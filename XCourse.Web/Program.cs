@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
+using NetTopologySuite;
 
 namespace XCourse.Web
 {
@@ -14,7 +15,8 @@ namespace XCourse.Web
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            builder.Services.AddDbContext<XCourseContext>(options => options.UseSqlServer(connectionString));
+
+            builder.Services.AddDbContext<XCourseContext>(options => options.UseSqlServer(connectionString, x => x.UseNetTopologySuite()));
 
             builder.Services.AddScoped<IUnitOfWork, IUnitOfWork>();
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using XCourse.Core.Entities;
 
 namespace XCourse.Core.Entities
@@ -8,10 +9,13 @@ namespace XCourse.Core.Entities
         [Key]
         public int ID { get; set; }
 
+        [ForeignKey(nameof(AppUser))]
         public int AppUserID { get; set; }
         public AppUser? AppUser { get; set; }
 
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Balance { get; set; } = 0m; // Default balance
+
 
         public string Currency { get; set; } = "EGP"; // Store currency if needed
 

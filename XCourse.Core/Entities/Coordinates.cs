@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace XCourse.Core.Entities
 {
-    [Owned]
-    public class Location
+    class Coordinates
     {
         [Column(TypeName = "decimal(9,6)")]
         public decimal Latitude { get; set; }
