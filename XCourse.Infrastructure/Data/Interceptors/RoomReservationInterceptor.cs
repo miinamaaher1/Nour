@@ -1,0 +1,47 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using XCourse.Core.Entities;
+
+namespace XCourse.Infrastructure.Data.Interceptors
+{
+    public class RoomReservationInterceptor : SaveChangesInterceptor
+    {
+        public override InterceptionResult<int> SavingChanges(
+           DbContextEventData eventData,
+           InterceptionResult<int> result)
+        {
+            ApplySoftDelete(eventData.Context);
+            return base.SavingChanges(eventData, result);
+        }
+
+        public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+            DbContextEventData eventData,
+            InterceptionResult<int> result,
+            CancellationToken cancellationToken = default)
+        {
+            ApplySoftDelete(eventData.Context);
+            return base.SavingChangesAsync(eventData, result, cancellationToken);
+        }
+
+        private void ApplySoftDelete(DbContext? context)
+        {
+            if (context == null)
+            {
+                return;
+            }
+
+            foreach (var entry in context.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Deleted && e.Entity is RoomReservation))
+            {
+                entry.State = EntityState.Modified;
+                entry.CurrentValues["IsDeleted"] = true;
+                entry.CurrentValues["DeleteDate"] = DateTime.Now;
+            }
+        }
+    }
+}

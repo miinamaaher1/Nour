@@ -5,7 +5,7 @@ using XCourse.Core.Entities;
 
 namespace XCourse.Infrastructure.Data
 {
-    public class XCourseContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
+    public partial class XCourseContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
     {
         public XCourseContext(DbContextOptions<XCourseContext> options) : base(options)
         {
@@ -27,5 +27,26 @@ namespace XCourse.Infrastructure.Data
         public virtual DbSet<Teacher> Teachers { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<Wallet> Wallets { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            OnModelCreatingPartial(modelBuilder);
+        }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+           
+            base.OnConfiguring(optionsBuilder);
+
+
+
+            OnConfiguringPartial(optionsBuilder);
+        }
+       partial void OnConfiguringPartial(DbContextOptionsBuilder optionsBuilder);
     }
 }
