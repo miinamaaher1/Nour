@@ -1,8 +1,12 @@
-﻿namespace XCourse.Core.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace XCourse.Core.Entities
 {
     public class Attendance
     {
+        [ForeignKey(nameof(Student))]
         public int StudentID { get; set; }
+        [ForeignKey(nameof(Session))]
         public int SessionId { get; set; }
         public string? Feedback { get; set; }
         public int? Rating { get; set; }

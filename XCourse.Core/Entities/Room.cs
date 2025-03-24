@@ -20,5 +20,6 @@ namespace XCourse.Core.Entities
         public int CenterID { get; set; }
         public virtual Center? Center { get; set; }
         public virtual ICollection<RoomReservation> RoomReservations { get; set; } = new HashSet<RoomReservation>();
+        public virtual ICollection<Group> Groups { get; set; } = new HashSet<Group>();
     }
 }

@@ -11,7 +11,7 @@ namespace XCourse.Core.Entities
         public Year Year { get; set; }
         public string? Major { get; set; }
         public virtual ICollection<Attendance> Attendances { get; set; } = new HashSet<Attendance>();
-        public virtual ICollection<RoomReservation> RoomReservation { get; set; } = new HashSet<RoomReservation>();
+        public virtual ICollection<RoomReservation> RoomReservations { get; set; } = new HashSet<RoomReservation>();
         public virtual ICollection<PrivateGroupRequest> PrivateGroupRequests { get; set; } = new HashSet<PrivateGroupRequest>();
         public virtual ICollection<Group> Groups { get; set; } = new HashSet<Group>();
 

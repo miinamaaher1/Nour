@@ -11,11 +11,13 @@ namespace XCourse.Core.Entities
         [ForeignKey(nameof(Teacher))]
         public int TeacherID { get; set; }
         public virtual Teacher? Teacher { get; set; }
+        [ForeignKey(nameof(Subject))]
+        public int SubjectID { get; set; }
+        public virtual Subject? Subject { get; set; }
 
         public bool IsApproved { get; set; } 
         public Address Address { get; set; }
         public Location Location { get; set; }
         public string? Details { get; set; }
-        public Subject Subject { get; set; }
     }
 }

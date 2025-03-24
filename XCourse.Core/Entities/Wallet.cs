@@ -8,8 +8,8 @@ namespace XCourse.Core.Entities
         [Key]
         public int ID { get; set; }
 
-        public int UserID { get; set; }
-        public AppUser? User { get; set; }
+        public int AppUserID { get; set; }
+        public AppUser? AppUser { get; set; }
 
         public decimal Balance { get; set; } = 0m; // Default balance
 

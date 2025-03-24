@@ -19,8 +19,4 @@
     <ProjectReference Include="..\XCourse.Core\XCourse.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\Configurations\" />
-  </ItemGroup>
-
 </Project>

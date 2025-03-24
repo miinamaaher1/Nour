@@ -13,8 +13,8 @@ namespace XCourse.Core.Entities
         [Key]
         public int Id { get; set; }
 
-        public int WalletId { get; set; }
-        public Wallet Wallet { get; set; }
+        public int WalletID { get; set; }
+        public virtual Wallet? Wallet { get; set; }
 
         public decimal Amount { get; set; }
 

@@ -34,7 +34,9 @@
         public Year Year { get; set; }
         public Semester Semester { get; set; }
         public virtual ICollection<Teacher> Teachers { get; set; } = new HashSet<Teacher>();
-        public virtual ICollection<Group> Group { get; set; } = new HashSet<Group>();
+        public virtual ICollection<Group> Groups { get; set; } = new HashSet<Group>();
+        public virtual ICollection<PrivateGroupRequest> PrivateGroupRequests { get; set; } = new HashSet<PrivateGroupRequest>();
+
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

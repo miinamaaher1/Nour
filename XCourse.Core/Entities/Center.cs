@@ -1,4 +1,6 @@
-﻿namespace XCourse.Core.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace XCourse.Core.Entities
 {
     public class Center
     {
@@ -7,7 +9,10 @@
         public bool IsGirlsOnly { get; set; }
         public Location Location { get; set; }
         public Address Address { get; set; }
-        public virtual CenterAdmin? CentreAdmin { get; set; }
+        [ForeignKey(nameof(CenterAdmin))]
+        public int CenterAdminID { get; set; }
+
+        public virtual CenterAdmin? CenterAdmin { get; set; }
         public virtual ICollection<Room> Rooms { get; set; } = new HashSet<Room>();
 
         // IsDeleted 
