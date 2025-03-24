@@ -1,4 +1,4 @@
-﻿namespace XCourse.Web.Models
+﻿namespace XCourse.Core.Entities
 {
     public class Center
     {
@@ -12,7 +12,5 @@
 
         // IsDeleted 
         public bool IsDeleted { get; set; }
-
-
     }
 }

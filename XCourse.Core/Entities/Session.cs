@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
-    
     public class Session
     {
         public int ID { get; set; }

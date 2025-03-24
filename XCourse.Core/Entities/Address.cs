@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
-    [ComplexType]
+    [Owned]
     public class Address
     {
         public string Street { get; set; }

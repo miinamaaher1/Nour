@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using XCourse.Core.Entities;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
     public class Wallet
     {

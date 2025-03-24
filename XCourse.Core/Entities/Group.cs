@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
     public class Group
     {
@@ -21,7 +21,7 @@ namespace XCourse.Web.Models
         [ForeignKey(nameof(Subject))]
         public int? SubjectID { get; set; }
         public virtual Subject? Subject { get; set; }
-        public virtual ICollection<AssistantInvitations> AssistantInvitationss { get; set; } = new HashSet<AssistantInvitations>();
+        public virtual ICollection<AssistantInvitation> AssistantInvitationss { get; set; } = new HashSet<AssistantInvitation>();
         public virtual ICollection<Student> Students { get; set; } = new HashSet<Student>();
         public virtual ICollection<Announcement> Announcements { get; set; } = new HashSet<Announcement>();
         public virtual ICollection<Session> Sessions { get; set; } = new HashSet<Session>();

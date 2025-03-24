@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
     public class CenterAdmin
     {
@@ -12,6 +12,5 @@ namespace XCourse.Web.Models
 
         // IsDeleted 
         public bool IsDeleted { get; set; }
-
     }
 }

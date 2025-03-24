@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
     public class Assistant
     {
@@ -8,7 +8,7 @@ namespace XCourse.Web.Models
         [ForeignKey(nameof(AppUser))]
         public int AppUserID { get; set; }
         public virtual AppUser? AppUser { get; set; }
-        public virtual ICollection<AssistantInvitations> AssistantInvitations { get; set; } = new HashSet<AssistantInvitations>();
+        public virtual ICollection<AssistantInvitation> AssistantInvitations { get; set; } = new HashSet<AssistantInvitation>();
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

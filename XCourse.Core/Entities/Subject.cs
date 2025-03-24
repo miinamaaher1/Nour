@@ -1,4 +1,4 @@
-﻿namespace XCourse.Web.Models
+﻿namespace XCourse.Core.Entities
 {
     public enum Semester
     {

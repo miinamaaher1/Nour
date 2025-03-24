@@ -1,4 +1,4 @@
-﻿namespace XCourse.Web.Models
+﻿namespace XCourse.Core.Entities
 {
     public class Attendance
     {
@@ -13,6 +13,5 @@
         public virtual Session? Session { get; set; }
         // IsDeleted 
         public bool IsDeleted { get; set; }
-
     }
 }

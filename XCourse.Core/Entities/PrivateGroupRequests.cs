@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
-    public class PrivateGroupRequests
+    public class PrivateGroupRequest
     {
         [ForeignKey(nameof(Student))]
         public int StudentID { get; set; }

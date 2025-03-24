@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
-    public class AssistantInvitations
+    public class AssistantInvitation
     {
         public int ID { get; set; }
         [ForeignKey(nameof(Assistant))]

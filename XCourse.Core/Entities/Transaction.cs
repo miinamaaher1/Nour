@@ -1,7 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
+    public enum TransactionType
+    {
+        Deposit,
+        Withdrawal,
+        Refund
+    }
     public class Transaction
     {
         [Key]
@@ -18,12 +24,4 @@ namespace XCourse.Web.Models
 
         public string StripePaymentId { get; set; } // Store Stripe transaction ID
     }
-
-    public enum TransactionType
-    {
-        Deposit,
-        Withdrawal,
-        Refund
-    }
-
 }

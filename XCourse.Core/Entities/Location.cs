@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
-    [NotMapped]
+    [Owned]
     public class Location
     {
         public double Latitude { get; set; }

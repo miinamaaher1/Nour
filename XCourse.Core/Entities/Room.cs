@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
     [Flags]
-    public enum RoomType
+    public enum Equipment
     {
         Study,
         Lecture,
@@ -14,13 +14,11 @@ namespace XCourse.Web.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public int Capacity { get; set; }
-        public RoomType RoomType { get; set; }
+        public Equipment Equipment { get; set; }
         public decimal PricePerHour { get; set; }
         [ForeignKey(nameof(Center))]
         public int CenterID { get; set; }
         public virtual Center? Center { get; set; }
         public virtual ICollection<RoomReservation> RoomReservations { get; set; } = new HashSet<RoomReservation>();
-        
-        
     }
 }

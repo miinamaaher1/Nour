@@ -1,13 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace XCourse.Web.Models
+namespace XCourse.Core.Entities
 {
     public enum Gender
     {
         Male,
         Female
     }
-    public class AppUser
+    public class AppUser : IdentityUser<int>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

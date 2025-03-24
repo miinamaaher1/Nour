@@ -1,17 +1,29 @@
-﻿namespace XCourse.Infrastructure.Repositories.Interfaces
+﻿using Microsoft.EntityFrameworkCore;
+using XCourse.Core.Entities;
+
+namespace XCourse.Infrastructure.Repositories.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        //IUserRepository Users { get; }
-        //IRepository<Board> Boards { get; }
-        //IRepository<BoardUserAccess> BoardUserAccesses { get; }
-        //IRepository<TodoUserAssign> TodoUserAssigns { get; }
-        //IRepository<Note> Notes { get; }
-        //IRepository<Todo> Todos { get; }
-        //IRepository<Notebook> Notebooks { get; }
-        //IRepository<Project> Projects { get; }
+        IRepository<AppUser> AppUsers { get; }
+        IRepository<Announcement> Announcements { get; }
+        IRepository<Assistant> Assistants { get; }
+        IRepository<AssistantInvitation> AssistantInvitations { get; }
+        IRepository<Attendance> Attendances { get; }
+        IRepository<Center> Centers { get; }
+        IRepository<CenterAdmin> CenterAdmins { get; }
+        IRepository<Group> Groups { get; }
+        IRepository<PrivateGroupRequest> PrivateGroupRequests { get; }
+        IRepository<Room> Rooms { get; }
+        IRepository<RoomReservation> RoomReservations { get; }
+        IRepository<Session> Sessions { get; }
+        IRepository<Student> Students { get; }
+        IRepository<Subject> Subjects { get; }
+        IRepository<Teacher> Teachers { get; }
+        IRepository<Transaction> Transactions { get; }
+        IRepository<Wallet> Wallets { get; }
 
-        //int Save();
-        //Task<int> SaveAsync();
+        int Save();
+        Task<int> SaveAsync();
     }
 }
