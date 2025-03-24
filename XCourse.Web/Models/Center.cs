@@ -1,0 +1,18 @@
+﻿namespace XCourse.Web.Models
+{
+    public class Center
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public bool IsGirlsOnly { get; set; }
+        public Location Location { get; set; }
+        public Address Address { get; set; }
+        public virtual CenterAdmin? CentreAdmin { get; set; }
+        public virtual ICollection<Room> Rooms { get; set; } = new HashSet<Room>();
+
+        // IsDeleted 
+        public bool IsDeleted { get; set; }
+
+
+    }
+}
