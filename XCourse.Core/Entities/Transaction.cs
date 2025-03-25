@@ -18,7 +18,7 @@ namespace XCourse.Core.Entities
         [Display(Name = "Wallet")]
         public int WalletID { get; set; }
         public virtual Wallet? Wallet { get; set; }
-
+        [Range(0.01, 99999999999999.99, ErrorMessage = "Amount must be greater than zero.")]
         public decimal Amount { get; set; }
 
         [EnumDataType(typeof(TransactionType))]
@@ -26,6 +26,6 @@ namespace XCourse.Core.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string StripePaymentId { get; set; } // Store Stripe transaction ID
+        public string PaymentTransactionID { get; set; }
     }
 }
