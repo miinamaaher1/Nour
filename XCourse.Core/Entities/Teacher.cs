@@ -18,10 +18,10 @@ namespace XCourse.Core.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal PrivatePrice { get; set; }
 
-        public virtual ICollection<PrivateGroupRequest> PrivateGroupRequests { get; set; } = new HashSet<PrivateGroupRequest>();
-        public virtual ICollection<AssistantInvitation> AssistantInvitations { get; set; } = new HashSet<AssistantInvitation>();
-        public virtual ICollection<Subject> Subjects { get; set; } = new HashSet<Subject>();
-        public virtual ICollection<Group> Groups { get; set; } = new HashSet<Group>();
+        public virtual ICollection<PrivateGroupRequest>? PrivateGroupRequests { get; set; }
+        public virtual ICollection<AssistantInvitation>? AssistantInvitations { get; set; }
+        public virtual ICollection<Subject>? Subjects { get; set; }
+        public virtual ICollection<Group>? Groups { get; set; }
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

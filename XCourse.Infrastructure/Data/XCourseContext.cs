@@ -40,13 +40,13 @@ namespace XCourse.Infrastructure.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           
+
             base.OnConfiguring(optionsBuilder);
 
 
 
             OnConfiguringPartial(optionsBuilder);
         }
-       partial void OnConfiguringPartial(DbContextOptionsBuilder optionsBuilder);
+        partial void OnConfiguringPartial(DbContextOptionsBuilder optionsBuilder);
     }
 }

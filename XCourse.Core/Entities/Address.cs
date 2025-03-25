@@ -7,15 +7,15 @@ namespace XCourse.Core.Entities
     public class Address
     {
         [MaxLength(25,ErrorMessage ="Number of characters for street must be less than or equal 25")]
-        public string Street { get; set; }
+        public string? Street { get; set; }
 
-        [MaxLength(25, ErrorMessage = "Number of characters for Neighbourhood must be less than or equal 25")]
-        public string Neighbourhood { get; set; }
+        [MaxLength(25, ErrorMessage = "Number of characters for Neighborhood must be less than or equal 25")]
+        public string? Neighborhood { get; set; }
 
         [MaxLength(25, ErrorMessage = "Number of characters for City must be less than or equal 25")]
-        public string City { get; set; }
+        public string? City { get; set; }
 
         [MaxLength(25, ErrorMessage = "Number of characters for Governorate must be less than or equal 25")]
-        public string Governorate { get; set; }
+        public string? Governorate { get; set; }
     }
 }

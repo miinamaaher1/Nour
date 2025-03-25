@@ -26,7 +26,7 @@ namespace XCourse.Core.Entities
         public int CenterAdminID { get; set; }
 
         public virtual CenterAdmin? CenterAdmin { get; set; }
-        public virtual ICollection<Room> Rooms { get; set; } = new HashSet<Room>();
+        public virtual ICollection<Room>? Rooms { get; set; }
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

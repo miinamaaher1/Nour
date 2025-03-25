@@ -8,10 +8,7 @@ namespace XCourse.Core.Entities
     {
         [Key]
         public int ID { get; set; }
-
-        [ForeignKey(nameof(AppUser))]
-        public int AppUserID { get; set; }
-        public AppUser? AppUser { get; set; }
+        public virtual AppUser? AppUser { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Balance { get; set; } = 0m; // Default balance
@@ -19,7 +16,7 @@ namespace XCourse.Core.Entities
 
         public string Currency { get; set; } = "EGP"; // Store currency if needed
 
-        public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+        public ICollection<Transaction>? Transactions { get; set; }
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

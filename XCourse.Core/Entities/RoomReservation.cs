@@ -18,10 +18,6 @@ namespace XCourse.Core.Entities
         public int? StudentID { get; set; }
         public virtual Student? Student { get; set; }
 
-        [ForeignKey(nameof(Session))]
-        [Display(Name = nameof(Session))]
-        public int? SessionID { get; set; }
-
         public virtual Session? Session { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]

@@ -29,7 +29,7 @@ namespace XCourse.Core.Entities
         [Display(Name = nameof(Center))]
         public int CenterID { get; set; }
         public virtual Center? Center { get; set; }
-        public virtual ICollection<RoomReservation> RoomReservations { get; set; } = new HashSet<RoomReservation>();
-        public virtual ICollection<Group> Groups { get; set; } = new HashSet<Group>();
+        public virtual ICollection<RoomReservation>? RoomReservations { get; set; }
+        public virtual ICollection<Group>? Groups { get; set; }
     }
 }

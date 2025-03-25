@@ -14,7 +14,7 @@ namespace XCourse.Core.Entities
 
         public virtual AppUser? AppUser { get; set; }
 
-        public virtual ICollection<AssistantInvitation> AssistantInvitations { get; set; } = new HashSet<AssistantInvitation>();
+        public virtual ICollection<AssistantInvitation>? AssistantInvitations { get; set; }
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

@@ -10,15 +10,12 @@ namespace XCourse.Core.Entities
 
         public bool IsImportant { get; set; }
 
-        [Required]
         [MaxLength(50, ErrorMessage = "Number of characters for Title must be less than or equal 50")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        [Required]
         [MaxLength(300, ErrorMessage = "Number of characters for Body must be less than or equal 300")]
         public string Body { get; set; }
 
-        [Required]
         [DataType(dataType: DataType.DateTime)]
         public DateTime DateTime { get; set; }
 

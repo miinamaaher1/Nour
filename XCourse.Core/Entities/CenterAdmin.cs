@@ -13,7 +13,7 @@ namespace XCourse.Core.Entities
         public int AppUserID { get; set; }
 
         public virtual AppUser? AppUser { get; set; }
-        public virtual ICollection<Center> Centers { get; set; } = new HashSet<Center>();
+        public virtual ICollection<Center>? Centers { get; set; }
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

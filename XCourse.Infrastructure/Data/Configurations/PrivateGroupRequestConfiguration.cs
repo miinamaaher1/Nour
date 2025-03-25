@@ -17,15 +17,18 @@ namespace XCourse.Infrastructure.Data.Configurations
 
             builder.HasOne(p => p.Student)
                 .WithMany(s => s.PrivateGroupRequests)
-                .HasForeignKey(p => p.StudentID);
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(p => p.Teacher)
                 .WithMany(s => s.PrivateGroupRequests)
-                .HasForeignKey(p => p.TeacherID);
+                .HasForeignKey(p => p.TeacherID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(p => p.Subject)
                 .WithMany(s => s.PrivateGroupRequests)
-                .HasForeignKey(p => p.SubjectID);
+                .HasForeignKey(p => p.SubjectID)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

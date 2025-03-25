@@ -17,15 +17,18 @@ namespace XCourse.Infrastructure.Data.Configurations
 
             builder.HasOne(e => e.Assistant)
                 .WithMany(a => a.AssistantInvitations)
-                .HasForeignKey(e => e.AssistantID);
+                .HasForeignKey(e => e.AssistantID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(e => e.Teacher)
                 .WithMany(a => a.AssistantInvitations)
-                .HasForeignKey(e => e.TeacherID);
+                .HasForeignKey(e => e.TeacherID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(e => e.Group)
                 .WithMany(a => a.AssistantInvitations)
-                .HasForeignKey(e => e.GroupID);
+                .HasForeignKey(e => e.GroupID)
+                .OnDelete(DeleteBehavior.NoAction);
 
 
         }

@@ -19,6 +19,7 @@ namespace XCourse.Core.Entities
         public int WalletID { get; set; }
         public virtual Wallet? Wallet { get; set; }
         [Range(0.01, 99999999999999.99, ErrorMessage = "Amount must be greater than zero.")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Amount { get; set; }
 
         [EnumDataType(typeof(TransactionType))]

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using XCourse.Web.Models;
+using XCourse.Core.ViewModels;
+
 
 namespace XCourse.Web.Controllers
 {

@@ -16,10 +16,10 @@ namespace XCourse.Core.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal PricePerSession { get; set; }
 
-        public Address Address { get; set; }
+        public Address? Address { get; set; }
 
         [Column(TypeName = "geography")]
-        public Point Location { get; set; }
+        public Point? Location { get; set; }
 
         public bool IsPrivate { get; set; }
         public bool IsOnline { get; set; }
@@ -41,10 +41,10 @@ namespace XCourse.Core.Entities
         [Display(Name = nameof(Subject))]
         public int? SubjectID { get; set; }
         public virtual Subject? Subject { get; set; }
-        public virtual ICollection<AssistantInvitation> AssistantInvitations { get; set; } = new HashSet<AssistantInvitation>();
-        public virtual ICollection<Student> Students { get; set; } = new HashSet<Student>();
-        public virtual ICollection<Announcement> Announcements { get; set; } = new HashSet<Announcement>();
-        public virtual ICollection<Session> Sessions { get; set; } = new HashSet<Session>();
+        public virtual ICollection<AssistantInvitation>? AssistantInvitations { get; set; }
+        public virtual ICollection<Student>? Students { get; set; }
+        public virtual ICollection<Announcement>? Announcements { get; set; }
+        public virtual ICollection<Session>? Sessions { get; set; }
 
 
         // IsDeleted 

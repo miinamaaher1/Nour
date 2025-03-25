@@ -1,4 +1,4 @@
-namespace XCourse.Core.Entities
+namespace XCourse.Core.ViewModels
 {
     public class ErrorViewModel
     {

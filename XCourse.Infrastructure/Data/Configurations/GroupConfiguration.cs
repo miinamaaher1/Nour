@@ -24,6 +24,14 @@ namespace XCourse.Infrastructure.Data.Configurations
             builder.HasOne(g => g.Subject)
                 .WithMany(t => t.Groups)
                 .HasForeignKey(g => g.SubjectID);
+
+            builder.HasMany(g => g.Students)
+                    .WithMany(t => t.Groups)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "StudentGroups",
+                        j => j.HasOne<Student>().WithMany().HasForeignKey("StudentID").OnDelete(DeleteBehavior.NoAction),
+                        j => j.HasOne<Group>().WithMany().HasForeignKey("GroupID").OnDelete(DeleteBehavior.NoAction)
+                    );
         }
     }
 }

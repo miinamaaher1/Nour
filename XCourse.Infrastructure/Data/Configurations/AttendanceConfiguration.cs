@@ -17,13 +17,15 @@ namespace XCourse.Infrastructure.Data.Configurations
 
             builder.HasOne(e => e.Session)
                 .WithMany(s => s.Attendances)
-                .HasForeignKey(e => e.SessionId);
+                .HasForeignKey(e => e.SessionId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(e => e.Student)
                 .WithMany(s => s.Attendances)
-                .HasForeignKey(e => e.StudentID);
+                .HasForeignKey(e => e.StudentID)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            
+
         }
     }
 }

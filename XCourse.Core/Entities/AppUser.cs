@@ -53,30 +53,9 @@ namespace XCourse.Core.Entities
         public DateTime? DeleteDate { get; set; }
 
         // Users Types
-        // 1. Student
-        [ForeignKey(nameof(Student))]
-        [Display(Name = nameof(Student))]
-        public int? StudentID {get; set;}
         public virtual Student? Student { get; set; }
-
-        // 2. Teacher
-        [ForeignKey(nameof(Teacher))]
-        [Display(Name = nameof(Teacher))]
-        public int? TeacherID { get; set; }
         public virtual Teacher? Teacher { get; set; }
-
-        // 3. CenterAdimn
-        [ForeignKey(nameof(CenterAdmin))]
-        [Display(Name = "Center Admin")]
-        public int? CenterAdminID { get; set; }
         public virtual CenterAdmin? CenterAdmin { get; set; }
-
-        // 4. Assistant
-        [ForeignKey(nameof(Assistant))]
-        [Display(Name = nameof(Assistant))]
-        public int? AssistantID { get; set; }
         public virtual Assistant? Assistant { get; set; }
-
-
     }
 }

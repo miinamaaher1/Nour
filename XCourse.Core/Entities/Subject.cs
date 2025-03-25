@@ -45,9 +45,9 @@ namespace XCourse.Core.Entities
         [EnumDataType(typeof(Semester))]
         public Semester Semester { get; set; }
 
-        public virtual ICollection<Teacher> Teachers { get; set; } = new HashSet<Teacher>();
-        public virtual ICollection<Group> Groups { get; set; } = new HashSet<Group>();
-        public virtual ICollection<PrivateGroupRequest> PrivateGroupRequests { get; set; } = new HashSet<PrivateGroupRequest>();
+        public virtual ICollection<Teacher>? Teachers { get; set; }
+        public virtual ICollection<Group>? Groups { get; set; }
+        public virtual ICollection<PrivateGroupRequest>? PrivateGroupRequests { get; set; }
 
 
         // IsDeleted 

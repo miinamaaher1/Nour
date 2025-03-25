@@ -32,7 +32,7 @@ namespace XCourse.Core.Entities
         [Display(Name = nameof(Group))]
         public int GroupID { get; set; }
         public virtual Group? Group { get; set; }
-        public virtual ICollection<Attendance> Attendances { get; set; } = new HashSet<Attendance>();
+        public virtual ICollection<Attendance>? Attendances { get; set; }
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

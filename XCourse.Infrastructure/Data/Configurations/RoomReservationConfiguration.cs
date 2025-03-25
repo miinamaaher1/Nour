@@ -16,15 +16,18 @@ namespace XCourse.Infrastructure.Data.Configurations
 
             builder.HasOne(r => r.Student)
                 .WithMany(s => s.RoomReservations)
-                .HasForeignKey(r => r.StudentID);
+                .HasForeignKey(r => r.StudentID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(r => r.Room)
                 .WithMany(s => s.RoomReservations)
-                .HasForeignKey(r => r.RoomID);
+                .HasForeignKey(r => r.RoomID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(r => r.Session)
                 .WithOne(s => s.RoomReservation)
-                .HasForeignKey<Session>(s => s.RoomReservationID);
+                .HasForeignKey<Session>(s => s.RoomReservationID)
+                .OnDelete(DeleteBehavior.NoAction);
 
         }
     }
