@@ -9,7 +9,6 @@ namespace Xcourse.Infrastructure.Repositories
     {
         private readonly XCourseContext context;
 
-        public IRepository<AppUser> AppUsers { get; }
         public IRepository<Announcement> Announcements { get; }
         public IRepository<Assistant> Assistants { get; }
         public IRepository<AssistantInvitation> AssistantInvitations { get; }
@@ -31,7 +30,6 @@ namespace Xcourse.Infrastructure.Repositories
         {
             context = _context;
 
-            AppUsers = new BaseRepository<AppUser>(context);
             Announcements = new BaseRepository<Announcement>(context);
             Assistants = new BaseRepository<Assistant>(context);
             AssistantInvitations = new BaseRepository<AssistantInvitation>(context);

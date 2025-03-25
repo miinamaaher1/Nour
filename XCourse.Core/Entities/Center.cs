@@ -21,6 +21,10 @@ namespace XCourse.Core.Entities
 
         public Address Address { get; set; }
 
+        [Column(TypeName = "varbinary(MAX)")]
+        [Display(Name = "Preview Picture")]
+        public byte[] PreviewPicture { get; set; }
+
         [ForeignKey(nameof(CenterAdmin))]
         [Display(Name = "Center Admin")]
         public int CenterAdminID { get; set; }

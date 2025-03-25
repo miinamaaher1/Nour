@@ -5,7 +5,6 @@ namespace XCourse.Infrastructure.Repositories.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRepository<AppUser> AppUsers { get; }
         IRepository<Announcement> Announcements { get; }
         IRepository<Assistant> Assistants { get; }
         IRepository<AssistantInvitation> AssistantInvitations { get; }

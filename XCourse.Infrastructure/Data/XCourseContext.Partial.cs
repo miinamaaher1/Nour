@@ -29,7 +29,7 @@ namespace XCourse.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new AppUserConfiguration());
             modelBuilder.ApplyConfiguration(new AssistantInvitationConfiguration());
             modelBuilder.ApplyConfiguration(new AttendanceConfiguration());
-            modelBuilder.ApplyConfiguration(new CenterEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new CenterConfiguration());
             modelBuilder.ApplyConfiguration(new GroupConfiguration());
             modelBuilder.ApplyConfiguration(new PrivateGroupRequestConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());

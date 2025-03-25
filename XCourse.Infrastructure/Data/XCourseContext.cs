@@ -42,9 +42,6 @@ namespace XCourse.Infrastructure.Data
         {
 
             base.OnConfiguring(optionsBuilder);
-
-
-
             OnConfiguringPartial(optionsBuilder);
         }
         partial void OnConfiguringPartial(DbContextOptionsBuilder optionsBuilder);

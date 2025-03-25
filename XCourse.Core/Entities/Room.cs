@@ -25,6 +25,10 @@ namespace XCourse.Core.Entities
         [Column(TypeName = "decimal(18,2)")]
         public decimal PricePerHour { get; set; }
 
+        [Column(TypeName = "varbinary(MAX)")]
+        [Display(Name = "Preview Picture")]
+        public byte[] PreviewPicture { get; set; }
+
         [ForeignKey(nameof(Center))]
         [Display(Name = nameof(Center))]
         public int CenterID { get; set; }
