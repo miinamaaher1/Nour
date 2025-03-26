@@ -23,7 +23,7 @@ namespace XCourse.Web
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
 
-            builder.Services.AddIdentity<AppUser, IdentityRole<int>>(options =>
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;

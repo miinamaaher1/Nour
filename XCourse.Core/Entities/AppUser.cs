@@ -20,7 +20,7 @@ namespace XCourse.Core.Entities
         CenterAdmin
     }
 
-    public class AppUser : IdentityUser<int>
+    public class AppUser : IdentityUser
     {
         [Required]
         [MaxLength(25, ErrorMessage = "Number of characters for first name must be less than or equal 25")]

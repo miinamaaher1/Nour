@@ -13,25 +13,25 @@ namespace XCourse.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<AppUser> builder)
         {
-            builder.HasOne(a => a.Wallet)
+            builder.HasOne(u => u.Wallet)
                    .WithOne(w => w.AppUser)
-                   .HasForeignKey<AppUser>(w => w.WalletID);
+                   .HasForeignKey<AppUser>(a => a.WalletID);
 
-            builder.HasOne(a => a.Student)
-                   .WithOne(w => w.AppUser)
-                   .HasForeignKey<Student>(w => w.AppUserID);
+            builder.HasOne(u => u.Student)
+                   .WithOne(s => s.AppUser)
+                   .HasForeignKey<Student>(s => s.AppUserID);
 
-            builder.HasOne(a => a.Teacher)
-                   .WithOne(w => w.AppUser)
-                   .HasForeignKey<Teacher>(w => w.AppUserID);
+            builder.HasOne(u => u.Teacher)
+                   .WithOne(t => t.AppUser)
+                   .HasForeignKey<Teacher>(t => t.AppUserID);
 
-            builder.HasOne(a => a.Assistant)
-                   .WithOne(w => w.AppUser)
-                   .HasForeignKey<Assistant>(w => w.AppUserID);
+            builder.HasOne(u => u.Assistant)
+                   .WithOne(a => a.AppUser)
+                   .HasForeignKey<Assistant>(a => a.AppUserID);
 
-            builder.HasOne(a => a.CenterAdmin)
-                   .WithOne(w => w.AppUser)
-                   .HasForeignKey<CenterAdmin>(w => w.AppUserID);
+            builder.HasOne(u => u.CenterAdmin)
+                   .WithOne(c => c.AppUser)
+                   .HasForeignKey<CenterAdmin>(c => c.AppUserID);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace XCourse.Core.Entities
 
         [ForeignKey(nameof(AppUser))]
         [Display(Name = "App User")]
-        public int AppUserID { get; set; }
+        public string AppUserID { get; set; }
 
         public virtual AppUser? AppUser { get; set; }
 

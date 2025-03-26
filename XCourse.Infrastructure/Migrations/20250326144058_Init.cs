@@ -7,7 +7,7 @@ using NetTopologySuite.Geometries;
 namespace XCourse.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingEntities_V10 : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,8 +16,7 @@ namespace XCourse.Infrastructure.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -66,7 +65,7 @@ namespace XCourse.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -85,21 +84,21 @@ namespace XCourse.Infrastructure.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
-                    ProfilePicture = table.Column<byte[]>(type: "varbinary(MAX)", nullable: false),
+                    ProfilePicture = table.Column<byte[]>(type: "varbinary(MAX)", nullable: true),
                     Gender = table.Column<int>(type: "int", nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
+                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true),
                     HomeAddress_Street = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     HomeAddress_Neighborhood = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     HomeAddress_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     HomeAddress_Governorate = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
-                    HomeLocation = table.Column<Point>(type: "geography", nullable: false),
+                    HomeLocation = table.Column<Point>(type: "geography", nullable: true),
                     WalletID = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AccountType = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -155,7 +154,7 @@ namespace XCourse.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -177,7 +176,7 @@ namespace XCourse.Infrastructure.Migrations
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,8 +193,8 @@ namespace XCourse.Infrastructure.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -218,7 +217,7 @@ namespace XCourse.Infrastructure.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -240,7 +239,7 @@ namespace XCourse.Infrastructure.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AppUserID = table.Column<int>(type: "int", nullable: false),
+                    AppUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -260,7 +259,7 @@ namespace XCourse.Infrastructure.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AppUserID = table.Column<int>(type: "int", nullable: false),
+                    AppUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -280,9 +279,9 @@ namespace XCourse.Infrastructure.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AppUserID = table.Column<int>(type: "int", nullable: false),
-                    Year = table.Column<int>(type: "int", nullable: false),
-                    Major = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
+                    AppUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: true),
+                    Major = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -302,9 +301,9 @@ namespace XCourse.Infrastructure.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AppUserID = table.Column<int>(type: "int", nullable: false),
-                    IsAvilableForPrivateGroup = table.Column<bool>(type: "bit", nullable: false),
-                    PrivatePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AppUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsAvailableForPrivateGroups = table.Column<bool>(type: "bit", nullable: false),
+                    PrivatePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -326,11 +325,12 @@ namespace XCourse.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     IsGirlsOnly = table.Column<bool>(type: "bit", nullable: false),
-                    Location = table.Column<Point>(type: "geography", nullable: false),
+                    Location = table.Column<Point>(type: "geography", nullable: true),
                     Address_Street = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Neighborhood = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Governorate = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
+                    PreviewPicture = table.Column<byte[]>(type: "varbinary(MAX)", nullable: true),
                     CenterAdminID = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -357,7 +357,7 @@ namespace XCourse.Infrastructure.Migrations
                     Address_Neighborhood = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Governorate = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
-                    Location = table.Column<Point>(type: "geography", nullable: false),
+                    Location = table.Column<Point>(type: "geography", nullable: true),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -414,6 +414,7 @@ namespace XCourse.Infrastructure.Migrations
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     Equipment = table.Column<int>(type: "int", nullable: false),
                     PricePerHour = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PreviewPicture = table.Column<byte[]>(type: "varbinary(MAX)", nullable: true),
                     CenterID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -444,6 +445,7 @@ namespace XCourse.Infrastructure.Migrations
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
                     IsGirlsOnly = table.Column<bool>(type: "bit", nullable: false),
                     TeacherID = table.Column<int>(type: "int", nullable: false),
+                    CoverPicture = table.Column<byte[]>(type: "varbinary(MAX)", nullable: true),
                     DefaultRoomID = table.Column<int>(type: "int", nullable: true),
                     SubjectID = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -507,8 +509,8 @@ namespace XCourse.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsImportant = table.Column<bool>(type: "bit", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Body = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Body = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     GroupID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -529,7 +531,7 @@ namespace XCourse.Infrastructure.Migrations
                     AssistantID = table.Column<int>(type: "int", nullable: false),
                     GroupID = table.Column<int>(type: "int", nullable: false),
                     ID = table.Column<int>(type: "int", nullable: false),
-                    TeacherID = table.Column<int>(type: "int", nullable: false)
+                    TeacherID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -586,7 +588,7 @@ namespace XCourse.Infrastructure.Migrations
                     Address_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Governorate = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
-                    URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    URL = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExpiryDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RoomReservationID = table.Column<int>(type: "int", nullable: false),
                     GroupID = table.Column<int>(type: "int", nullable: false),
@@ -614,7 +616,7 @@ namespace XCourse.Infrastructure.Migrations
                 columns: table => new
                 {
                     StudentID = table.Column<int>(type: "int", nullable: false),
-                    SessionId = table.Column<int>(type: "int", nullable: false),
+                    SessionID = table.Column<int>(type: "int", nullable: false),
                     Feedback = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Rating = table.Column<int>(type: "int", nullable: true),
                     HasAttended = table.Column<bool>(type: "bit", nullable: true),
@@ -624,10 +626,10 @@ namespace XCourse.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Attendances", x => new { x.StudentID, x.SessionId });
+                    table.PrimaryKey("PK_Attendances", x => new { x.StudentID, x.SessionID });
                     table.ForeignKey(
-                        name: "FK_Attendances_Sessions_SessionId",
-                        column: x => x.SessionId,
+                        name: "FK_Attendances_Sessions_SessionID",
+                        column: x => x.SessionID,
                         principalTable: "Sessions",
                         principalColumn: "ID");
                     table.ForeignKey(
@@ -704,9 +706,9 @@ namespace XCourse.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Attendances_SessionId",
+                name: "IX_Attendances_SessionID",
                 table: "Attendances",
-                column: "SessionId");
+                column: "SessionID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CenterAdmins_AppUserID",

@@ -5,7 +5,7 @@ using XCourse.Core.Entities;
 
 namespace XCourse.Infrastructure.Data
 {
-    public partial class XCourseContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
+    public partial class XCourseContext : IdentityDbContext<AppUser>
     {
         public XCourseContext(DbContextOptions<XCourseContext> options) : base(options)
         {

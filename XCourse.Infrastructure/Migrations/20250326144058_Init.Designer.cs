@@ -13,8 +13,8 @@ using XCourse.Infrastructure.Data;
 namespace XCourse.Infrastructure.Migrations
 {
     [DbContext(typeof(XCourseContext))]
-    [Migration("20250326002310_MakePictiresNullable")]
-    partial class MakePictiresNullable
+    [Migration("20250326144058_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,13 +26,10 @@ namespace XCourse.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -56,7 +53,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,8 +67,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -80,7 +78,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,8 +92,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -104,7 +103,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -115,8 +114,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -125,13 +125,13 @@ namespace XCourse.Infrastructure.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -140,10 +140,10 @@ namespace XCourse.Infrastructure.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -198,11 +198,10 @@ namespace XCourse.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Body")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<DateTime>("DateTime")
+                    b.Property<DateTime?>("DateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("GroupID")
@@ -224,20 +223,20 @@ namespace XCourse.Infrastructure.Migrations
 
             modelBuilder.Entity("XCourse.Core.Entities.AppUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AccountType")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("DateOfBirth")
+                    b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("DeleteDate")
@@ -259,7 +258,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<Point>("HomeLocation")
-                        .IsRequired()
                         .HasColumnType("geography");
 
                     b.Property<bool>("IsDeleted")
@@ -333,8 +331,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("AppUserID")
-                        .HasColumnType("int");
+                    b.Property<string>("AppUserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -358,7 +357,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("ID")
                         .HasColumnType("int");
 
-                    b.Property<int>("TeacherID")
+                    b.Property<int?>("TeacherID")
                         .HasColumnType("int");
 
                     b.HasKey("AssistantID", "GroupID");
@@ -375,7 +374,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("StudentID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SessionId")
+                    b.Property<int>("SessionID")
                         .HasColumnType("int");
 
                     b.Property<double?>("ClassWorkGrade")
@@ -397,9 +396,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int?>("Rating")
                         .HasColumnType("int");
 
-                    b.HasKey("StudentID", "SessionId");
+                    b.HasKey("StudentID", "SessionID");
 
-                    b.HasIndex("SessionId");
+                    b.HasIndex("SessionID");
 
                     b.ToTable("Attendances");
                 });
@@ -422,7 +421,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Point>("Location")
-                        .IsRequired()
                         .HasColumnType("geography");
 
                     b.Property<string>("Name")
@@ -448,8 +446,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("AppUserID")
-                        .HasColumnType("int");
+                    b.Property<string>("AppUserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -532,7 +531,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Point>("Location")
-                        .IsRequired()
                         .HasColumnType("geography");
 
                     b.HasKey("StudentID", "TeacherID", "SubjectID");
@@ -653,7 +651,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("URL")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -674,17 +671,17 @@ namespace XCourse.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("AppUserID")
-                        .HasColumnType("int");
+                    b.Property<string>("AppUserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Major")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
+                    b.Property<int?>("Major")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Year")
+                    b.Property<int?>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -733,16 +730,17 @@ namespace XCourse.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("AppUserID")
-                        .HasColumnType("int");
+                    b.Property<string>("AppUserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsAvilableForPrivateGroup")
+                    b.Property<bool>("IsAvailableForPrivateGroups")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("PrivatePrice")
+                    b.Property<decimal?>("PrivatePrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ID");
@@ -810,16 +808,16 @@ namespace XCourse.Infrastructure.Migrations
                     b.ToTable("Wallets");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.HasOne("XCourse.Core.Entities.AppUser", null)
                         .WithMany()
@@ -828,7 +826,7 @@ namespace XCourse.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("XCourse.Core.Entities.AppUser", null)
                         .WithMany()
@@ -837,9 +835,9 @@ namespace XCourse.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -852,7 +850,7 @@ namespace XCourse.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("XCourse.Core.Entities.AppUser", null)
                         .WithMany()
@@ -912,8 +910,8 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.OwnsOne("XCourse.Core.Entities.Address", "HomeAddress", b1 =>
                         {
-                            b1.Property<int>("AppUserId")
-                                .HasColumnType("int");
+                            b1.Property<string>("AppUserId")
+                                .HasColumnType("nvarchar(450)");
 
                             b1.Property<string>("City")
                                 .HasMaxLength(25)
@@ -939,8 +937,7 @@ namespace XCourse.Infrastructure.Migrations
                                 .HasForeignKey("AppUserId");
                         });
 
-                    b.Navigation("HomeAddress")
-                        .IsRequired();
+                    b.Navigation("HomeAddress");
 
                     b.Navigation("Wallet");
                 });
@@ -970,24 +967,20 @@ namespace XCourse.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("XCourse.Core.Entities.Teacher", "Teacher")
+                    b.HasOne("XCourse.Core.Entities.Teacher", null)
                         .WithMany("AssistantInvitations")
-                        .HasForeignKey("TeacherID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("TeacherID");
 
                     b.Navigation("Assistant");
 
                     b.Navigation("Group");
-
-                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("XCourse.Core.Entities.Attendance", b =>
                 {
                     b.HasOne("XCourse.Core.Entities.Session", "Session")
                         .WithMany("Attendances")
-                        .HasForeignKey("SessionId")
+                        .HasForeignKey("SessionID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1039,8 +1032,7 @@ namespace XCourse.Infrastructure.Migrations
                                 .HasForeignKey("CenterID");
                         });
 
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Address");
 
                     b.Navigation("CenterAdmin");
                 });
@@ -1165,8 +1157,7 @@ namespace XCourse.Infrastructure.Migrations
                                 .HasForeignKey("PrivateGroupRequestStudentID", "PrivateGroupRequestTeacherID", "PrivateGroupRequestSubjectID");
                         });
 
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Address");
 
                     b.Navigation("Student");
 
