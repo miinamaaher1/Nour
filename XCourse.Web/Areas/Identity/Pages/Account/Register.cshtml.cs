@@ -176,12 +176,6 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                     }
                 }
 
-                Wallet wallet = new Wallet();
-                _unitOfWork.Wallets.Add(wallet);
-                _unitOfWork.Save();
-                user.WalletID = wallet.ID;
-
-
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -189,7 +183,6 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
 
                     if (Input.AccountType == AccountType.Student)
                     {
@@ -229,6 +222,13 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         _unitOfWork.CenterAdmins.Add(centerAdmin);
                         _unitOfWork.Save();
                     }
+
+                    Wallet wallet = new Wallet()
+                    {
+                        AppUserID = user.Id
+                    };
+                    _unitOfWork.Wallets.Add(wallet);
+                    _unitOfWork.Save();
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

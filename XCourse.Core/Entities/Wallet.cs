@@ -8,6 +8,10 @@ namespace XCourse.Core.Entities
     {
         [Key]
         public int ID { get; set; }
+
+        [ForeignKey(nameof(AppUser))]
+        [Display(Name = "App User")]
+        public string AppUserID { get; set; }
         public virtual AppUser? AppUser { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]

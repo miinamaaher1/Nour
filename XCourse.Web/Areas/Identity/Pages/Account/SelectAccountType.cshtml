@@ -2,6 +2,7 @@
 @using XCourse.Core.Entities
 @model XCourse.Web.Areas.Identity.Pages.Account.SelectAccountTypeModel
 @{
+    ViewData["Title"] = "Select Account Type";
 }
 <a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Student">Student</a>
 <a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Teacher">Teacher</a>

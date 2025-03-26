@@ -15,7 +15,7 @@ namespace XCourse.Infrastructure.Data.Configurations
         {
             builder.HasOne(u => u.Wallet)
                    .WithOne(w => w.AppUser)
-                   .HasForeignKey<AppUser>(a => a.WalletID);
+                   .HasForeignKey<Wallet>(w => w.AppUserID);
 
             builder.HasOne(u => u.Student)
                    .WithOne(s => s.AppUser)

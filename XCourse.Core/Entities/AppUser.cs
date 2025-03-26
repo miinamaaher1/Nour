@@ -51,10 +51,6 @@ namespace XCourse.Core.Entities
         public Point? HomeLocation { get; set; }
 
         // Wallet
-        [ForeignKey(nameof(Wallet))]
-        [Display(Name = nameof(Wallet))]
-        public int WalletID { get; set; }
-
         public Wallet? Wallet { get; set; }
 
         // IsDeleted 
