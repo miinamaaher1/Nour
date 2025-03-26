@@ -32,9 +32,10 @@ namespace XCourse.Core.Entities
         public Address? Address { get; set; }
         [EnumDataType(typeof(WeekDay))]
         public WeekDay DefaultSessionDays { get; set; }
-        public TimeOnly? DefaultStartTime { get; set; }
-        public TimeOnly? DefaultEndTime { get; set; }
-        public bool IsActive { get; set; } = true; // bydefault active when initialized
+        public TimeOnly? DefaultDayOneTime { get; set; }
+        public TimeOnly? DefaultDayTwoTime { get; set; }
+        public TimeSpan? Duration { get; set; }
+        public bool IsActive { get; set; } = true; // by default active when initialized
 
         [Column(TypeName = "geography")]
         public Point? Location { get; set; }
