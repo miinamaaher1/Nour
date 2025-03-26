@@ -35,7 +35,7 @@ namespace XCourse.Core.Entities
         public TimeOnly? DefaultDayOneTime { get; set; }
         public TimeOnly? DefaultDayTwoTime { get; set; }
         public TimeSpan? Duration { get; set; }
-        public bool IsActive { get; set; } = true; // bydefault active when initialized
+        public bool IsActive { get; set; } = true; // by default active when initialized
 
         [Column(TypeName = "geography")]
         public Point? Location { get; set; }
