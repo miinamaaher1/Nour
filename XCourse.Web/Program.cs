@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Xcourse.Infrastructure.Repositories;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
+using XCourse.Services.Implementations;
 
 namespace XCourse.Web
 {
@@ -19,6 +21,7 @@ namespace XCourse.Web
             builder.Services.AddDbContext<XCourseContext>(options => options.UseSqlServer(connectionString, options => options.UseNetTopologySuite()));
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole<int>>(options =>
             {
@@ -29,7 +32,7 @@ namespace XCourse.Web
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 4;
 
-            }).AddEntityFrameworkStores<XCourseContext>();
+            }).AddEntityFrameworkStores<XCourseContext>().AddDefaultTokenProviders();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

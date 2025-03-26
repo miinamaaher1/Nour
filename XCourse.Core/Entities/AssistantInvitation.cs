@@ -14,12 +14,6 @@ namespace XCourse.Core.Entities
 
         public virtual Assistant? Assistant { get; set; }
 
-        [ForeignKey(nameof(Teacher))]
-        [Display(Name = nameof(Teacher))]
-        public int TeacherID { get; set; }
-
-        public virtual Teacher? Teacher { get; set; }
-
         [ForeignKey(nameof(Group))]
         [Display(Name = nameof(Group))]
         public int GroupID { get; set; }

@@ -19,6 +19,7 @@ namespace XCourse.Core.Entities
         public string Name { get; set; }
 
         public int Capacity { get; set; }
+        [EnumDataType(typeof(Equipment))]
         public Equipment Equipment { get; set; }
 
         [Display(Name = "Price per Hour")]
@@ -27,7 +28,7 @@ namespace XCourse.Core.Entities
 
         [Column(TypeName = "varbinary(MAX)")]
         [Display(Name = "Preview Picture")]
-        public byte[] PreviewPicture { get; set; }
+        public byte[]? PreviewPicture { get; set; }
 
         [ForeignKey(nameof(Center))]
         [Display(Name = nameof(Center))]

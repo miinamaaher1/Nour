@@ -9,6 +9,7 @@ namespace XCourse.Core.Entities
     } 
     public enum Major
     {
+        General,
         Science,
         Math,
         Literature

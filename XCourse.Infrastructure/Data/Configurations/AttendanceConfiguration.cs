@@ -13,11 +13,11 @@ namespace XCourse.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Attendance> builder)
         {
-            builder.HasKey(e => new {e.StudentID , e.SessionId});
+            builder.HasKey(e => new {e.StudentID , e.SessionID});
 
             builder.HasOne(e => e.Session)
                 .WithMany(s => s.Attendances)
-                .HasForeignKey(e => e.SessionId)
+                .HasForeignKey(e => e.SessionID)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(e => e.Student)

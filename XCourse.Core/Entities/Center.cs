@@ -17,13 +17,13 @@ namespace XCourse.Core.Entities
         public bool IsGirlsOnly { get; set; }
 
         [Column(TypeName = "geography")]
-        public Point Location { get; set; }
+        public Point? Location { get; set; }
 
-        public Address Address { get; set; }
+        public Address? Address { get; set; }
 
         [Column(TypeName = "varbinary(MAX)")]
         [Display(Name = "Preview Picture")]
-        public byte[] PreviewPicture { get; set; }
+        public byte[]? PreviewPicture { get; set; }
 
         [ForeignKey(nameof(CenterAdmin))]
         [Display(Name = "Center Admin")]

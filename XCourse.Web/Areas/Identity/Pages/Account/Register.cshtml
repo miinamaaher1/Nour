@@ -1,4 +1,5 @@
 ﻿@page
+@using XCourse.Core.Entities
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -6,16 +7,32 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-4">
             <h2>Create a new account.</h2>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input asp-for="Input.AccountType" hidden value="@Model.AccountType"/>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" placeholder="first name" />
+                <label asp-for="Input.FirstName">First Name</label>
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" placeholder="last name" />
+                <label asp-for="Input.LastName">Last Name</label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                 <label asp-for="Input.Email">Email</label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
+                <label asp-for="Input.UserName">User Name</label>
+                <span asp-validation-for="Input.UserName" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
                 <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
@@ -27,10 +44,69 @@
                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Street" class="form-control" autocomplete="street" aria-required="false" placeholder="baker street" />
+                <label asp-for="Input.Street">Street</label>
+                <span asp-validation-for="Input.Street" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Neighborhood" class="form-control" autocomplete="neighborhood" aria-required="false" placeholder="neighborhood" />
+                <label asp-for="Input.Neighborhood">Neighborhood</label>
+                <span asp-validation-for="Input.Neighborhood" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.City" class="form-control" autocomplete="city" aria-required="false" placeholder="gotham city" />
+                <label asp-for="Input.City">City</label>
+                <span asp-validation-for="Input.City" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Governorate" class="form-control" autocomplete="governorate" aria-required="false" placeholder="cairo governorate" />
+                <label asp-for="Input.Governorate">Governorate</label>
+                <span asp-validation-for="Input.Governorate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DateOfBirth" class="form-control" aria-required="false"/>
+                <label asp-for="Input.DateOfBirth">DateOfBirth</label>
+                <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+            </div>
+            @if (Model.AccountType == AccountType.Student)
+            {
+                <div class="form-floating mb-3">
+                    <Select asp-for="Input.Year" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Year>()"> </Select>
+                    <label asp-for="Input.Year">Year</label>
+                    <span asp-validation-for="Input.Year" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <Select asp-for="Input.Major" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Major>()"> </Select>
+                    <label asp-for="Input.Major">Major</label>
+                    <span asp-validation-for="Input.Major" class="text-danger"></span>
+                </div>
+            }
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
     </div>
-    <div class="col-md-6 col-md-offset-2">
+    <div class="col-md-4">
+        <div class="form-group">
+            @if (Model.Input.ProfilePicture != null)
+            {
+                <img id="profilePicture" alt="profile" class="large-pfp"
+                        src="data:image/*;base64,@(Convert.ToBase64String(Model.Input.ProfilePicture))" />
+            }
+            else
+            {
+                <img id="profilePicture" alt="profile" class="large-pfp"
+                        src="~/images/default_profile.png" />
+            }
+            <div class="custom-file mt-2">
+                <input type="file"
+                        accept="image/*"
+                        asp-for="Input.ProfilePicture"
+                        class="form-control"
+                        onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+                <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-md-offset-2">
         <section>
             <h3>Use another service to register.</h3>
             <hr />
@@ -61,6 +137,7 @@
         </section>
     </div>
 </div>
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

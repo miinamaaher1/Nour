@@ -23,8 +23,8 @@ namespace XCourse.Core.Entities
         public virtual Subject? Subject { get; set; }
 
         public bool IsApproved { get; set; } 
-        public Address Address { get; set; }
-        public Point Location { get; set; }
+        public Address? Address { get; set; }
+        public Point? Location { get; set; }
         public string? Details { get; set; }
     }
 }

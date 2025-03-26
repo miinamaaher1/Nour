@@ -19,7 +19,7 @@ namespace XCourse.Core.Entities
         public bool IsOnline { get; set; }
 
         [Url]
-        public string URL { get; set; }
+        public string? URL { get; set; }
 
         public DateTime ExpiryDateTime { get; set; }
 

@@ -1,0 +1,9 @@
+﻿@page
+@using XCourse.Core.Entities
+@model XCourse.Web.Areas.Identity.Pages.Account.SelectAccountTypeModel
+@{
+}
+<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Student">Student</a>
+<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Teacher">Teacher</a>
+<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Assistant">Assistant</a>
+<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.CenterAdmin">Center Admin</a>

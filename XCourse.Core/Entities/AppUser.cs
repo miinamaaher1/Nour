@@ -11,6 +11,15 @@ namespace XCourse.Core.Entities
         Male,
         Female
     }
+
+    public enum AccountType
+    {
+        Student,
+        Teacher,
+        Assistant,
+        CenterAdmin
+    }
+
     public class AppUser : IdentityUser<int>
     {
         [Required]
@@ -25,21 +34,21 @@ namespace XCourse.Core.Entities
 
         [Column(TypeName = "varbinary(MAX)")]
         [Display(Name = "Profile Picture")]
-        public byte[] ProfilePicture { get; set; }
+        public byte[]? ProfilePicture { get; set; }
 
         [EnumDataType(typeof(Gender))]
         public Gender Gender { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Date of Birth")]
-        public DateOnly DateOfBirth {get; set;}
+        public DateOnly? DateOfBirth {get; set;}
 
         [Display(Name = "Home Address")]
-        public Address HomeAddress { get; set; }
+        public Address? HomeAddress { get; set; }
 
         [Display(Name = "Home Location")]
         [Column(TypeName = "geography")]
-        public Point HomeLocation { get; set; }
+        public Point? HomeLocation { get; set; }
 
         // Wallet
         [ForeignKey(nameof(Wallet))]
@@ -53,6 +62,8 @@ namespace XCourse.Core.Entities
         public DateTime? DeleteDate { get; set; }
 
         // Users Types
+        [EnumDataType(typeof(AccountType))]
+        public AccountType AccountType { get; set; }
         public virtual Student? Student { get; set; }
         public virtual Teacher? Teacher { get; set; }
         public virtual CenterAdmin? CenterAdmin { get; set; }

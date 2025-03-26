@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using XCourse.Infrastructure.Data;
@@ -12,9 +13,11 @@ using XCourse.Infrastructure.Data;
 namespace XCourse.Infrastructure.Migrations
 {
     [DbContext(typeof(XCourseContext))]
-    partial class XCourseContextModelSnapshot : ModelSnapshot
+    [Migration("20250326002310_MakePictiresNullable")]
+    partial class MakePictiresNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,10 +198,11 @@ namespace XCourse.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Body")
+                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<DateTime?>("DateTime")
+                    b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("GroupID")
@@ -229,14 +233,11 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("AccountType")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly?>("DateOfBirth")
+                    b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
                     b.Property<DateTime?>("DeleteDate")
@@ -258,6 +259,7 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<Point>("HomeLocation")
+                        .IsRequired()
                         .HasColumnType("geography");
 
                     b.Property<bool>("IsDeleted")
@@ -356,7 +358,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("ID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TeacherID")
+                    b.Property<int>("TeacherID")
                         .HasColumnType("int");
 
                     b.HasKey("AssistantID", "GroupID");
@@ -373,7 +375,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("StudentID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SessionID")
+                    b.Property<int>("SessionId")
                         .HasColumnType("int");
 
                     b.Property<double?>("ClassWorkGrade")
@@ -395,9 +397,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int?>("Rating")
                         .HasColumnType("int");
 
-                    b.HasKey("StudentID", "SessionID");
+                    b.HasKey("StudentID", "SessionId");
 
-                    b.HasIndex("SessionID");
+                    b.HasIndex("SessionId");
 
                     b.ToTable("Attendances");
                 });
@@ -420,6 +422,7 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Point>("Location")
+                        .IsRequired()
                         .HasColumnType("geography");
 
                     b.Property<string>("Name")
@@ -529,6 +532,7 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Point>("Location")
+                        .IsRequired()
                         .HasColumnType("geography");
 
                     b.HasKey("StudentID", "TeacherID", "SubjectID");
@@ -649,6 +653,7 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("URL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -675,10 +680,11 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Major")
-                        .HasColumnType("int");
+                    b.Property<string>("Major")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
-                    b.Property<int?>("Year")
+                    b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -730,13 +736,13 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("AppUserID")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsAvailableForPrivateGroups")
+                    b.Property<bool>("IsAvilableForPrivateGroup")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<decimal?>("PrivatePrice")
+                    b.Property<decimal>("PrivatePrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ID");
@@ -933,7 +939,8 @@ namespace XCourse.Infrastructure.Migrations
                                 .HasForeignKey("AppUserId");
                         });
 
-                    b.Navigation("HomeAddress");
+                    b.Navigation("HomeAddress")
+                        .IsRequired();
 
                     b.Navigation("Wallet");
                 });
@@ -963,20 +970,24 @@ namespace XCourse.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("XCourse.Core.Entities.Teacher", null)
+                    b.HasOne("XCourse.Core.Entities.Teacher", "Teacher")
                         .WithMany("AssistantInvitations")
-                        .HasForeignKey("TeacherID");
+                        .HasForeignKey("TeacherID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Assistant");
 
                     b.Navigation("Group");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("XCourse.Core.Entities.Attendance", b =>
                 {
                     b.HasOne("XCourse.Core.Entities.Session", "Session")
                         .WithMany("Attendances")
-                        .HasForeignKey("SessionID")
+                        .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1028,7 +1039,8 @@ namespace XCourse.Infrastructure.Migrations
                                 .HasForeignKey("CenterID");
                         });
 
-                    b.Navigation("Address");
+                    b.Navigation("Address")
+                        .IsRequired();
 
                     b.Navigation("CenterAdmin");
                 });
@@ -1153,7 +1165,8 @@ namespace XCourse.Infrastructure.Migrations
                                 .HasForeignKey("PrivateGroupRequestStudentID", "PrivateGroupRequestTeacherID", "PrivateGroupRequestSubjectID");
                         });
 
-                    b.Navigation("Address");
+                    b.Navigation("Address")
+                        .IsRequired();
 
                     b.Navigation("Student");
 

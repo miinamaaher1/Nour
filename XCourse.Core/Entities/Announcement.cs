@@ -14,10 +14,10 @@ namespace XCourse.Core.Entities
         public string? Title { get; set; }
 
         [MaxLength(300, ErrorMessage = "Number of characters for Body must be less than or equal 300")]
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
         [DataType(dataType: DataType.DateTime)]
-        public DateTime DateTime { get; set; }
+        public DateTime? DateTime { get; set; }
 
         [Display(Name = nameof(Group))]
         [ForeignKey(nameof(Group))]

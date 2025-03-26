@@ -14,10 +14,10 @@ namespace XCourse.Core.Entities
         public virtual AppUser? AppUser { get; set; }
 
         [EnumDataType(typeof(Year))]
-        public Year Year { get; set; }
+        public Year? Year { get; set; }
 
-        [MaxLength(25,ErrorMessage = "Number of characters for major must be less than or equal 25")]
-        public string? Major { get; set; }
+        [EnumDataType(typeof(Major))]
+        public Major? Major { get; set; }
 
         public virtual ICollection<Attendance>? Attendances { get; set; }
         public virtual ICollection<RoomReservation>? RoomReservations { get; set; }

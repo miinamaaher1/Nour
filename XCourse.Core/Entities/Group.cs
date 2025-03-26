@@ -31,7 +31,7 @@ namespace XCourse.Core.Entities
 
         [Column(TypeName = "varbinary(MAX)")]
         [Display(Name = "Cover Picture")]
-        public byte[] CoverPicture { get; set; }
+        public byte[]? CoverPicture { get; set; }
 
         public virtual Teacher? Teacher { get; set; }
 

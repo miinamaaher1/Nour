@@ -11,7 +11,7 @@ namespace XCourse.Core.Entities
 
         [ForeignKey(nameof(Session))]
         [Display(Name = nameof(Session))]
-        public int SessionId { get; set; }
+        public int SessionID { get; set; }
 
         [MaxLength(500, ErrorMessage = "Number of characters for feedback must be less than or equal 500")]
         [Display(Name = nameof(Feedback))]

@@ -12,11 +12,11 @@ namespace XCourse.Core.Entities
         [Display(Name = "App User")]
         public int AppUserID { get; set; }
         public virtual AppUser? AppUser { get; set; }
-        public bool IsAvilableForPrivateGroup { get; set; }
+        public bool IsAvailableForPrivateGroups { get; set; }
 
         [Display(Name = "Private Price")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal PrivatePrice { get; set; }
+        public decimal? PrivatePrice { get; set; }
 
         public virtual ICollection<PrivateGroupRequest>? PrivateGroupRequests { get; set; }
         public virtual ICollection<AssistantInvitation>? AssistantInvitations { get; set; }

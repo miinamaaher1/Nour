@@ -20,11 +20,6 @@ namespace XCourse.Infrastructure.Data.Configurations
                 .HasForeignKey(e => e.AssistantID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(e => e.Teacher)
-                .WithMany(a => a.AssistantInvitations)
-                .HasForeignKey(e => e.TeacherID)
-                .OnDelete(DeleteBehavior.NoAction);
-
             builder.HasOne(e => e.Group)
                 .WithMany(a => a.AssistantInvitations)
                 .HasForeignKey(e => e.GroupID)
