@@ -9,7 +9,7 @@ namespace XCourse.Core.Entities
         [Key]
         public int ID { get; set; }
 
-        public TimeSpan Duration { get; set; }
+        public TimeSpan? Duration { get; set; }
 
         [Column(TypeName = "geography")]
         public Point? Location { get; set; }
