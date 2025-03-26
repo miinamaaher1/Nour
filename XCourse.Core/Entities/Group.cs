@@ -4,6 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XCourse.Core.Entities
 {
+    [Flags]
+    public enum WeekDay
+    {
+        None = 0,
+        Saturday = 1,    
+        Sunday = 2,    
+        Monday = 4,    
+        Tuesday = 8,    
+        Wednesday = 16,   
+        Thursday = 32,   
+        Friday = 64    
+    }
+
     public class Group
     {
         [Key]
@@ -17,10 +30,15 @@ namespace XCourse.Core.Entities
         public decimal PricePerSession { get; set; }
 
         public Address? Address { get; set; }
+        [EnumDataType(typeof(WeekDay))]
+        public WeekDay DefaultSessionDays { get; set; }
+        public TimeOnly? DefaultStartTime { get; set; }
+        public TimeOnly? DefaultEndTime { get; set; }
+        public bool IsActive { get; set; } = true; // bydefault active when initialized
 
         [Column(TypeName = "geography")]
         public Point? Location { get; set; }
-
+        
         public bool IsPrivate { get; set; }
         public bool IsOnline { get; set; }
         public bool IsGirlsOnly { get; set; }

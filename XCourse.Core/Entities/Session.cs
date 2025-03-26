@@ -19,13 +19,13 @@ namespace XCourse.Core.Entities
         public bool IsOnline { get; set; }
 
         [Url]
-        public string? URL { get; set; }
-
-        public DateTime ExpiryDateTime { get; set; }
+        public string? URL { get; set; } // for online groups [optional]
+        public DateTime StartDateTime { get; set; }
+        public DateTime EndDateTime { get; set; }
 
         [ForeignKey(nameof(RoomReservation))]
         [Display(Name = "Room Reservation")]
-        public int RoomReservationID { get; set; }
+        public int? RoomReservationID { get; set; }
         public virtual RoomReservation? RoomReservation { get; set; }
 
         [ForeignKey(nameof(Group))]
