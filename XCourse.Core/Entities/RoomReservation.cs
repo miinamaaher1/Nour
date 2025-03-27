@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XCourse.Core.Entities
 {
+    public enum ReservationStatus
+    {
+        Pending,
+        Declined,
+        Approved
+    }
     public class RoomReservation
     {
         [Key]
@@ -22,9 +28,11 @@ namespace XCourse.Core.Entities
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalPrice { get; set; }
-        public DateTime DateTime { get; set; }
-        public TimeSpan Duration { get; set; }
-        public bool IsApproved { get; set; }
+        public DateOnly? Date { get; set; }
+        public TimeOnly? StartTime { get; set; }
+        public TimeOnly? EndTime { get; set; }
+        public WeekDay? WeekDay { get; set; }
+        public ReservationStatus ReservationStatus { get; set; }
 
         // IsDeleted 
         public bool IsDeleted { get; set; }

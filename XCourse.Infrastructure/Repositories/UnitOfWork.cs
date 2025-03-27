@@ -25,6 +25,7 @@ namespace Xcourse.Infrastructure.Repositories
         public IRepository<Teacher> Teachers { get; }
         public IRepository<Transaction> Transactions { get; }
         public IRepository<Wallet> Wallets { get; }
+        public IRepository<GroupDefaults> GroupDefaults { get; }
 
         public UnitOfWork(XCourseContext _context)
         {
