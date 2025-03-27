@@ -27,6 +27,7 @@ namespace XCourse.Infrastructure.Data
         public virtual DbSet<Teacher> Teachers { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<Wallet> Wallets { get; set; }
+        public virtual DbSet<GroupDefaults> GroupDefaults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

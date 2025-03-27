@@ -21,6 +21,7 @@ namespace XCourse.Infrastructure.Repositories.Interfaces
         IRepository<Teacher> Teachers { get; }
         IRepository<Transaction> Transactions { get; }
         IRepository<Wallet> Wallets { get; }
+        IRepository<GroupDefaults> GroupDefaults { get; }
 
         int Save();
         Task<int> SaveAsync();
