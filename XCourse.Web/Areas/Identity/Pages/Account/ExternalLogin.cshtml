@@ -19,9 +19,57 @@
         <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
+                <input readonly asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
                 <label asp-for="Input.Email" class="form-label"></label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Street" class="form-control" autocomplete="street" aria-required="false" placeholder="baker street" />
+                <label asp-for="Input.Street">Street</label>
+                <span asp-validation-for="Input.Street" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Neighborhood" class="form-control" autocomplete="neighborhood" aria-required="false" placeholder="neighborhood" />
+                <label asp-for="Input.Neighborhood">Neighborhood</label>
+                <span asp-validation-for="Input.Neighborhood" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.City" class="form-control" autocomplete="city" aria-required="false" placeholder="gotham city" />
+                <label asp-for="Input.City">City</label>
+                <span asp-validation-for="Input.City" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Governorate" class="form-control" autocomplete="governorate" aria-required="false" placeholder="cairo governorate" />
+                <label asp-for="Input.Governorate">Governorate</label>
+                <span asp-validation-for="Input.Governorate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DateOfBirth" class="form-control" aria-required="false" />
+                <label asp-for="Input.DateOfBirth">DateOfBirth</label>
+                <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <Select asp-for="Input.Gender" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Gender>()"> </Select>
+                <label asp-for="Input.Gender">Gender</label>
+                <span asp-validation-for="Input.Gender" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <Select asp-for="Input.AccountType" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<AccountType>()"
+                        onchange="toggleStudentOptions(this)"> </Select>
+                <label asp-for="Input.AccountType">AccountType</label>
+                <span asp-validation-for="Input.AccountType" class="text-danger"></span>
+            </div>
+            <div id="studoptions">
+                <div class="form-floating mb-3">
+                    <Select asp-for="Input.Year" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Year>()"> </Select>
+                    <label asp-for="Input.Year">Year</label>
+                    <span asp-validation-for="Input.Year" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <Select asp-for="Input.Major" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Major>()"> </Select>
+                    <label asp-for="Input.Major">Major</label>
+                    <span asp-validation-for="Input.Major" class="text-danger"></span>
+                </div>
             </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
@@ -30,4 +78,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function toggleStudentOptions(selectElement) {
+            var selectedValue = selectElement.value;
+            var studentOptions = document.getElementById('studoptions');
+
+            if (selectedValue === 'Student' || selectedValue === 0) {
+                studentOptions.style.display = 'block';
+            } else {
+                studentOptions.style.display = 'none';
+            }
+        }
+    </script>
 }

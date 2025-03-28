@@ -1,16 +1,30 @@
 ﻿@page
 @model IndexModel
 @{
+    Layout = "_Layout";
+}
+@inject UserManager<AppUser> _userManager
+@{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
+<form id="profile-form" method="post">
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" placeholder="first name" />
+                <label asp-for="Input.FirstName">First Name</label>
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" placeholder="last name" />
+                <label asp-for="Input.LastName">Last Name</label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+            </div>
             <div class="form-floating mb-3">
                 <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
                 <label asp-for="Username" class="form-label"></label>
@@ -20,10 +34,78 @@
                 <label asp-for="Input.PhoneNumber" class="form-label"></label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Street" class="form-control" autocomplete="street" aria-required="false" placeholder="baker street" />
+                <label asp-for="Input.Street">Street</label>
+                <span asp-validation-for="Input.Street" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Neighborhood" class="form-control" autocomplete="neighborhood" aria-required="false" placeholder="neighborhood" />
+                <label asp-for="Input.Neighborhood">Neighborhood</label>
+                <span asp-validation-for="Input.Neighborhood" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.City" class="form-control" autocomplete="city" aria-required="false" placeholder="gotham city" />
+                <label asp-for="Input.City">City</label>
+                <span asp-validation-for="Input.City" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Governorate" class="form-control" autocomplete="governorate" aria-required="false" placeholder="cairo governorate" />
+                <label asp-for="Input.Governorate">Governorate</label>
+                <span asp-validation-for="Input.Governorate" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DateOfBirth" class="form-control" aria-required="false" />
+                <label asp-for="Input.DateOfBirth">DateOfBirth</label>
+                <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <Select asp-for="Input.Gender" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Gender>()"> </Select>
+                <label asp-for="Input.Gender">Gender</label>
+                <span asp-validation-for="Input.Gender" class="text-danger"></span>
+            </div>
+            @{
+                var user = await _userManager.GetUserAsync(User);
+                if (user.AccountType == AccountType.Student)
+                {
+                    <div class="form-floating mb-3">
+                        <Select asp-for="Input.Year" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Year>()"> </Select>
+                        <label asp-for="Input.Year">Year</label>
+                        <span asp-validation-for="Input.Year" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <Select asp-for="Input.Major" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Major>()"> </Select>
+                        <label asp-for="Input.Major">Major</label>
+                        <span asp-validation-for="Input.Major" class="text-danger"></span>
+                    </div>
+                }
+            }
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </form>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            @if (Model.Input.ProfilePicture != null)
+            {
+                <img id="profilePicture" alt="profile" class="large-pfp"
+                        src="data:image/*;base64,@(Convert.ToBase64String(Model.Input.ProfilePicture))" />
+            }
+            else
+            {
+                <img id="profilePicture" alt="profile" class="large-pfp"
+                        src="~/images/default_profile.png" />
+            }
+            <div class="custom-file mt-2">
+                <input type="file"
+                        accept="image/*"
+                        asp-for="Input.ProfilePicture"
+                        class="form-control"
+                        onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+                <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+            </div>
+        </div>
     </div>
 </div>
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
