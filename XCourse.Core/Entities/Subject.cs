@@ -2,6 +2,7 @@
 
 namespace XCourse.Core.Entities
 {
+    [Flags]
     public enum Semester
     {
         First,
