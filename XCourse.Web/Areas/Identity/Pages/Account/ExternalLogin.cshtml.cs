@@ -2,40 +2,40 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
+using XCourse.Core.Entities;
+using XCourse.Infrastructure.Repositories.Interfaces;
 
 namespace XCourse.Web.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
-        private readonly IUserEmailStore<IdentityUser> _emailStore;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IUserStore<AppUser> _userStore;
+        private readonly IUserEmailStore<AppUser> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ExternalLoginModel(
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore,
+            SignInManager<AppUser> signInManager,
+            UserManager<AppUser> userManager,
+            IUserStore<AppUser> userStore,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IUnitOfWork unitOfWork)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -43,6 +43,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _logger = logger;
             _emailSender = emailSender;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -84,8 +85,42 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            [Required]
+            [RegularExpression(@"^[A-Za-z][A-Za-z0-9._]{2,19}$",
+                ErrorMessage = "Username must start with a letter and can contain only letters, numbers, underscores, and dots (3-20 characters).")]
+            public string UserName { get; set; }
+
+            [MaxLength(25, ErrorMessage = "Number of characters for first name must be less than or equal 25")]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+            [MaxLength(25, ErrorMessage = "Number of characters for last name must be less than or equal 25")]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+            [EnumDataType(typeof(Gender))]
+            public Gender Gender { get; set; }
+            [DataType(DataType.Date)]
+            [Display(Name = "Date of Birth")]
+            public DateOnly DateOfBirth { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+
+            [MaxLength(25, ErrorMessage = "Number of characters for street must be less than or equal 25")]
+            public string Street { get; set; }
+
+            [MaxLength(25, ErrorMessage = "Number of characters for Neighborhood must be less than or equal 25")]
+            public string Neighborhood { get; set; }
+
+            [MaxLength(25, ErrorMessage = "Number of characters for City must be less than or equal 25")]
+            public string City { get; set; }
+
+            [MaxLength(25, ErrorMessage = "Number of characters for Governorate must be less than or equal 25")]
+            public string Governorate { get; set; }
+            [EnumDataType(typeof(Year))]
+            public Year? Year { get; set; }
+
+            [EnumDataType(typeof(Major))]
+            public Major? Major { get; set; }
+            public AccountType AccountType { get; set; }
         }
-        
+
         public IActionResult OnGet() => RedirectToPage("./Login");
 
         public IActionResult OnPost(string provider, string returnUrl = null)
@@ -131,7 +166,9 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        FirstName = info.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value,
+                        LastName = info.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value
                     };
                 }
                 return Page();
@@ -156,6 +193,21 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
+                Address address = new()
+                {
+                    Street = Input.Street,
+                    Neighborhood = Input.Neighborhood,
+                    City = Input.City,
+                    Governorate = Input.Governorate
+                };
+
+                user.HomeAddress = address;
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.DateOfBirth = Input.DateOfBirth;
+                user.Gender = Input.Gender;
+
+
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -163,6 +215,52 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+
+                        if (Input.AccountType == AccountType.Student)
+                        {
+                            Student student = new Student()
+                            {
+                                Year = Input.Year,
+                                Major = Input.Major,
+                                AppUserID = user.Id
+                            };
+                            _unitOfWork.Students.Add(student);
+                            _unitOfWork.Save();
+                        }
+                        else if (Input.AccountType == AccountType.Teacher)
+                        {
+                            Teacher teacher = new Teacher()
+                            {
+                                AppUserID = user.Id
+                            };
+                            _unitOfWork.Teachers.Add(teacher);
+                            _unitOfWork.Save();
+                        }
+                        else if (Input.AccountType == AccountType.Assistant)
+                        {
+                            Assistant assistant = new Assistant()
+                            {
+                                AppUserID = user.Id
+                            };
+                            _unitOfWork.Assistants.Add(assistant);
+                            _unitOfWork.Save();
+                        }
+                        else if (Input.AccountType == AccountType.CenterAdmin)
+                        {
+                            CenterAdmin centerAdmin = new CenterAdmin()
+                            {
+                                AppUserID = user.Id
+                            };
+                            _unitOfWork.CenterAdmins.Add(centerAdmin);
+                            _unitOfWork.Save();
+                        }
+
+                        Wallet wallet = new Wallet()
+                        {
+                            AppUserID = user.Id
+                        };
+                        _unitOfWork.Wallets.Add(wallet);
+                        _unitOfWork.Save();
 
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -197,27 +295,27 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private AppUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<AppUser>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(AppUser)}'. " +
+                    $"Ensure that '{nameof(AppUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the external login page in /Areas/Identity/Pages/Account/ExternalLogin.cshtml");
             }
         }
 
-        private IUserEmailStore<IdentityUser> GetEmailStore()
+        private IUserEmailStore<AppUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<IdentityUser>)_userStore;
+            return (IUserEmailStore<AppUser>)_userStore;
         }
     }
 }

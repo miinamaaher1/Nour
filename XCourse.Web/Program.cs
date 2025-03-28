@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,7 @@ using Xcourse.Infrastructure.Repositories;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
-using XCourse.Services.Implementations;
+using XCourse.Services.Implementations.EmailServices;
 
 namespace XCourse.Web
 {
@@ -33,6 +34,16 @@ namespace XCourse.Web
                 options.Password.RequiredLength = 4;
 
             }).AddEntityFrameworkStores<XCourseContext>().AddDefaultTokenProviders();
+
+            builder.Services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = "405609490730-njvh97vlu1sf5egc7tp3v7q91ueo1jt4.apps.googleusercontent.com";
+                options.ClientSecret = "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";
+
+                options.Scope.Add("profile"); // Request profile data
+                options.ClaimActions.MapJsonKey("given_name", "given_name");
+                options.ClaimActions.MapJsonKey("family_name", "family_name");
+            });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace XCourse.Services.Implementations
+namespace XCourse.Services.Implementations.EmailServices
 {
     public class FakeEmailSender : IEmailSender
     {
