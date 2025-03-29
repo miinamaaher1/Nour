@@ -1,0 +1,66 @@
+﻿@model TeacherProfileVM
+
+@{
+    ViewData["Title"] = $"{Model.TeacherName}";
+}
+
+<div class="container">
+    <div class="card mb-3 mx-auto" style="max-width: 800px;">
+        <div class="row g-0 align-items-center">
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.TeacherName</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                @if (Model.TeacherProfilePicture != null)
+                {
+                    <img alt="profile" class="mid-pfp"
+                    src="data:image/*;base64,@(Convert.ToBase64String(Model.TeacherProfilePicture))" />
+                }
+                else
+                {
+                    <img alt="profile" class="mid-pfp"
+                    src="~/images/default_profile.png" />
+                }
+            </div>
+        </div>
+    </div>
+
+    @foreach (var group in Model.AvailbleGroups)
+    {
+        <div class="card mb-3 mx-auto" style="max-width: 640px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    @if (group.CoverPicture != null)
+                    {
+                        <img alt="cover" class="img-fluid rounded-start"
+                        src="data:image/*;base64,@(Convert.ToBase64String(group.CoverPicture))" />
+                    }
+                    else
+                    {
+                        <img alt="cover" class="img-fluid rounded-start"
+                        src="~/images/default_cover.png" />
+                    }
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">@group.SubjectName</h5>
+                        <h6 class="card-subtitle mb-2 text-body-secondary">@group.Year, @group.Semester</h6>
+                        @if (group.IsOnline)
+                        {
+                            <i class="fa-solid fa-globe" style="color: lightgreen"></i>
+                        }
+                        @if (group.IsGirlsOnly)
+                        {
+                            <i class="fa-solid fa-child-dress" style="color: pink"></i>
+                        }
+                        <p class="card-text">Seats Available: @(group.MaxStudents - group.CurrentStudents) / @group.MaxStudents<br />Session Price: L.E. @group.PricePerSession</p>
+                        <a asp-area="Students" asp-controller="Group" asp-action="Details" class="btn btn-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,16 +1,16 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Xcourse.Infrastructure.Repositories;
 using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
+using XCourse.Services.Implementations.StudentServices;
+using XCourse.Services.Interfaces.StudentServices;
 
 namespace XCourse.Web
 {
@@ -28,7 +28,8 @@ namespace XCourse.Web
             builder.Services.AddDbContext<XCourseContext>(options => options.UseSqlServer(connectionString, options => options.UseNetTopologySuite()));
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddSingleton<IEmailSender, GmailSender>();
+            builder.Services.AddScoped<IEmailSender, GmailSender>();
+            builder.Services.AddScoped<ITeacherProfileService, TeacherProfileService>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
