@@ -164,6 +164,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.DateOfBirth = Input.DateOfBirth;
+                user.Gender = Input.Gender;
 
                 if (Request.Form.Files.Count > 0)
                 {

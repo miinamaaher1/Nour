@@ -463,6 +463,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<byte[]>("CoverPicture")
                         .HasColumnType("varbinary(MAX)");
 
+                    b.Property<int>("CurrentStudents")
+                        .HasColumnType("int");
+
                     b.Property<int?>("DefaultRoomID")
                         .HasColumnType("int");
 
@@ -493,7 +496,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<decimal>("PricePerSession")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("SubjectID")
+                    b.Property<int>("SubjectID")
                         .HasColumnType("int");
 
                     b.Property<int>("TeacherID")
@@ -530,11 +533,11 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int?>("RoomID")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly?>("SatartTime")
-                        .HasColumnType("time");
-
                     b.Property<DateOnly?>("StartDate")
                         .HasColumnType("date");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time");
 
                     b.Property<int?>("WeekDay")
                         .HasColumnType("int");
@@ -1100,7 +1103,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.HasOne("XCourse.Core.Entities.Subject", "Subject")
                         .WithMany("Groups")
-                        .HasForeignKey("SubjectID");
+                        .HasForeignKey("SubjectID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("XCourse.Core.Entities.Teacher", "Teacher")
                         .WithMany("Groups")
