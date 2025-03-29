@@ -85,10 +85,6 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
-            [Required]
-            [RegularExpression(@"^[A-Za-z][A-Za-z0-9._]{2,19}$",
-                ErrorMessage = "Username must start with a letter and can contain only letters, numbers, underscores, and dots (3-20 characters).")]
-            public string UserName { get; set; }
 
             [MaxLength(25, ErrorMessage = "Number of characters for first name must be less than or equal 25")]
             [Display(Name = "First Name")]
@@ -166,9 +162,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                        FirstName = info.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value,
-                        LastName = info.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
                     };
                 }
                 return Page();

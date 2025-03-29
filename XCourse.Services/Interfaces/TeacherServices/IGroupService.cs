@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XCourse.Core.Entities;
 
-namespace XCourse.Services.Interfaces.Teacher
+namespace XCourse.Services.Interfaces.TeacherServices
 {
     interface IGroupService 
     {
