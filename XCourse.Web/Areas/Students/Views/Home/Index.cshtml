@@ -1,111 +1,76 @@
-﻿@model XCourse.Core.ViewModels.Students.HomeViewModel
+﻿@model XCourse.Core.ViewModels.StudentsViewModels.HomeViewModel
 
 @{
     ViewData["Title"] = "Home";
 }
 
 <div class="container mt-4">
-
     <!-- Upcoming Sessions -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h4>Upcoming Sessions</h4>
+            <a href="#" class="btn btn-light btn-sm">View All</a>
         </div>
-        <div class="card-body">
-            @if (Model.UpcomingSessions.Any())
-            {
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Session ID</th>
-                            <th>Start Time</th>
-                            <th>Duration</th>
-                            <th>Subject</th>
-                            <th>Teacher</th>
-                            <th>Online</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var session in Model.UpcomingSessions)
-                        {
-                            <tr>
-                                <td>@session.SessionID</td>
-                                <td>@session.StartDateTime.ToString("f")</td>
-                                <td>@session.Duration?.ToString(@"hh\:mm")</td>
-                                <td>@session.SubjectName</td>
-                                <td>@session.GroupTeacherName</td>
-                                <td>@(session.IsOnline ? "Yes" : "No")</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p class="text-muted">No upcoming sessions.</p>
-            }
+        <div class="card-body position-relative">
+            <button class="btn btn-dark position-absolute start-0 top-50 translate-middle-y" id="prevSession"><i class="fas fa-chevron-left"></i></button>
+            <div id="sessionCarousel" class="d-flex overflow-auto">
+                @foreach (var session in Model.UpcomingSessions)
+                {
+                    <div class="card mx-2 p-3 shadow-sm text-center" style="min-width: 250px;">
+                        <div class="d-flex flex-column align-items-center">
+                            <img class="rounded-circle mb-2" src="@(session.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(session.TeacherProfilePicture) : Url.Content("~/images/default_teacher.jpg"))" alt="Teacher Profile" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #ddd;">
+                            <h5 class="text-primary">@session.SubjectName</h5>
+                        </div>
+                        <p><strong>Teacher:</strong> <span class="text-secondary">@session.GroupTeacherName</span></p>
+                        <p><strong>Start Time:</strong> <span class="text-secondary">@session.StartDateTime.ToString("f")</span></p>
+                        <p><strong>Duration:</strong> <span class="text-secondary">@session.Duration?.ToString(@"hh\:mm")</span></p>
+                        <p><span class="badge bg-success">@(session.IsOnline ? "Online" : "Offline")</span></p>
+                    </div>
+                }
+            </div>
+            <button class="btn btn-dark position-absolute end-0 top-50 translate-middle-y" id="nextSession"><i class="fas fa-chevron-right"></i></button>
         </div>
     </div>
-
     <!-- Recommended Groups -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-success text-white">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
             <h4>Recommended Groups</h4>
+            <a href="#" class="btn btn-light btn-sm">View All</a>
         </div>
-        <div class="card-body">
-            @if (Model.RecommendedGroups.Any())
-            {
-                <div class="row">
-                    @foreach (var group in Model.RecommendedGroups)
-                    {
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title">@group.SubjectName</h5>
-                                    <p class="card-text"><strong>Teacher:</strong> @group.GroupTeacherName</p>
-                                    <p class="card-text"><strong>Price:</strong> $@group.PricePerSession per session</p>
-                                    <p class="card-text"><strong>Max Students:</strong> @group.MaxStudents</p>
-                                    <p class="card-text"><strong>Current Enrolled:</strong> @group.CurrentStudentsCount</p>
-                                    <p class="card-text"><strong>Online:</strong> @(group.IsOnline ? "Yes" : "No")</p>
-                                    <p class="card-text"><strong>Girls Only:</strong> @(group.IsGirlsOnly ? "Yes" : "No")</p>
-                                </div>
-                            </div>
+        <div class="card-body position-relative">
+            <button class="btn btn-dark position-absolute start-0 top-50 translate-middle-y" id="prevGroup"><i class="fas fa-chevron-left"></i></button>
+            <div id="groupCarousel" class="d-flex overflow-auto">
+                @foreach (var group in Model.RecommendedGroups)
+                {
+                    <div class="card mx-2 p-3 shadow-sm text-center" style="min-width: 250px;">
+                        <img class="card-img-top rounded" src="@(group.GroupPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.GroupPicture) : Url.Content("~/images/default_Group.jpg"))" alt="Group Cover" style="height: 150px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="text-success">@group.SubjectName</h5>
+                            <p><strong>Teacher:</strong> <span class="text-secondary">@group.GroupTeacherName</span></p>
+                            <p><strong>Price:</strong> <span class="text-secondary">$@group.PricePerSession per session</span></p>
+                            <p><strong>Max Students:</strong> <span class="text-secondary">@group.MaxStudents</span></p>
+                            <p><strong>Enrolled:</strong> <span class="text-secondary">@group.CurrentStudentsCount</span></p>
+                            <p><strong></strong> <span class="badge bg-success">@(group.IsOnline ? "Online" : "Offline")</span></p>
+                            <p><strong></strong> <span class="badge bg-warning text-dark">@(group.IsGirlsOnly ? "Girls Only" : "Mixed Group")</span></p>
                         </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <p class="text-muted">No recommended groups at the moment.</p>
-            }
+                    </div>
+                }
+            </div>
+            <button class="btn btn-dark position-absolute end-0 top-50 translate-middle-y" id="nextGroup"><i class="fas fa-chevron-right"></i></button>
         </div>
     </div>
-
-    <!-- Announcements -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-warning">
-            <h4>Announcements</h4>
-            <span class="badge bg-danger">@Model.NumOfAnnouncements Unread</span>
-        </div>
-        <div class="card-body">
-            @if (Model.Announcements.Any())
-            {
-                <ul class="list-group">
-                    @foreach (var announcement in Model.Announcements)
-                    {
-                        <li class="list-group-item">
-                            <strong>@announcement.Title</strong>
-                            <p class="text-muted mb-1">@announcement.Body</p>
-                            <small class="text-secondary">Posted on @announcement.DateTime</small>
-                        </li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p class="text-muted">No announcements available.</p>
-            }
-        </div>
-    </div>
-
 </div>
+
+<script>
+    function setupCarousel(prevBtnId, nextBtnId, containerId) {
+        document.getElementById(prevBtnId).addEventListener("click", function () {
+            document.getElementById(containerId).scrollBy({ left: -300, behavior: "smooth" });
+        });
+        document.getElementById(nextBtnId).addEventListener("click", function () {
+            document.getElementById(containerId).scrollBy({ left: 300, behavior: "smooth" });
+        });
+    }
+
+    setupCarousel("prevSession", "nextSession", "sessionCarousel");
+    setupCarousel("prevGroup", "nextGroup", "groupCarousel");
+</script>
