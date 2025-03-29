@@ -1,4 +1,4 @@
-﻿using XCourse.Core.ViewModels;
+﻿using XCourse.Core.ViewModels.StudentsViewModels;
 
 namespace XCourse.Services.Interfaces.StudentServices
 {

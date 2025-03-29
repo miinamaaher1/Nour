@@ -40,11 +40,11 @@ body {
 .mid-pfp {
     border-radius: 50%;
     object-fit: cover;
-    width: 220px;
-    height: 220px;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    margin-left: 25px;
+    width: 180px;
+    height: 180px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 70px;
 }
 
 .large-pfp {

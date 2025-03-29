@@ -1,8 +1,8 @@
 ﻿using XCourse.Core.Entities;
 
-namespace XCourse.Core.DTOs
+namespace XCourse.Core.ViewModels.StudentsViewModels
 {
-    public class CompactGroupDTO
+    public class CompactGroupVM
     {
         public int GroupID { get; set; }
         public string SubjectName { get; set; }

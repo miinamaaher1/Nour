@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using XCourse.Core.ViewModels;
+using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.StudentServices;
 
 namespace XCourse.Web.Areas.Students.Controllers

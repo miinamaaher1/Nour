@@ -1,5 +1,4 @@
-﻿using XCourse.Core.DTOs;
-using XCourse.Core.ViewModels;
+﻿using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.StudentServices;
 
@@ -29,7 +28,7 @@ namespace XCourse.Services.Implementations.StudentServices
             var groups = _unitOfWork.Groups.FindAll(g => g.TeacherID == teacherID && g.IsActive && g.CurrentStudents < g.MaxStudents);
             foreach (var group in groups)
             {
-                CompactGroupDTO compactGroup = new()
+                CompactGroupVM compactGroup = new()
                 {
                     GroupID = group.ID,
                     IsOnline = group.IsOnline,
