@@ -24,6 +24,8 @@ namespace XCourse.Core.Entities
 
         [Display(Name = "Maximum no. of Students")]
         public int MaxStudents { get; set; }
+        [Display(Name = "Current no. of Students")]
+        public int CurrentStudents { get; set; }
 
         [Display(Name = "Price per Session")]
         [Column(TypeName = "decimal(18,2)")]
@@ -59,7 +61,7 @@ namespace XCourse.Core.Entities
 
         [ForeignKey(nameof(Subject))]
         [Display(Name = nameof(Subject))]
-        public int? SubjectID { get; set; }
+        public int SubjectID { get; set; }
         public virtual Subject? Subject { get; set; }
         public virtual ICollection<AssistantInvitation>? AssistantInvitations { get; set; }
         public virtual ICollection<Student>? Students { get; set; }

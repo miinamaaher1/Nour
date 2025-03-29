@@ -47,6 +47,7 @@ namespace Xcourse.Infrastructure.Repositories
             Teachers = new BaseRepository<Teacher>(context);
             Transactions = new BaseRepository<Transaction>(context);
             Wallets = new BaseRepository<Wallet>(context);
+            GroupDefaults = new BaseRepository<GroupDefaults>(context);
         }
 
         public int Save()

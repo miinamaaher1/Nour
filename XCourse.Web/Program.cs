@@ -1,12 +1,17 @@
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Xcourse.Infrastructure.Repositories;
+using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
+using XCourse.Services.Implementations.StudentServices;
+using XCourse.Services.Interfaces.StudentServices;
+using XCourse.Web.ServicesCollections;
 
 namespace XCourse.Web
 {
@@ -19,10 +24,14 @@ namespace XCourse.Web
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             //var connectionString = builder.Configuration.GetConnectionString("TestConnection");
 
+            builder.Services.Configure<GmailSettings>(builder.Configuration.GetSection("GmailSettings"));
+
             builder.Services.AddDbContext<XCourseContext>(options => options.UseSqlServer(connectionString, options => options.UseNetTopologySuite()));
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
+            builder.Services.AddScoped<IEmailSender, GmailSender>();
+            builder.Services.AddStudentServices();
+            builder.Services.AddTeacherServices();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -35,14 +44,17 @@ namespace XCourse.Web
 
             }).AddEntityFrameworkStores<XCourseContext>().AddDefaultTokenProviders();
 
-            builder.Services.AddAuthentication().AddGoogle(options =>
+            builder.Services.AddAuthentication(options =>
             {
-                options.ClientId = "405609490730-njvh97vlu1sf5egc7tp3v7q91ueo1jt4.apps.googleusercontent.com";
-                options.ClientSecret = "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";
-
-                options.Scope.Add("profile"); // Request profile data
-                options.ClaimActions.MapJsonKey("given_name", "given_name");
-                options.ClaimActions.MapJsonKey("family_name", "family_name");
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddGoogle(options =>
+            {
+                var googleAuthNSection = builder.Configuration.GetSection("GmailSettings");
+                options.ClientId = googleAuthNSection["ClientId"]!;
+                options.ClientSecret = googleAuthNSection["ClientSecret"]!;
             });
 
             // Add services to the container.
