@@ -73,6 +73,7 @@ namespace XCourse.Infrastructure.Repositories
 
             return query.Where(expression).ToList();
         }
+
         public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression, string[]? includes = null)
         {
             IQueryable<T> query = context.Set<T>();
