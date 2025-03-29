@@ -7,6 +7,8 @@ using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
+using XCourse.Services.Implementations.Student;
+using XCourse.Services.Interfaces.Student;
 
 namespace XCourse.Web
 {
@@ -23,7 +25,7 @@ namespace XCourse.Web
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
-
+            builder.Services.AddScoped<IStudentHomeService, StudentHomeService>();
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
