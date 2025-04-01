@@ -11,8 +11,8 @@ namespace XCourse.Infrastructure.Repositories.Interfaces
 
         T Find(Expression<Func<T, bool>> expression, string[]? includes = null);
         Task<T> FindAsync(Expression<Func<T, bool>> expression, string[]? includes = null);
-        IEnumerable<T> FindAll(Expression<Func<T, bool>> expression, string[]? includes = null);
-        Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression, string[]? includes = null);
+        IEnumerable<T> FindAll(Expression<Func<T, bool>> expression, string[]? includes = null, int? skip = null, int? take = null);
+        Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression, string[]? includes = null, int? skip = null, int? take = null);
 
         T Add(T entity);
         Task<T> AddAsync(T entity);
