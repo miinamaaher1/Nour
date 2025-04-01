@@ -1,0 +1,139 @@
+﻿@model XCourse.Core.ViewModels.StudentsViewModels.GroupDetails
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 class="text-center mb-5 text-primary">Group Details</h1>
+
+<div class="container">
+
+    <!-- Group Overview Section -->
+    <h4 class="mb-4 text-dark">Group Overview</h4>
+    <hr class="mb-4" />
+
+    <div class="row">
+        <!-- Group Cover Image -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-lg rounded border-0">
+                @if (Model.CoverPicture != null && Model.CoverPicture.Length > 0)
+                {
+                        <div class="position-relative overflow-hidden" style="height: 200px;">
+                            <img src="@(Model.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.CoverPicture) : Url.Content("/images/default_cover.png"))"
+                                 class="w-100 h-100 object-fit-cover rounded-0">
+                        </div>
+                }
+                else
+                {
+                        <img src="/images/default_cover.png" class="card-img-top rounded-0" alt="Default Cover">
+                }
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <!-- Group Details -->
+            <dl class="row">
+                <dt class="col-sm-4 text-dark font-weight-bold">Session Days</dt>
+                <dd class="col-sm-8 text-muted">@Html.DisplayFor(model => model.DefaultSessionDays)</dd>
+
+                <!-- Active Status -->
+                <dt class="col-sm-4 text-dark font-weight-bold">Active</dt>
+                <dd class="col-sm-8">
+                    @if (Model.IsActive)
+                    {
+                            <i class="fas fa-check-circle text-success"></i> <span>Active</span>
+                    }
+                    else
+                    {
+                            <i class="fas fa-times-circle text-danger"></i> <span>Inactive</span>
+                    }
+                </dd>
+
+                <!-- Private Status -->
+                <dt class="col-sm-4 text-dark font-weight-bold">Private</dt>
+                <dd class="col-sm-8">
+                    @if (Model.IsPrivate)
+                    {
+                            <i class="fas fa-lock text-warning"></i> <span>Private</span>
+                    }
+                    else
+                    {
+                            <i class="fas fa-unlock text-primary"></i> <span>Public</span>
+                    }
+                </dd>
+
+                <!-- Online Status -->
+                <dt class="col-sm-4 text-dark font-weight-bold">Online</dt>
+                <dd class="col-sm-8">
+                    @if (Model.IsOnline)
+                    {
+                            <i class="fas fa-check-circle text-success"></i> <span>Online</span>
+                    }
+                    else
+                    {
+                            <i class="fas fa-times-circle text-danger"></i> <span>Offline</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4 text-dark font-weight-bold">Subject</dt>
+                <dd class="col-sm-8 text-muted">@Html.DisplayFor(model => model.Subject)</dd>
+
+                <dt class="col-sm-4 text-dark font-weight-bold">Address</dt>
+                <dd class="col-sm-8 text-muted">@Html.DisplayFor(model => model.Address.City)</dd>
+                   <dt class="col-sm-4 text-dark font-weight-bold">Location</dt>
+                <dd class="col-sm-8 text-muted">@Html.Partial("_MyPartialView",Model.Location)</dd>
+                <dt class="col-sm-4 text-dark font-weight-bold">Teacher</dt>
+                <dd class="col-sm-8">
+                    <p class="m-0 text-dark">@Html.DisplayFor(model => model.Teacher.AppUser.FirstName)</p>
+                </dd>
+
+                <!-- Teacher Profile Image -->
+                <div class="col-md-4 mt-4">
+                    <div class="card shadow-lg rounded border-0">
+                        @if (Model.Teacher.AppUser.ProfilePicture != null && Model.Teacher.AppUser.ProfilePicture.Length > 0)
+                        {
+                                <div class="position-relative overflow-hidden" style="height: 180px;">
+                                    <img src="@(Model.Teacher.AppUser.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Teacher.AppUser.ProfilePicture) : Url.Content("/images/default_profile.png"))"
+                                         class="w-100 h-100 object-fit-cover rounded-circle border border-2 border-white">
+                                </div>
+                        }
+                        else
+                        {
+                                <img src="/images/default_profile.png" class="card-img-top rounded-circle border border-2 border-white" alt="Default Profile">
+                        }
+                    </div>
+                </div>
+            </dl>
+
+            <!-- Sessions Section -->
+            @if (Model.Sessions != null && Model.Sessions.Any())
+            {
+                    <h5 class="mt-4 text-dark">Sessions</h5>
+                @foreach (var session in Model.Sessions)
+                {
+                            <div class="card shadow-sm rounded mb-3 border-0">
+                                <div class="card-body bg-light">
+                                    <p><strong class="text-primary">Room:</strong> @session.RoomReservation.Room.Name</p>
+                                    <p><strong class="text-primary">Duration:</strong> @session.Duration</p>
+                                    <p><strong class="text-primary">Start Date:</strong> @session.StartDateTime</p>
+                                    <p><strong class="text-primary">End Date:</strong> @session.EndDateTime</p>
+                           
+                                </div>
+                            </div>
+                }
+            }
+            else
+            {
+                    <p class="text-muted">No sessions available.</p>
+            }
+        </div>
+    </div>
+
+  
+    <div class="mt-4">
+        <a class="btn btn-lg btn-success text-white" href="@Url.Action("Index", "Session", new { Id = Model.Id })">View All Sessions</a>
+    </div>
+
+
+</div>
+
