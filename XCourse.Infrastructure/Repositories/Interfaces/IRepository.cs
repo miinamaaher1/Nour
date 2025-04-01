@@ -6,8 +6,8 @@ namespace XCourse.Infrastructure.Repositories.Interfaces
     {
         T Get(int id);
         Task<T> GetAsync(int id);
-        IEnumerable<T> GetAll(string[]? includes = null);
-        Task<IEnumerable<T>> GetAllAsync(string[]? includes = null);
+        IEnumerable<T> GetAll(string[]? includes = null, int? skip = null, int? take = null);
+        Task<IEnumerable<T>> GetAllAsync(string[]? includes = null, int? skip = null, int? take = null);
 
         T Find(Expression<Func<T, bool>> expression, string[]? includes = null);
         Task<T> FindAsync(Expression<Func<T, bool>> expression, string[]? includes = null);
