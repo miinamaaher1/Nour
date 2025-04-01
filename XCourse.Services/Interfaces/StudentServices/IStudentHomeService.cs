@@ -9,10 +9,14 @@ using XCourse.Core.ViewModels.StudentsViewModels;
 namespace XCourse.Services.Interfaces.Student
 {
     public interface IStudentHomeService
-    { 
-       public Task<HomeViewModel> IndexService(string  id);
+    {
+        public Task<HomeViewModel> IndexService(string id);
+        
+        public Task<ICollection<SessionViewModel>> SessionIndexService(string guid);
 
-        public Task<List<Session>> GetStudentSessions(int studentId);
+        public Task<SessionDetailsViewModel> SessionDetailsService(int sessionId, string userId);
+
+        public Task<ICollection<Session>> GetStudentSessions(int studentId);
 
         public Task<List<Group>> GetStudentGroups(int studentId);
 

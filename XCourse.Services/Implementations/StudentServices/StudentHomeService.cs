@@ -31,33 +31,21 @@ namespace XCourse.Services.Implementations.Student
                 return new HomeViewModel();
             }
 
-            // Fetch groups based on the student's Major , Year and Location with related data
+            // Fetch groups based on the student's Major , Year and Location with related data 
             var recommendedGroups = await GetRecommendedGroups(student.ID);
 
-            // Fetch all sessions for the groups the student is part of
+            // Fetch all sessions for the groups the student is part of -->ordered by date  
             var sessions = await GetStudentSessions(student.ID);
-            
 
-            // Fetch all announcements for the groups the student is part of
+
+            // Fetch all announcements for the groups the student is part of --> ordered by date --> 10 announcements 
             var announcements = await GetStudentAnnouncements(student.ID);
 
-            // Get the number of unread announcements
+            // Get the number of announcements
             var numOfAnnouncements = announcements.Count;
 
-            var upcomingSessions = sessions
-             .Where(s => s.StartDateTime > DateTime.Now)
-             .Select(s => new SessionViewModel
-             {
-                 SessionID = s.ID,
-                 IsOnline = s.Group.IsOnline,
-                 Duration = s.Duration,
-                 StartDateTime = s.StartDateTime,
-                 SubjectName = s.Group.Subject != null ? s.Group.Subject.Topic : "Unknown",
-                 GroupTeacherName = s.Group.Teacher != null && s.Group.Teacher.AppUser != null
-                    ? s.Group.Teacher.AppUser.FirstName + " " + s.Group.Teacher.AppUser.LastName
-                    : "Unknown",
-                 TeacherProfilePicture =s.Group.Teacher.AppUser != null? s.Group.Teacher.AppUser.ProfilePicture: null
-             }).Take(10).ToList();
+            //Mapping sessions to the Session view model ---> Take 10 sessions  
+            var upcomingSessions = await MapSessionsToVMSessions(sessions,10);
 
             var groupViewModels = recommendedGroups
             .Select(g => new GroupViewModel
@@ -80,19 +68,55 @@ namespace XCourse.Services.Implementations.Student
             {
                 UpcomingSessions = upcomingSessions,
                 RecommendedGroups = groupViewModels,
-                Announcements = announcements.Take(10).ToList(),
-                NumOfAnnouncements = numOfAnnouncements,
+                Announcements = announcements.OrderBy(a=>a.DateTime).Take(10).ToList(),
+                NumOfAnnouncements = numOfAnnouncements
 
             };
 
         }
 
+        public async Task<ICollection<SessionViewModel>> SessionIndexService(string guid)
+        {
+            var student = await _unitOfWork.Students.FindAsync(
+                x => x.AppUserID == guid
+            );
 
-        public async Task<List<Session>> GetStudentSessions(int studentId)
+            var sessionsVM = await MapSessionsToVMSessions(await GetStudentSessions(student.ID));
+
+            return sessionsVM;
+        }
+
+        public async Task<SessionDetailsViewModel> SessionDetailsService(int sessionId , string userId)
+        {
+
+            var sessionAttendance= await _unitOfWork.Attendances.FindAsync(
+                a => a.SessionID == sessionId && a.Student.AppUserID == userId
+            );
+
+            var session = await _unitOfWork.Sessions.FindAsync(
+                s => s.ID == sessionId,
+                ["Group", "Group.Subject","Address", "RoomReservation.Room", "Group.Teacher.AppUser"]
+            );
+
+            if (session == null)
+            {
+                return new SessionDetailsViewModel();
+            }
+
+            return new SessionDetailsViewModel()
+            {
+                Session = session,
+                Attendances=sessionAttendance
+            };
+        }
+
+
+        public async Task<ICollection<Session>> GetStudentSessions(int studentId)
         {
 
             var sessions = await _unitOfWork.Sessions.FindAllAsync(
-                         s => s.Group.Students.Any(st => st.ID == studentId),
+                         s => s.Group.Students.Any(st => st.ID == studentId)
+                            && s.StartDateTime > DateTime.Now,
                            ["Group", "Group.Subject", "Group.Teacher.AppUser" ]
                      );
 
@@ -105,7 +129,7 @@ namespace XCourse.Services.Implementations.Student
         {
             var groups = _unitOfWork.Groups.FindAll(
                 g => g.Students.Any(st => st.ID == studentId),
-                new string[] { "Subject", "Students", "Teacher.AppUser" }
+                ["Subject", "Students", "Teacher.AppUser" ]
             ).ToList();
             return await Task.FromResult(groups);
         }
@@ -125,10 +149,11 @@ namespace XCourse.Services.Implementations.Student
             // Fetch groups based on the student's Major and Year with related data
             var groups = await _unitOfWork.Groups.FindAllAsync(
                    g => g.Subject != null &&
+                     g.IsActive == true &&
                      g.Subject.Major == student.Major &&
                      g.Subject.Year == student.Year &&
                      g.IsPrivate == false &&
-                     g.MaxStudents > g.Students.Count &&
+                     g.MaxStudents > g.CurrentStudents &&
                      !(g.IsGirlsOnly == true && student.AppUser.Gender == Gender.Male) &&
                      g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower() &&
                      !g.Students.Any(st => st.ID == student.ID),
@@ -143,11 +168,39 @@ namespace XCourse.Services.Implementations.Student
         public async Task<List<Announcement>> GetStudentAnnouncements(int studentId)
         {
             var announcements = await _unitOfWork.Announcements.FindAllAsync(
-                a => a.Group.Students.Any(st => st.ID == studentId),
-                new string[] { "Group", "Group.Teacher.AppUser" }
+                a => a.Group.Students.Any(st => st.ID == studentId)&&
+                a.DateTime > DateTime.UtcNow&&
+                a.Group.IsActive == true,
+                [ "Group", "Group.Teacher.AppUser" ]
             );
 
             return await Task.FromResult(announcements.ToList());
+        }
+
+        private async Task<List<SessionViewModel>> MapSessionsToVMSessions(ICollection<Session> sessions , int numOfRows=0)
+        {
+            var sessionsVM = sessions
+                 .Select(s => new SessionViewModel
+                 {
+                     SessionID = s.ID,
+                     IsOnline = s.Group.IsOnline,
+                     Duration = s.Duration,
+                     StartDateTime = s.StartDateTime,
+                     SubjectName = s.Group.Subject != null ? s.Group.Subject.Topic : "Unknown",
+                     GroupTeacherName = s.Group.Teacher != null && s.Group.Teacher.AppUser != null
+                        ? s.Group.Teacher.AppUser.FirstName + " " + s.Group.Teacher.AppUser.LastName
+                        : "Unknown",
+                     TeacherProfilePicture = s.Group.Teacher.AppUser != null ? s.Group.Teacher.AppUser.ProfilePicture : null
+                 });
+
+            if (numOfRows > 0)
+            {
+                return sessionsVM.Take(numOfRows).ToList();
+            }
+            else
+            {
+                return sessionsVM.ToList();
+            }
         }
 
     }
