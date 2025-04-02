@@ -92,6 +92,8 @@ namespace XCourse.Web.Areas.Identity.Pages.Account.Manage
 
             [EnumDataType(typeof(Major))]
             public Major? Major { get; set; }
+            public bool IsAvailableForPrivateGroups { get; set; }
+            public decimal? PrivatePrice { get; set; }
         }
 
         private async Task LoadAsync(AppUser user)
@@ -186,6 +188,14 @@ namespace XCourse.Web.Areas.Identity.Pages.Account.Manage
                 stud.Year = Input.Year;
                 stud.Major = Input.Major;
                 _unitOfWork.Students.Update(stud);
+                _unitOfWork.Save();
+            }
+            else if (user.AccountType == AccountType.Teacher)
+            {
+                Teacher teacher = _unitOfWork.Teachers.Find(s => s.AppUserID == user.Id);
+                teacher.IsAvailableForPrivateGroups = Input.IsAvailableForPrivateGroups;
+                teacher.PrivatePrice = Input.PrivatePrice;
+                _unitOfWork.Teachers.Update(teacher);
                 _unitOfWork.Save();
             }
 

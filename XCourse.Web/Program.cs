@@ -9,8 +9,6 @@ using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
-using XCourse.Services.Implementations.StudentServices;
-using XCourse.Services.Interfaces.StudentServices;
 using XCourse.Web.ServicesCollections;
 
 namespace XCourse.Web
@@ -32,6 +30,18 @@ namespace XCourse.Web
             builder.Services.AddScoped<IEmailSender, GmailSender>();
             builder.Services.AddStudentServices();
             builder.Services.AddTeacherServices();
+
+            // Add CORS policy
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowLocalhost3000",
+            //        policy =>
+            //        {
+            //            policy.WithOrigins("http://127.0.0.1:3000")
+            //                .AllowAnyMethod()
+            //                .AllowAnyHeader();
+            //        });
+            //});
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -67,6 +77,9 @@ namespace XCourse.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            // Enable CORS before adding controllers
+            //app.UseCors("AllowLocalhost3000");
 
             app.UseStaticFiles();
 

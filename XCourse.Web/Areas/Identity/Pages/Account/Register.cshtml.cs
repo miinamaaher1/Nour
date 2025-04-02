@@ -133,6 +133,8 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
 
             [EnumDataType(typeof(Major))]
             public Major? Major { get; set; }
+            public bool IsAvailableForPrivateGroups { get; set; }
+            public decimal? PrivatePrice { get; set; }
             public AccountType AccountType { get; set; }
         }
 
@@ -200,7 +202,9 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                     {
                         Teacher teacher = new Teacher()
                         {
-                            AppUserID = user.Id
+                            AppUserID = user.Id,
+                            IsAvailableForPrivateGroups = Input.IsAvailableForPrivateGroups,
+                            PrivatePrice = Input.PrivatePrice
                         };
                         _unitOfWork.Teachers.Add(teacher);
                         _unitOfWork.Save();

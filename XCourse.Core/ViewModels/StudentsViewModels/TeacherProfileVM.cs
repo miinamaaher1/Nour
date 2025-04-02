@@ -4,7 +4,9 @@
     {
         public int TeacherID { get; set; }
         public string TeacherName { get; set; }
-        public byte[] TeacherProfilePicture { get; set; }
+        public bool IsAvailableForPrivateGroups { get; set; }
+        public decimal? PrivateGroupPrice { get; set; }
+        public byte[]? TeacherProfilePicture { get; set; }
         public List<CompactGroupVM> AvailbleGroups { get; set; }
     }
 }
