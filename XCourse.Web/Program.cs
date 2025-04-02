@@ -9,9 +9,6 @@ using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
-
-using XCourse.Services.Implementations.StudentServices;
-using XCourse.Services.Interfaces.StudentServices;
 using XCourse.Web.ServicesCollections;
 
 namespace XCourse.Web
