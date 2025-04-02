@@ -1,0 +1,111 @@
+﻿@model XCourse.Core.ViewModels.Students.HomeViewModel
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container mt-4">
+
+    <!-- Upcoming Sessions -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Upcoming Sessions</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.UpcomingSessions.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Start Time</th>
+                            <th>Duration</th>
+                            <th>Subject</th>
+                            <th>Teacher</th>
+                            <th>Online</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var session in Model.UpcomingSessions)
+                        {
+                            <tr>
+                                <td>@session.SessionID</td>
+                                <td>@session.StartDateTime.ToString("f")</td>
+                                <td>@session.Duration?.ToString(@"hh\:mm")</td>
+                                <td>@session.SubjectName</td>
+                                <td>@session.GroupTeacherName</td>
+                                <td>@(session.IsOnline ? "Yes" : "No")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No upcoming sessions.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Recommended Groups -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4>Recommended Groups</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.RecommendedGroups.Any())
+            {
+                <div class="row">
+                    @foreach (var group in Model.RecommendedGroups)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">@group.SubjectName</h5>
+                                    <p class="card-text"><strong>Teacher:</strong> @group.GroupTeacherName</p>
+                                    <p class="card-text"><strong>Price:</strong> $@group.PricePerSession per session</p>
+                                    <p class="card-text"><strong>Max Students:</strong> @group.MaxStudents</p>
+                                    <p class="card-text"><strong>Current Enrolled:</strong> @group.CurrentStudentsCount</p>
+                                    <p class="card-text"><strong>Online:</strong> @(group.IsOnline ? "Yes" : "No")</p>
+                                    <p class="card-text"><strong>Girls Only:</strong> @(group.IsGirlsOnly ? "Yes" : "No")</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No recommended groups at the moment.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning">
+            <h4>Announcements</h4>
+            <span class="badge bg-danger">@Model.NumOfAnnouncements Unread</span>
+        </div>
+        <div class="card-body">
+            @if (Model.Announcements.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var announcement in Model.Announcements)
+                    {
+                        <li class="list-group-item">
+                            <strong>@announcement.Title</strong>
+                            <p class="text-muted mb-1">@announcement.Body</p>
+                            <small class="text-secondary">Posted on @announcement.DateTime</small>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">No announcements available.</p>
+            }
+        </div>
+    </div>
+
+</div>

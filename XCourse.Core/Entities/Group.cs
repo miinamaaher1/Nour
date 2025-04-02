@@ -46,12 +46,12 @@ namespace XCourse.Core.Entities
         [ForeignKey(nameof(Teacher))]
         [Display(Name = nameof(Teacher))]
         public int TeacherID { get; set; }
+        public virtual Teacher? Teacher { get; set; }
 
         [Column(TypeName = "varbinary(MAX)")]
         [Display(Name = "Cover Picture")]
         public byte[]? CoverPicture { get; set; }
 
-        public virtual Teacher? Teacher { get; set; }
 
         [ForeignKey(nameof(Room))]
         [Display(Name = nameof(Room))]
