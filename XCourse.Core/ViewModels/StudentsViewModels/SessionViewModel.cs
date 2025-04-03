@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XCourse.Core.ViewModels.Students
+namespace XCourse.Core.ViewModels.StudentsViewModels
 {
     public class SessionViewModel
     {
@@ -14,5 +14,6 @@ namespace XCourse.Core.ViewModels.Students
         public DateTime StartDateTime { get; set; }
         public string SubjectName { get; set; }
         public string GroupTeacherName { get; set; }
+        public byte[] TeacherProfilePicture { get; set; }
     }
 }

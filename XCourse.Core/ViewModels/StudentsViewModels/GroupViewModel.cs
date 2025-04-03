@@ -1,4 +1,4 @@
-﻿namespace XCourse.Core.ViewModels.Students
+﻿namespace XCourse.Core.ViewModels.StudentsViewModels
 {
     public class GroupViewModel
     {
@@ -10,5 +10,7 @@
         public bool IsGirlsOnly { get; set; }
         public int MaxStudents { get; set; }
         public int CurrentStudentsCount { get; set; }
+        public byte[] TeacherProfilePicture { get; set; }
+        public byte[] GroupPicture { get; set; }
     }
 }
