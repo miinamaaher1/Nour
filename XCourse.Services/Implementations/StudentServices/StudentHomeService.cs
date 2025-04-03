@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.StudentsViewModels;
 
@@ -35,7 +36,7 @@ namespace XCourse.Services.Implementations.Student
             var recommendedGroups = await GetRecommendedGroups(student.ID);
 
             // Fetch all sessions for the groups the student is part of -->ordered by date  
-            var sessions = await GetStudentSessions(student.ID);
+            var sessions = await GetStudentUpcomingSessions(student.ID);
 
 
             // Fetch all announcements for the groups the student is part of --> ordered by date --> 10 announcements 
@@ -66,7 +67,7 @@ namespace XCourse.Services.Implementations.Student
 
             return new HomeViewModel()
             {
-                UpcomingSessions = upcomingSessions,
+                UpcomingSessions = upcomingSessions.ToList(),
                 RecommendedGroups = groupViewModels,
                 Announcements = announcements.OrderBy(a=>a.DateTime).Take(10).ToList(),
                 NumOfAnnouncements = numOfAnnouncements
@@ -75,8 +76,18 @@ namespace XCourse.Services.Implementations.Student
 
         }
 
-        public async Task<ICollection<SessionViewModel>> SessionIndexService(string guid)
+        public async Task<ICollection<SessionViewModel>> SessionIndexService(string guid , int groupId)
         {
+
+            if (groupId != 0)
+            {
+                var sessions = await _unitOfWork.Sessions.FindAllAsync(
+                    s => s.GroupID == groupId ,
+                    ["Group", "Group.Subject", "Group.Teacher.AppUser"]
+                );
+                return await MapSessionsToVMSessions(sessions.ToList());
+            }
+
             var student = await _unitOfWork.Students.FindAsync(
                 x => x.AppUserID == guid
             );
@@ -110,14 +121,71 @@ namespace XCourse.Services.Implementations.Student
             };
         }
 
+        public Task SessionSaveFeedbackService(FeedBackDTO feedBackDTO , string userId)
+        {
+            if (feedBackDTO == null)
+            {
+                return Task.FromResult(0);
+            }
 
-        public async Task<ICollection<Session>> GetStudentSessions(int studentId)
+            var student = _unitOfWork.Students.Find(
+                s => s.AppUserID == userId
+            );
+
+            feedBackDTO.StudentId = student.ID;
+
+
+            var feedbackExists = _unitOfWork.Attendances.Find(
+                a => a.SessionID == feedBackDTO.SessionID && a.StudentID == feedBackDTO.StudentId
+            );
+            if (feedbackExists == null)
+            { 
+            var feedback = new Attendance()
+            {
+                StudentID = feedBackDTO.StudentId,
+                SessionID = feedBackDTO.SessionID,
+                Rating = feedBackDTO.Rating,
+                Feedback = feedBackDTO.Feedback
+            };
+
+            _unitOfWork.Attendances.Add(feedback);
+                _unitOfWork.Save();
+                return Task.FromResult(0);
+            }
+            else
+            {
+                feedbackExists.Rating = feedBackDTO.Rating;
+                feedbackExists.Feedback = feedBackDTO.Feedback;
+                _unitOfWork.Attendances.Update(feedbackExists);
+                _unitOfWork.Save();
+                return Task.FromResult(0);
+            }
+
+
+            
+
+        }
+
+        /**----------------------------------------------------------------------------------**/
+        public async Task<ICollection<Session>> GetStudentUpcomingSessions(int studentId)
         {
 
             var sessions = await _unitOfWork.Sessions.FindAllAsync(
                          s => s.Group.Students.Any(st => st.ID == studentId)
                             && s.StartDateTime > DateTime.Now,
                            ["Group", "Group.Subject", "Group.Teacher.AppUser" ]
+                     );
+
+            return await Task.FromResult(sessions.OrderBy(s => s.StartDateTime).ToList());
+
+        }
+
+        public async Task<ICollection<Session>> GetStudentSessions(int studentId)
+        {
+
+            var sessions = await _unitOfWork.Sessions.FindAllAsync(
+                         s => s.Group.Students.Any(st => st.ID == studentId),
+                           ["Group", "Group.Subject", "Group.Teacher.AppUser"]
                      );
 
             return await Task.FromResult(sessions.OrderBy(s => s.StartDateTime).ToList());
@@ -169,7 +237,6 @@ namespace XCourse.Services.Implementations.Student
         {
             var announcements = await _unitOfWork.Announcements.FindAllAsync(
                 a => a.Group.Students.Any(st => st.ID == studentId)&&
-                a.DateTime > DateTime.UtcNow&&
                 a.Group.IsActive == true,
                 [ "Group", "Group.Teacher.AppUser" ]
             );
@@ -177,7 +244,7 @@ namespace XCourse.Services.Implementations.Student
             return await Task.FromResult(announcements.ToList());
         }
 
-        private async Task<List<SessionViewModel>> MapSessionsToVMSessions(ICollection<Session> sessions , int numOfRows=0)
+        private async Task<ICollection<SessionViewModel>> MapSessionsToVMSessions(ICollection<Session> sessions , int numOfRows=0)
         {
             var sessionsVM = sessions
                  .Select(s => new SessionViewModel
@@ -203,5 +270,6 @@ namespace XCourse.Services.Implementations.Student
             }
         }
 
+      
     }
 }

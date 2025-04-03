@@ -124,7 +124,7 @@
                 <h4 class="mb-0"><i class="fas fa-clipboard-check"></i> Attendance & Feedback</h4>
             </div>
             <div class="card-body">
-                @if (Model.Attendances.HasAttended.HasValue)
+                @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue)
                 {
                     <div class="alert alert-@(hasAttended ? "success" : "danger")">
                         <i class="fas fa-@(hasAttended ? "check-circle" : "times-circle")"></i>
@@ -189,17 +189,16 @@
                                             <i class="fas fa-comment-dots"></i> Your Feedback
                                         </div>
                                         <div class="card-body">
-                                            <form asp-action="SaveFeedback" asp-route-sessionId="@Model.Session.ID" method="post">
-                                                <input type="hidden" asp-for="Attendances.StudentID" />
-                                                <input type="hidden" asp-for="Attendances.SessionID" />
-                                                
+                                            <form asp-action="SaveFeedback" method="post">
+                                                <input type="hidden" name="SessionID" value="@Model.Session.ID" />
+
                                                 <div class="mb-3">
-                                                    <label asp-for="Attendances.Rating" class="form-label">Rating</label>
+                                                    <label class="form-label">Rating</label>
                                                     <div class="rating-input">
                                                         @for (int i = 1; i <= 5; i++)
                                                         {
                                                             <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="radio" asp-for="Attendances.Rating"
+                                                                <input class="form-check-input" type="radio" name="Rating"
                                                                        id="rating@(i)" value="@i"
                                                                        checked="@(Model.Attendances.Rating == i)" />
                                                                 <label class="form-check-label" for="rating@(i)">
@@ -208,20 +207,18 @@
                                                             </div>
                                                         }
                                                     </div>
-                                                    <span asp-validation-for="Attendances.Rating" class="text-danger"></span>
                                                 </div>
-                                                
+
                                                 <div class="mb-3">
-                                                    <label asp-for="Attendances.Feedback" class="form-label">Feedback</label>
-                                                    <textarea asp-for="Attendances.Feedback" class="form-control" rows="4" 
-                                                              placeholder="Share your thoughts about this session..."></textarea>
-                                                    <span asp-validation-for="Attendances.Feedback" class="text-danger"></span>
+                                                    <label class="form-label">Feedback</label>
+                                                    <textarea name="Feedback" class="form-control" rows="4"
+                                                              placeholder="Share your thoughts about this session...">@Model.Attendances.Feedback</textarea>
                                                     <div class="form-text">
                                                         Maximum 500 characters.
                                                         <span id="charCount">0</span>/500
                                                     </div>
                                                 </div>
-                                                
+
                                                 <button type="submit" class="btn btn-primary">
                                                     <i class="fas fa-paper-plane"></i> Submit Feedback
                                                 </button>
@@ -352,19 +349,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form asp-action="UpdateFeedback" asp-route-sessionId="@Model.Session.ID" method="post">
-                        <input type="hidden" asp-for="Attendances.StudentID" />
-                        <input type="hidden" asp-for="Attendances.SessionID" />
-                        
+                    <form asp-action="SaveFeedback" method="post">
+                        <input type="hidden" name="SessionID" value="@Model.Session.ID" />
+
                         <div class="mb-3">
                             <label for="editRating" class="form-label">Rating</label>
                             <div class="edit-rating-input">
                                 @for (int i = 1; i <= 5; i++)
                                 {
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="Attendances.Rating" 
-                                               id="editRating@(i)" value="@i" 
-                                               @(Model.Attendances.Rating == i ? "checked" : "") />
+                                        <input class="form-check-input" type="radio" name="Rating"
+                                               id="editRating@(i)" value="@i"
+                                        @(Model.Attendances.Rating == i ? "checked" : "") />
                                         <label class="form-check-label" for="editRating@(i)">
                                             <i class="fas fa-star text-warning"></i> @i
                                         </label>
@@ -372,17 +368,17 @@
                                 }
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="editFeedback" class="form-label">Feedback</label>
-                            <textarea class="form-control" id="editFeedback" name="Attendances.Feedback" 
+                            <textarea class="form-control" id="editFeedback" name="Feedback"
                                       rows="4" maxlength="500">@Model.Attendances.Feedback</textarea>
                             <div class="form-text">
                                 Maximum 500 characters.
                                 <span id="editCharCount">@(Model.Attendances.Feedback?.Length ?? 0)</span>/500
                             </div>
                         </div>
-                        
+
                         <div class="text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary">
@@ -401,61 +397,61 @@
         // Character counter for feedback
         $(document).ready(function() {
             // For main feedback form
-            $('textarea[name="Attendances.Feedback"]').on('input', function() {
+            $('textarea[name="Feedback"]').on('input', function() {
                 var charCount = $(this).val().length;
                 $('#charCount').text(charCount);
-                
+
                 if (charCount > 500) {
                     $('#charCount').addClass('text-danger');
                 } else {
                     $('#charCount').removeClass('text-danger');
                 }
             });
-            
+
             // For edit feedback modal
             $('#editFeedback').on('input', function() {
                 var charCount = $(this).val().length;
                 $('#editCharCount').text(charCount);
-                
+
                 if (charCount > 500) {
                     $('#editCharCount').addClass('text-danger');
                 } else {
                     $('#editCharCount').removeClass('text-danger');
                 }
             });
-            
+
             // Initialize character count on page load
-            var initialCount = $('textarea[name="Attendances.Feedback"]').val().length;
+            var initialCount = $('textarea[name="Feedback"]').val().length;
             $('#charCount').text(initialCount);
         });
-        
+
         // Countdown timer for upcoming sessions
         @if (!sessionPassed)
         {
             <text>
-            function updateCountdown() {
-                const sessionDate = new Date('@Model.Session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss")');
-                const now = new Date();
-                const diff = sessionDate - now;
-                
-                if (diff == 0) {
-                    $('#sessionCountdown').text('Session has started!');
-                    return;
+                function updateCountdown() {
+                    const sessionDate = new Date('@Model.Session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss")');
+                    const now = new Date();
+                    const diff = sessionDate - now;
+
+                    if (diff == 0) {
+                        $('#sessionCountdown').text('Session has started!');
+                        return;
+                    }
+
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    $('#sessionCountdown').html(
+                        `<i class="fas fa-clock"></i> ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
+                    );
                 }
-                
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                
-                $('#sessionCountdown').html(
-                    `<i class="fas fa-clock"></i> ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
-                );
-            }
-            
-            // Update countdown every second
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+
+                // Update countdown every second
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
             </text>
         }
     </script>

@@ -221,6 +221,8 @@
     </div>
 </div>
 
+
+
 @section Scripts {
     <script src="@Url.Content("~/Scripts/tui-code-snippet.min.js")"></script>
     <script src="@Url.Content("~/Scripts/tui-calendar.min.js")"></script>
@@ -249,43 +251,44 @@
                        '</div>';
             }
 
-            function getPopupDetailTemplate(event) {
-                var isOnline = event.raw.isOnline === 'true';
-                var iconClass = isOnline ? 'fa-wifi' : 'fa-building';
-                var locationText = isOnline ? 'Online Session' : 'Offline Session';
-                var locationColor = isOnline ? '#248a6b' : '#15479e';
+        function getPopupDetailTemplate(event) {
+            var isOnline = event.raw.isOnline === 'true';
+            var iconClass = isOnline ? 'fa-wifi' : 'fa-building';
+            var locationText = isOnline ? 'Online Session' : 'Offline Session';
+            var locationColor = isOnline ? '#248a6b' : '#15479e';
 
-                var start = new Date(event.start);
-                var end = new Date(event.end);
+            var start = new Date(event.start);
+            var end = new Date(event.end);
 
-                var formattedDate = start.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
+            var formattedDate = start.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
 
-                var formattedStartTime = start.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+            var formattedStartTime = start.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
-                var formattedEndTime = end.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+            var formattedEndTime = end.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
-                return '<div class="p-3">' +
-                       '<h4 class="mb-3">' + event.title + '</h4>' +
-                       '<div class="mb-2"><i class="fas fa-chalkboard-teacher me-2"></i> <strong>Teacher:</strong> ' + event.raw.teacher + '</div>' +
-                       '<div class="mb-2"><i class="fas fa-calendar-day me-2"></i> <strong>Date:</strong> ' + formattedDate + '</div>' +
-                       '<div class="mb-2"><i class="fas fa-clock me-2"></i> <strong>Time:</strong> ' + formattedStartTime + ' - ' + formattedEndTime + '</div>' +
-                       '<div class="mb-2"><i class="fas fa-hourglass-half me-2"></i> <strong>Duration:</strong> ' + event.raw.duration + '</div>' +
-                       '<div class="mt-3 pt-2 border-top">' +
-                       '<span style="color: ' + locationColor + ';"><i class="fas ' + iconClass + ' me-2"></i> ' + locationText + '</span>' +
-                       '</div>' +
-                       '</div>';
-            }
+            return '<div class="p-3">' +
+                   '<h4 class="mb-3">' + event.title + '</h4>' +
+                   '<div class="mb-2"><i class="fas fa-chalkboard-teacher me-2"></i> <strong>Teacher:</strong> ' + event.raw.teacher + '</div>' +
+                   '<div class="mb-2"><i class="fas fa-calendar-day me-2"></i> <strong>Date:</strong> ' + formattedDate + '</div>' +
+                   '<div class="mb-2"><i class="fas fa-clock me-2"></i> <strong>Time:</strong> ' + formattedStartTime + ' - ' + formattedEndTime + '</div>' +
+                   '<div class="mb-2"><i class="fas fa-hourglass-half me-2"></i> <strong>Duration:</strong> ' + event.raw.duration + '</div>' +
+                   '<div class="mt-3 pt-2 border-top">' +
+                   '<span style="color: ' + locationColor + ';"><i class="fas ' + iconClass + ' me-2"></i> ' + locationText + '</span>' +
+                   '<div class="mt-2"><a href="/Students/Session/Details/' + event.id + '" class="btn btn-outline-info">Details</a></div>' +
+                   '</div>' +
+                   '</div>';
+        }
 
             // Initialize calendar
             var calendar = new tui.Calendar("#calendar", {
