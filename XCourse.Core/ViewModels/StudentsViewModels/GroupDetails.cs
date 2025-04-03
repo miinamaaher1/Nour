@@ -16,7 +16,7 @@ namespace XCourse.Core.ViewModels.StudentsViewModels
         public int Id { get; set; } 
         public Address? Address { get; set; }
         public Point? Location { get; set; }
-
+        public string Key { set; get; }
         public virtual Room? DefaultRoom { get; set; }
 
         public virtual ICollection<Session>? Sessions { get; set; }
