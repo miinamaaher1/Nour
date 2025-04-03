@@ -80,23 +80,41 @@
                     <span asp-validation-for="Input.Major" class="text-danger"></span>
                 </div>
             </div>
+            <div id="teachOptions">
+                <div class="form-check mb-3">
+                    <input asp-for="Input.IsAvailableForPrivateGroups" class="form-check-input" aria-required="false" />
+                    <label asp-for="Input.IsAvailableForPrivateGroups" class="form-check-label">Available For Private Groups</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PrivatePrice" class="form-control" aria-required="false" placeholder="00.00" />
+                    <label asp-for="Input.PrivatePrice" class="form-label">Private Group Price Per Session</label>
+                    <span asp-validation-for="Input.PrivatePrice" class="text-danger"></span>
+                </div>
+            </div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>
 </div>
 
-<script>
-    document.getElementById('accTypeSelect').addEventListener('change', (e) => {
-        var selectedValue = e.target.value;
-        var studentOptions = document.getElementById('studOptions');
-        if (selectedValue == 0) {
-            studentOptions.classList.remove("d-none");
-        } else {
-            studentOptions.classList.add("d-none");
-        }
-    })
-</script>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('accTypeSelect').addEventListener('change', (e) => {
+            var selectedValue = e.target.value;
+            var studentOptions = document.getElementById('studOptions');
+            var teachtOptions = document.getElementById('teachOptions');
+            if (selectedValue == 0) {
+                studentOptions.classList.remove("d-none");
+                teachtOptions.classList.add("d-none");
+            } else if (selectedValue == 1) {
+                teachtOptions.classList.remove("d-none");
+                studentOptions.classList.add("d-none");
+            } else {
+                teachtOptions.classList.add("d-none");
+                studentOptions.classList.add("d-none");
+            }
+        })
+    </script>
 }
