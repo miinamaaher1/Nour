@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XCourse.Core.Entities;
 
-namespace XCourse.Core.ViewModels.Students
+namespace XCourse.Core.ViewModels.StudentsViewModels
 {
     public class HomeViewModel
     {
