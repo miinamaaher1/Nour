@@ -67,7 +67,7 @@
                             <i class="fa-solid fa-child-dress" style="color: pink"></i>
                         }
                         <p class="card-text">Seats Available: @(group.MaxStudents - group.CurrentStudents) / @group.MaxStudents<br />Session Price: L.E. @group.PricePerSession</p>
-                        <a asp-area="Students" asp-controller="Group" asp-action="Details" asp-route-id="@group.GroupID" class="btn btn-primary">Details</a>
+                        <a asp-area="Students" asp-controller="Group" asp-action="DetailsNotEnrolled" asp-route-id="@group.GroupID" class="btn btn-primary">Details</a>
                     </div>
                 </div>
             </div>

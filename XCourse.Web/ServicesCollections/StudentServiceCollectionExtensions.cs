@@ -10,6 +10,7 @@ namespace XCourse.Web.ServicesCollections
             services.AddScoped<ITeacherProfileService, TeacherProfileService>();
             services.AddScoped<IEnrollStudentService, EnrollStudentService>();
             services.AddScoped<IRequestPrivateGroupService, RequestPrivateGroupService>();
+            services.AddScoped<IMapService, MapService>();
 
             return services;
         }
