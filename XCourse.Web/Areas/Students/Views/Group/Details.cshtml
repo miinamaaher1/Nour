@@ -1,4 +1,7 @@
-﻿@model XCourse.Core.ViewModels.StudentsViewModels.GroupDetails
+﻿@using XCourse.Core.DTOs.StudentDTOs
+
+
+@model XCourse.Core.ViewModels.StudentsViewModels.GroupDetails
 
 @{
     ViewData["Title"] = "Details";
@@ -69,10 +72,12 @@
 
                     <dt class="col-sm-4 fw-bold text-dark">📍 Address</dt>
                     <dd class="col-sm-8 text-muted">@Html.DisplayFor(model => model.Address.City)</dd>
-
+                    @if (Model.Location != null)
+                    {
                     <dt class="col-sm-4 fw-bold text-dark">🗺 Location</dt>
-                    <dd class="col-sm-8 text-muted">@Html.Partial("_MyPartialView", Model.Location)</dd>
-
+                 
+                        <dd class="col-sm-8 text-muted">@Html.Partial("_MapPartialView", new MapInfoDTO() { Key = Model.Key, OriginX = Model.Location.X, OriginY = Model.Location.Y })</dd>
+                    }
                     
                 </dl>
             </div>
@@ -88,7 +93,8 @@
                         <div class="col-md-6">
                             <div class="card shadow-sm rounded-lg border-0 mb-3">
                                 <div class="card-body bg-white p-4">
-                                    <h6 class="text-primary mb-2">🏠 Room: @session.RoomReservation.Room.Name</h6>
+                                    @if(session.RoomReservation!=null){
+                                    <h6 class="text-primary mb-2">🏠 Room: @session.RoomReservation.Room.Name</h6>}
                                     <p class="text-muted mb-1"><strong>⏳ Duration:</strong> @session.Duration</p>
                                     <p class="text-muted mb-1"><strong>🕒 Start Date:</strong> @session.StartDateTime.ToString("dddd, dd MMM yyyy hh:mm tt")</p>
                                     <p class="text-muted mb-1"><strong>🔚 End Date:</strong> @session.EndDateTime.ToString("dddd, dd MMM yyyy hh:mm tt")</p>

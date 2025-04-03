@@ -9,6 +9,7 @@ using XCourse.Services.Interfaces.StudentServices;
 
 using XCourse.Core.ViewModels.StudentsViewModels;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
 
 
 namespace XCourse.Services.Implementations.StudentServices
@@ -17,10 +18,12 @@ namespace XCourse.Services.Implementations.StudentServices
     {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration; 
 
-        public StudentGroupService(IUnitOfWork unitOfWork)
+        public StudentGroupService(IUnitOfWork unitOfWork,IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
 
         public GroupDetails Details(int id)
@@ -43,6 +46,7 @@ namespace XCourse.Services.Implementations.StudentServices
                 Id=group.ID,
                 Address = group.Address,
                 Location = group.Location,
+                Key = _configuration["GoogleMaps:ApiKey"],
                 DefaultSessionDays = group.DefaultSessionDays,
                 DefaultRoom = group.DefaultRoom,
                 Sessions = _unitOfWork.Sessions.FindAll(s=>s.GroupID==group.ID,new string[] { "RoomReservation.Room" },null,3).ToList(),
