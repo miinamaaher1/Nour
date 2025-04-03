@@ -1,0 +1,131 @@
+﻿@model XCourse.Core.ViewModels.StudentsViewModels.GroupDetails
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container py-5">
+    <!-- Title -->
+    <h1 class="text-center text-primary fw-bold mb-4">📚 Group Details</h1>
+
+    <!-- Group Overview Section -->
+    <div class="card shadow-sm rounded-4 p-4 border-0">
+        <h4 class="text-dark fw-bold">Group Overview</h4>
+        <hr />
+
+        <div class="row align-items-center">
+            <!-- Group Cover Image -->
+            <div class="col-md-4 text-center">
+                <div class="rounded-4 overflow-hidden shadow">
+                    <img src="@(Model.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.CoverPicture) : Url.Content("/images/default_cover.png"))"
+                         class="img-fluid rounded-4">
+                </div>
+            </div>
+
+            <!-- Group Details -->
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-4 fw-bold text-dark">📅 Session Days</dt>
+                    <dd class="col-sm-8 text-muted">@Html.DisplayFor(model => model.DefaultSessionDays)</dd>
+
+                    <dt class="col-sm-4 fw-bold text-dark">✅ Active</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success px-3 py-2">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger px-3 py-2">Inactive</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 fw-bold text-dark">🔒 Private</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsPrivate)
+                        {
+                            <span class="badge bg-warning px-3 py-2">Private</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-primary px-3 py-2">Public</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 fw-bold text-dark">🌐 Online</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsOnline)
+                        {
+                            <span class="badge bg-success px-3 py-2">Online</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger px-3 py-2">Offline</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 fw-bold text-dark">📖 Subject</dt>
+                    <dd class="col-sm-8 text-muted">@Html.DisplayFor(model => model.Subject)</dd>
+
+                    <dt class="col-sm-4 fw-bold text-dark">📍 Address</dt>
+                    <dd class="col-sm-8 text-muted">@Html.DisplayFor(model => model.Address.City)</dd>
+
+                    <dt class="col-sm-4 fw-bold text-dark">🗺 Location</dt>
+                    <dd class="col-sm-8 text-muted">@Html.Partial("_MyPartialView", Model.Location)</dd>
+
+                    
+                </dl>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h5 class="text-dark">📆 Sessions</h5>
+            @if (Model.Sessions != null && Model.Sessions.Any())
+            {
+                <div class="row">
+                    @foreach (var session in Model.Sessions)
+                    {
+                        <div class="col-md-6">
+                            <div class="card shadow-sm rounded-lg border-0 mb-3">
+                                <div class="card-body bg-white p-4">
+                                    <h6 class="text-primary mb-2">🏠 Room: @session.RoomReservation.Room.Name</h6>
+                                    <p class="text-muted mb-1"><strong>⏳ Duration:</strong> @session.Duration</p>
+                                    <p class="text-muted mb-1"><strong>🕒 Start Date:</strong> @session.StartDateTime.ToString("dddd, dd MMM yyyy hh:mm tt")</p>
+                                    <p class="text-muted mb-1"><strong>🔚 End Date:</strong> @session.EndDateTime.ToString("dddd, dd MMM yyyy hh:mm tt")</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="mt-4 text-center">
+                    <a class="btn btn-lg btn-success text-white" href="@Url.Action("Index", "Session", new { Id = Model.Id })">📖 View All Sessions</a>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">❌ No sessions available.</p>
+            }
+        </div>
+
+        
+
+    <!-- Teacher Info -->
+    <div class="card shadow-sm rounded-4 p-4 border-0 mt-4">
+        <h4 class="text-dark fw-bold">👨‍🏫 Teacher</h4>
+        <hr />
+
+        <div class="d-flex align-items-center">
+            <div class="rounded-circle overflow-hidden shadow-lg" style="width: 100px; height: 100px;">
+                <img src="@(Model.Teacher.AppUser.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Teacher.AppUser.ProfilePicture) : Url.Content("/images/default_profile.png"))"
+                     class="img-fluid rounded-circle">
+            </div>
+            <div class="ms-3">
+                <h5 class="fw-bold text-dark">@Html.DisplayFor(model => model.Teacher.AppUser.FirstName)</h5>
+            </div>
+        </div>
+    </div>
+
+   
+    </div>
+    </div>
+    
