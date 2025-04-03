@@ -19,7 +19,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             _enrollStudentService = enrollStudentService;
             _requestPrivateGroupService = requestPrivateGroupService;
         }
-        public IActionResult Details(int id)
+        public IActionResult DetailsNotEnrolled(int id)
         {
             var group = _unitOfWork.Groups.Find(g => g.ID == id, ["Subject", "Teacher.AppUser", "GroupDefaults"]);
             if (group == null) return NotFound();
