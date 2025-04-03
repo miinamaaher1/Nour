@@ -21,6 +21,8 @@ namespace XCourse.Services.Implementations.StudentServices
             {
                 TeacherID = teacherID,
                 TeacherName = teacher.AppUser.FirstName + " " + teacher.AppUser.LastName,
+                IsAvailableForPrivateGroups = teacher.IsAvailableForPrivateGroups,
+                PrivateGroupPrice = teacher.PrivatePrice,
                 TeacherProfilePicture = teacher.AppUser.ProfilePicture,
                 AvailbleGroups = new()
             };

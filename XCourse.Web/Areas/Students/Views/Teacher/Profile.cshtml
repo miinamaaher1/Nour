@@ -1,8 +1,13 @@
-﻿@using XCourse.Core.ViewModels.StudentsViewModels
-@model TeacherProfileVM
+﻿@model TeacherProfileVM
+@using Microsoft.AspNetCore.Identity
+@using XCourse.Infrastructure.Repositories.Interfaces
+@inject UserManager<AppUser> UserManager
+@inject IUnitOfWork unitOfWork
 
 @{
     ViewData["Title"] = $"{Model.TeacherName}";
+    var user = UserManager.GetUserAsync(User).Result;
+    var stud = unitOfWork.Students.Find(s => s.AppUserID == user.Id);
 }
 
 <div class="container">
@@ -11,7 +16,11 @@
             <div class="col-md-8">
                 <div class="card-body">
                     <h5 class="card-title">@Model.TeacherName</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    @if (Model.IsAvailableForPrivateGroups)
+                    {
+                        <button id="open-modal" class="btn btn-warning">Request A Private Group For L.E. @Model.PrivateGroupPrice</button>
+                        <div id="succ-msg" style="margin-top: 5px; background-color:darkgreen; border-left: solid green 2px; border-radius: 5px" class="d-none"></div>
+                    }
                 </div>
             </div>
             <div class="col-md-4">
@@ -58,10 +67,222 @@
                             <i class="fa-solid fa-child-dress" style="color: pink"></i>
                         }
                         <p class="card-text">Seats Available: @(group.MaxStudents - group.CurrentStudents) / @group.MaxStudents<br />Session Price: L.E. @group.PricePerSession</p>
-                        <a asp-area="Students" asp-controller="Group" asp-action="Details" class="btn btn-primary">Details</a>
+                        <a asp-area="Students" asp-controller="Group" asp-action="DetailsNotEnrolled" asp-route-id="@group.GroupID" class="btn btn-primary">Details</a>
                     </div>
                 </div>
             </div>
         </div>
     }
+    <div id="xmodal-container" class="d-none">
+        <div id="xmodal-overlay">
+            <div id="xmodal">
+                <div id="xmodal-header">
+                    <h2>Request A Private Group</h2>
+                    <div id="err-msg" style="background-color:darkred; border-left: solid red 2px; border-radius: 5px" class="d-none"></div>
+                </div>
+                <div id="xmodal-body">
+                    <div class="form-group">
+                        <label for="subject-select" class="form-label">Subject</label>
+                        <select id="subject-select" class="form-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="governorate-select" class="form-label"></label>
+                        <select id="governorate-select" class="form-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="city-input" class="form-label">City</label>
+                        <input type="text" id="city-input" class="form-control" placeholder="City" />
+                    </div>
+                    <div class="form-group">
+                        <label for="neighborhood-input" class="form-label">Neighborhood</label>
+                        <input type="text" id="neighborhood-input" class="form-control" placeholder="Neighborhood" />
+                    </div>
+                    <div class="form-group">
+                        <label for="street-input" class="form-label">Street</label>
+                        <input type="text" id="street-input" class="form-control" placeholder="Street" />
+                    </div>
+                    <div class="form-group">
+                        <label for="details-input" class="form-label">Details</label>
+                        <textarea id="details-input" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div id="xmodal-footer">
+                    <div class="form-group">
+                        <button id="submit-request" class="btn btn-primary">Submit</button>
+                        <button id="close-modal" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Styles {
+    <style>
+        #xmodal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom:0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        #xmodal-overlay {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #xmodal {
+            background: #fff;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        #xmodal-header {
+            background: #007bff;
+            color: #fff;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        #xmodal-body {
+            padding: 20px;
+        }
+
+        #xmodal-footer {
+            background: #f1f1f1;
+            padding: 15px;
+            text-align: center;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let open_modal = document.getElementById("open-modal")
+        let close_modal = document.getElementById("close-modal")
+        let submit_btn = document.getElementById("submit-request")
+        let succ_msg = document.getElementById("succ-msg")
+        let err_msg = document.getElementById("err-msg")
+        let modal_container = document.getElementById("xmodal-container")
+        let subject_select = document.getElementById("subject-select")
+        let governorate_select = document.getElementById("governorate-select")
+        let city_input = document.getElementById("city-input")
+        let neighborhood_input = document.getElementById("neighborhood-input")
+        let street_input = document.getElementById("street-input")
+        let details_input = document.getElementById("details-input")
+
+        let teacherId = @Model.TeacherID
+        let studentId = @stud.ID
+
+
+        let governorate_list = [
+            { value: "Cairo", display: "Cairo" },
+            { value: "Alexandria", display: "Alexandria" },
+            { value: "Giza", display: "Giza" },
+            { value: "Port Said", display: "Port Said" },
+            { value: "Suez", display: "Suez" },
+            { value: "Dakahlia", display: "Dakahlia" },
+            { value: "Sharqia", display: "Sharqia" },
+            { value: "Qalyubia", display: "Qalyubia" },
+            { value: "Beheira", display: "Beheira" },
+            { value: "Minya", display: "Minya" },
+            { value: "Helwan", display: "Helwan" },
+            { value: "6th of October", display: "6th of October" },
+            { value: "Ismailia", display: "Ismailia" },
+            { value: "Gharbia", display: "Gharbia" },
+            { value: "Monufia", display: "Monufia" },
+            { value: "Kafr El Sheikh", display: "Kafr El Sheikh" },
+            { value: "Faiyum", display: "Faiyum" },
+            { value: "Beni Suef", display: "Beni Suef" },
+            { value: "Asyut", display: "Asyut" },
+            { value: "Sohag", display: "Sohag" },
+            { value: "Qena", display: "Qena" },
+            { value: "Aswan", display: "Aswan" },
+            { value: "Luxor", display: "Luxor" },
+            { value: "Red Sea", display: "Red Sea" },
+            { value: "New Valley", display: "New Valley" },
+            { value: "Matrouh", display: "Matrouh" },
+            { value: "North Sinai", display: "North Sinai" },
+            { value: "South Sinai", display: "South Sinai" },
+            { value: "Damietta", display: "Damietta" },
+        ]
+
+        async function submitRequest() {
+            let request_body = {
+                teacherID : teacherId,
+                studentID : studentId,
+                subjectID : subject_select.value,
+                governorate : governorate_select.value,
+                city : city_input.value,
+                neighborhood : neighborhood_input.value,
+                street : street_input.value,
+                details : details_input.value
+            }
+            let url = "/students/group/SendRequest"
+            let result = await getData(url, "POST", request_body)
+            if (result.isValid) {
+                succ_msg.innerText = "request sent successfully"
+                succ_msg.classList.remove("d-none")
+                err_msg.classList.add("d-none")
+                modal_container.classList.add("d-none")
+            } else {
+                err_msg.innerText = result.errors[0]
+                err_msg.classList.remove("d-none")
+                succ_msg.classList.add("d-none")
+            }
+        }
+
+        async function openModal() {
+            buildList(governorate_select, governorate_list)
+            let url = "/students/group/PrepareRequest"
+            let subject_list = await getData(url, "POST", {teacherID : teacherId, studentID : studentId})
+            buildList(subject_select, subject_list)
+            modal_container.classList.remove("d-none")
+        }
+
+        function closeModal() {
+            modal_container.classList.add("d-none")
+        }
+
+        function buildList(_select_input, _items_list) {
+            let options = ``
+            _items_list.forEach(item => {
+                options += `<option value="${item.value}">${item.display}</option>`
+            })
+            _select_input.innerHTML = options
+        }
+
+        async function getData(_url, _method, _body = {}) {
+            try {
+                let response = await fetch(_url, {
+                    method : _method,
+                    headers : {
+                        "Content-Type" : "application/json"
+                    },
+                    body : JSON.stringify(_body)
+                })
+
+                if (!response.ok) throw new Error(response.statusText)
+
+                let data = await response.json()
+                return data
+            } catch {
+                return []
+            }
+        }
+
+        open_modal.addEventListener("click", openModal)
+        close_modal.addEventListener("click", closeModal)
+        submit_btn.addEventListener("click", submitRequest)
+    </script>
+}

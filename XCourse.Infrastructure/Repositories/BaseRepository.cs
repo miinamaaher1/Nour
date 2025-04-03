@@ -22,23 +22,35 @@ namespace XCourse.Infrastructure.Repositories
         {
             return await context.Set<T>().FindAsync(id);
         }
-        public IEnumerable<T> GetAll(string[]? includes = null)
+        public IEnumerable<T> GetAll(string[]? includes = null, int? skip = null, int? take = null)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
                 foreach (var include in includes)
                     query = query.Include(include);
+
+            if (skip.HasValue)
+                query = query.Skip(skip.Value);
+
+            if (take.HasValue)
+                query = query.Take(take.Value);
 
             return query.ToList();
         }
-        public async Task<IEnumerable<T>> GetAllAsync(string[]? includes = null)
+        public async Task<IEnumerable<T>> GetAllAsync(string[]? includes = null, int? skip = null, int? take = null)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
                 foreach (var include in includes)
                     query = query.Include(include);
+
+            if (skip.HasValue)
+                query = query.Skip(skip.Value);
+
+            if (take.HasValue)
+                query = query.Take(take.Value);
 
             return await query.ToListAsync();
         }
@@ -63,24 +75,35 @@ namespace XCourse.Infrastructure.Repositories
 
             return await query.SingleOrDefaultAsync(expression);
         }
-        public IEnumerable<T> FindAll(Expression<Func<T, bool>> expression, string[]? includes = null)
+        public IEnumerable<T> FindAll(Expression<Func<T, bool>> expression, string[]? includes = null, int? skip = null, int? take = null)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
                 foreach (var include in includes)
                     query = query.Include(include);
+
+            if (skip.HasValue)
+                query = query.Skip(skip.Value);
+
+            if (take.HasValue)
+                query = query.Take(take.Value);
 
             return query.Where(expression).ToList();
         }
-
-        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression, string[]? includes = null)
+        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression, string[]? includes = null, int? skip = null, int? take = null)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
                 foreach (var include in includes)
                     query = query.Include(include);
+
+            if (skip.HasValue)
+                query = query.Skip(skip.Value);
+
+            if (take.HasValue)
+                query = query.Take(take.Value);
 
             return await query.Where(expression).ToListAsync();
         }
