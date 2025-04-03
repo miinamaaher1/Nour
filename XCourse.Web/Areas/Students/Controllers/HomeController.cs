@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using XCourse.Core.ViewModels.Students;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.Student;
 
 namespace XCourse.Web.Areas.Students.Controllers
@@ -13,12 +14,11 @@ namespace XCourse.Web.Areas.Students.Controllers
             _studentHomeService = studentHomeService;
 
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            //ahmed ===> 9798ruhuhvvrnr84994
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            HomeViewModel homeViewModel= _studentHomeService.IndexService(userID!);
+            HomeViewModel homeViewModel= await  _studentHomeService.IndexService(userID!);
 
             return View(homeViewModel);
         }
