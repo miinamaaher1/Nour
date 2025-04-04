@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace XCourse.Core.DTOs.Teacher
+namespace XCourse.Core.DTOs.Teachers
 {
     public class RequestCenterDto
     {

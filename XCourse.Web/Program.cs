@@ -33,8 +33,6 @@ namespace XCourse.Web
             builder.Services.AddStudentServices();
             builder.Services.AddTeacherServices();
 
-            builder.Services.AddScoped<XCourse.Services.Interfaces.Teacher.IGroupService, XCourse.Services.Implementations.GroupService>();
-
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;

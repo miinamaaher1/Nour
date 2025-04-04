@@ -1,0 +1,407 @@
+﻿@using XCourse.Core.ViewModels.StudentsViewModels
+@using XCourse.Core.ViewModels.TeachersViewModels
+@model IEnumerable<GroupVM>;
+
+@section Styles {
+    <style>
+        .page-title {
+            font-size: 1.5rem;
+            color: var(--clr-primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .group-card {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            height: 100%;
+        }
+
+            .group-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            }
+
+        .card-header {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 0;
+            color: var(--clr-text-on-primary);
+        }
+
+        .subject-badge {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .group-info {
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .info-icon {
+            color: var(--clr-secondary);
+            margin-right: 8px;
+            width: 18px;
+            text-align: center;
+        }
+
+        .info-text {
+            color: var(--clr-text-secondary);
+            flex: 1;
+        }
+
+        .session-days {
+            background-color: var(--clr-background);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            height: 125px;
+            overflow: auto;
+        }
+
+        .session-title {
+            font-size: 0.8rem;
+            color: var(--clr-text-secondary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .session-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+
+        .day-circle {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+
+        .badge {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 4px 8px;
+            border-radius: 20px;
+            margin-right: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .badge-online {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-offline {
+            background-color: var(--clr-secondary);
+            color: white;
+        }
+
+        .badge-private {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .badge-girls {
+            background-color: #d63384;
+            color: white;
+        }
+
+        .badge-status {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+        }
+
+        .students-count {
+            margin-top: 12px;
+            height: 5px;
+            background-color: var(--clr-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .students-progress {
+            height: 100%;
+            background-color: var(--clr-secondary);
+            border-radius: 3px;
+        }
+
+        .students-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-top: 4px;
+            color: var(--clr-text-secondary);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-attendance {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+            .btn-attendance:hover {
+                background-color: #a3634c;
+                color: var(--clr-text-on-secondary);
+            }
+
+        .btn-details {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+            .btn-details:hover {
+                background-color: #4e2257;
+                color: var(--clr-text-on-primary);
+            }
+    </style>
+}
+
+<div class="container">
+    <h1 class="page-title">Available Groups</h1>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var groupVM in Model)
+            {
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                    <div class="group-card">
+                        <div class="card-header">
+                            @if (groupVM.Subject != null)
+                            {
+                                <h5 class="card-title">@groupVM.Subject.Topic</h5>
+                                <span class="subject-badge">
+                                    <i class="fas fa-book"></i>
+                                    @switch ((int)(groupVM.Subject.Year))
+                                    {
+                                        case 0:
+                                            <span>Primary One</span>
+                                            break;
+                                        case 1:
+                                            <span>Primary Two</span>
+                                            break;
+                                        case 2:
+                                            <span>Primary Three</span>
+                                            break;
+                                        case 3:
+                                            <span>Primary Four</span>
+                                            break;
+                                        case 4:
+                                            <span>Primary Five</span>
+                                            break;
+                                        case 5:
+                                            <span>Primary Six</span>
+                                            break;
+                                        case 6:
+                                            <span>Preparatory One</span>
+                                            break;
+                                        case 7:
+                                            <span>Preparatory Two</span>
+                                            break;
+                                        case 8:
+                                            <span>Preparatory Three</span>
+                                            break;
+                                        case 9:
+                                            <span>Secondary One</span>
+                                            break;
+                                        case 10:
+                                            <span>Secondary Two</span>
+                                            break;
+                                        case 11:
+                                            <span>Secondary Three</span>
+                                            break;
+                                        default:
+                                            <span>Unknown Grade</span>
+                                            break;
+                                    }
+                                </span>
+                            }
+                            else
+                            {
+                                <h5 class="card-title">Unnamed Group</h5>
+                                <span class="subject-badge">Unknown Grade</span>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-wrap mb-2">
+                                <span class="badge @(groupVM.IsOnline ? "badge-online" : "badge-offline")">
+                                    <i class="fas @(groupVM.IsOnline ? "fa-globe" : "fa-building")"></i>
+                                    @(groupVM.IsOnline ? "Online" : "Offline")
+                                </span>
+                                <span class="badge @(groupVM.IsGirlsOnly ? "badge-girls" : "badge-status")">
+                                    <i class="fas @(groupVM.IsGirlsOnly ? "fa-female" : "fa-users")"></i>
+                                    @(groupVM.IsGirlsOnly ? "Girls Only" : "Mixed")
+                                </span>
+                                @if (groupVM.Subject != null)
+                                {
+                                    <span class="badge badge-private">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        @switch ((int)groupVM.Subject.Semester)
+                                        {
+                                            case 1:
+                                                <span>First Semester</span>
+                                                break;
+                                            case 2:
+                                                <span>Second Semester</span>
+                                                break;
+                                            case 3:
+                                                <span>Full Year</span>
+                                                break;
+                                            default:
+                                                <span>Unknown</span>
+                                                break;
+                                        }
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="group-info">
+                                <div class="info-row">
+                                    <span class="info-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </span>
+                                    <span class="info-text">
+                                        @if (!string.IsNullOrEmpty(groupVM.CenterName))
+                                        {
+                                            @groupVM.CenterName
+                                        }
+                                        else if (groupVM.Address != null)
+                                        {
+                                            <span>
+                                                @(!string.IsNullOrEmpty(groupVM.Address.Governorate) ? groupVM.Address.Governorate + ", " : "")
+                                                @(!string.IsNullOrEmpty(groupVM.Address.City) ? groupVM.Address.City + ", " : "")
+                                                @(groupVM.Address.Street ?? "")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span>Location not available</span>
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="session-days">
+                                <div class="session-title">Session Schedule</div>
+                                @if (groupVM.Sessions != null && groupVM.Sessions.Any())
+                                {
+                                    @foreach (var session in groupVM.Sessions)
+                                    {
+                                        <div class="session-time">
+                                            <div class="day-circle">
+                                                @(session.WeekDay.ToString().Substring(0, 2).ToUpper())
+                                            </div>
+                                            <div>@session.StartDate - @session.EndDate</div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div>No scheduled sessions</div>
+                                }
+                            </div>
+
+                            <div>
+                                <div class="students-count">
+                                    @{
+                                        var percentFilled = groupVM.Capacity > 0 ?
+                                        (groupVM.NumberOfStudent * 100 / groupVM.Capacity) : 0;
+                                    }
+                                    <div class="students-progress" style="width: @percentFilled%"></div>
+                                </div>
+                                <div class="students-text">
+                                    <span>Students</span>
+                                    <span>@groupVM.NumberOfStudent / @groupVM.Capacity</span>
+                                </div>
+                            </div>
+
+                            <div class="card-actions">
+                                <a href="#" class="btn-attendance">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    Attendance
+                                </a>
+                                <a asp-action="Details" asp-route-id="@groupVM.GroupID" class="btn-details">
+                                    <i class="fas fa-info-circle"></i>
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No groups are currently available.
+                </div>
+            </div>
+        }
+    </div>
+</div>

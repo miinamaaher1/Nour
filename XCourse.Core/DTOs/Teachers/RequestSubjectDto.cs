@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using XCourse.Core.Entities;
 
-namespace XCourse.Core.DTOs.Teacher
+namespace XCourse.Core.DTOs.Teachers
 {
     public class RequestSubjectDto
     {

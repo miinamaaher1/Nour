@@ -5,8 +5,8 @@ namespace XCourse.Core.Entities
     [Flags]
     public enum Semester
     {
-        First,
-        Second
+        First = 1,
+        Second = 2
     } 
     public enum Major
     {
