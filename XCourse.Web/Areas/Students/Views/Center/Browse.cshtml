@@ -1,0 +1,66 @@
+﻿@using XCourse.Core.DTOs.StudentDTOs
+@model MapInfoDTO
+
+@{
+	ViewData["Title"] = "Browse Centers";
+}
+
+<div id="map" style=""></div>
+<div id="panel">
+    <div id="panel-header">
+        <input type="text" />
+        <i class="fas fa-search"></i>
+    </div>
+    <div id="panel-body">
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        #map {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75vh;
+        }
+        #panel {
+            position: fixed;
+            top: 100px;
+            left: 150px;
+            z-index: 1000;
+            background: #fff;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: auto;
+        }
+        #panel-header {
+            background: #0FFF50;
+            color: #fff;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+        #panel-body {
+            padding: 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+	<script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=initMap" async defer></script>
+    <script>
+        async function initMap() {
+            // Specify map options
+            var mapOptions = {
+                center: { lat: @Model.OriginX, lng: @Model.OriginY },
+                zoom: 10
+            };
+
+            // Create the map
+            var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        }
+    </script>
+}

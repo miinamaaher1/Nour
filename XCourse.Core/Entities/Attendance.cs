@@ -18,7 +18,7 @@ namespace XCourse.Core.Entities
         public string? Feedback { get; set; }
 
         [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5")]
-        public int? Rating { get; set; }
+        public int? Rating { get; set; } 
 
         public bool? HasAttended { get; set; }
 
