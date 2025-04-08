@@ -42,11 +42,6 @@ namespace XCourse.Web
                 });
             });
 
-            builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            });
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
