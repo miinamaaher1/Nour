@@ -18,10 +18,6 @@ namespace XCourse.Core.Entities
 
         [DataType(dataType: DataType.DateTime)]
         public DateTime? DateTime { get; set; }
-
-        [Display(Name = nameof(Group))]
-        [ForeignKey(nameof(Group))]
-        public int GroupID { get; set; }
-        public virtual Group? Group { get; set; }
+        public virtual ICollection<Group> ? Groups { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using XCourse.Core.DTOs.Teachers;
 using XCourse.Core.Entities;
@@ -12,14 +11,14 @@ using XCourse.Core.ViewModels.TeachersViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.Teachers;
 
-namespace XCourse.Services.Implementations
+namespace XCourse.Services.Implementations.TeacherServices
 {
     public class GroupService : IGroupService
     {
         private readonly IUnitOfWork _unitOfWork;
         public GroupService(IUnitOfWork unitOfWork)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
         public async Task<IEnumerable<ResponseCenterDto>> GetAllCentersPerGovernorate(string governorate)
         {
@@ -44,9 +43,9 @@ namespace XCourse.Services.Implementations
                     (reservation.WeekDay & request.Day) == request.Day &&
                     reservation.Date >= request.StartDate && reservation.Date <= request.EndDate &&
                     (
-                        (request.StartTime >= reservation.StartTime && request.StartTime < reservation.EndTime) ||
-                        (request.EndTime > reservation.StartTime && request.EndTime <= reservation.EndTime) ||
-                        (request.StartTime <= reservation.StartTime && request.EndTime >= reservation.EndTime)
+                        request.StartTime >= reservation.StartTime && request.StartTime < reservation.EndTime ||
+                        request.EndTime > reservation.StartTime && request.EndTime <= reservation.EndTime ||
+                        request.StartTime <= reservation.StartTime && request.EndTime >= reservation.EndTime
                     )
                 );
 
@@ -84,9 +83,9 @@ namespace XCourse.Services.Implementations
                     (reservation.WeekDay & request.Sessions[i].DayId) == request.Sessions[i].DayId &&
                     reservation.Date >= request.Sessions[i].StartDate && reservation.Date <= request.Sessions[i].EndDate &&
                     (
-                        (request.Sessions[i].StartTime >= reservation.StartTime && request.Sessions[i].StartTime < reservation.EndTime) ||
-                        (request.Sessions[i].EndTime > reservation.StartTime && request.Sessions[i].EndTime <= reservation.EndTime) ||
-                        (request.Sessions[i].StartTime <= reservation.StartTime && request.Sessions[i].EndTime >= reservation.EndTime)
+                        request.Sessions[i].StartTime >= reservation.StartTime && request.Sessions[i].StartTime < reservation.EndTime ||
+                        request.Sessions[i].EndTime > reservation.StartTime && request.Sessions[i].EndTime <= reservation.EndTime ||
+                        request.Sessions[i].StartTime <= reservation.StartTime && request.Sessions[i].EndTime >= reservation.EndTime
                     )
                 );
                 if (reservation == null)
@@ -199,12 +198,11 @@ namespace XCourse.Services.Implementations
                     Title = string.IsNullOrWhiteSpace(title) ? null : title, // Assign title properly
                     Body = body,
                     DateTime = DateTime.Now,
-                    GroupID = groupId
+                    Groups = new List<Group>()
                 };
-
-                _unitOfWork.Announcements.Add(announcement);
-                await _unitOfWork.SaveAsync();
+                announcement.Groups.Add(group);
                 return true;
+                
             }
             catch
             {

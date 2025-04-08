@@ -80,7 +80,12 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return await _groupService.PostAnnouncement(request.groupId, 1, request.body! ,request.isImportant, request.title);
 
         }
-        
+        [HttpPost]
+        public async Task<IActionResult> GetAllGroups()
+        {
+            IEnumerable <GroupVM> groupDetails = await _groupService.GetAllGroups(1);
+            return Json(groupDetails);
+        } 
         
     }
 }

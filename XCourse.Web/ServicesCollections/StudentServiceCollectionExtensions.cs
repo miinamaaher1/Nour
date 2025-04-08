@@ -1,9 +1,9 @@
 ﻿using XCourse.Services.Implementations.Student;
-using XCourse.Services.Implementations;
 using XCourse.Services.Implementations.StudentServices;
 using XCourse.Services.Interfaces.Student;
 using XCourse.Services.Interfaces.StudentServices;
 using XCourse.Services.Interfaces.Teachers;
+using XCourse.Services.Implementations.TeacherServices;
 
 namespace XCourse.Web.ServicesCollections
 {
