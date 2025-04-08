@@ -1,13 +1,7 @@
 ﻿@model TeacherProfileVM
-@using Microsoft.AspNetCore.Identity
-@using XCourse.Infrastructure.Repositories.Interfaces
-@inject UserManager<AppUser> UserManager
-@inject IUnitOfWork unitOfWork
 
 @{
     ViewData["Title"] = $"{Model.TeacherName}";
-    var user = UserManager.GetUserAsync(User).Result;
-    var stud = unitOfWork.Students.Find(s => s.AppUserID == user.Id);
 }
 
 <div class="container">
@@ -182,7 +176,7 @@
         let details_input = document.getElementById("details-input")
 
         let teacherId = @Model.TeacherID
-        let studentId = @stud.ID
+        let studentId = @Model.StudentID
 
 
         let governorate_list = [

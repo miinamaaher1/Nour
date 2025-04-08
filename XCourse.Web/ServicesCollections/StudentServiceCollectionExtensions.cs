@@ -15,6 +15,7 @@ namespace XCourse.Web.ServicesCollections
             services.AddScoped<IMapService, MapService>();
             services.AddScoped<IStudentGroup, StudentGroupService>();
             services.AddScoped<IStudentHomeService, StudentHomeService>();
+            services.AddScoped<ICenterReservationService, CenterReservationService>();
 
             return services;
         }
