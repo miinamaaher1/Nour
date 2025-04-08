@@ -1,0 +1,704 @@
+﻿@model XCourse.Core.ViewModels.TeachersViewModels.GroupDetailsVM
+
+@section Styles {
+    <!-- Cover styling-->
+    <style>
+        .group-card {
+            background-color: var(--clr-surface);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+            .group-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+            }
+
+        .group-image {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            overflow: hidden;
+        }
+
+            .group-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
+
+        .group-card:hover .group-image img {
+            transform: scale(1.05);
+        }
+
+        .group-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, var(--clr-overlay), transparent);
+            padding: 20px;
+        }
+
+        .center-name {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .subject-name {
+            color: var(--clr-accent);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .group-price {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .group-content {
+            padding: 20px;
+        }
+
+        .group-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: var(--clr-text-secondary);
+        }
+
+            .meta-item i {
+                color: var(--clr-secondary);
+            }
+
+        .session-days {
+            background-color: var(--clr-background);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .session-title {
+            font-size: 0.9rem;
+            color: var(--clr-text-secondary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .session-time {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .day-circle {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .badge {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-right: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-online {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-offline {
+            background-color: var(--clr-secondary);
+            color: white;
+        }
+
+        .badge-private {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .badge-girls {
+            background-color: #d63384;
+            color: white;
+        }
+
+        .badge-status {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+        }
+
+        .students-count {
+            margin-top: 15px;
+            height: 6px;
+            background-color: var(--clr-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .students-progress {
+            height: 100%;
+            background-color: var(--clr-secondary);
+            border-radius: 3px;
+        }
+
+        .students-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: var(--clr-text-secondary);
+        }
+    </style>
+
+    <!-- Table styling-->
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            color: var(--clr-primary);
+            margin: 0;
+        }
+
+        .theme-toggle {
+            background-color: var(--clr-surface);
+            color: var(--clr-text-primary);
+            border: 1px solid var(--clr-border);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .theme-toggle:hover {
+                background-color: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+            }
+
+        .search-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 8px 12px;
+            border: 1px solid var(--clr-border);
+            border-radius: 20px; /* More rounded search box */
+            background-color: var(--clr-surface);
+            color: var(--clr-text-primary);
+        }
+
+        .table-container {
+            background-color: var(--clr-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+        }
+
+        th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--clr-border);
+            transition: background-color 0.3s ease;
+        }
+
+            tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            tbody tr:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+        td {
+            padding: 12px 15px;
+        }
+
+        .email {
+            color: var(--clr-text-secondary);
+        }
+
+        .exam-score {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .high-score {
+            color: #2e7d32;
+        }
+
+        .medium-score {
+            color: #f57c00;
+        }
+
+        .low-score {
+            color: #c62828;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: var(--clr-surface);
+            border-radius: 4px;
+            border: 1px solid var(--clr-border);
+        }
+
+        .pagination-info {
+            color: var(--clr-text-secondary);
+        }
+
+        .pagination-controls button {
+            background-color: var(--clr-surface);
+            color: var(--clr-primary);
+            border: 1px solid var(--clr-border);
+            padding: 6px 12px;
+            margin: 0 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .pagination-controls button:hover:not(:disabled) {
+                background-color: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+            }
+
+            .pagination-controls button:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        /* Combined attendance styling */
+        .attendance-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .checkbox-container {
+            position: relative;
+            padding-left: 30px;
+            cursor: not-allowed;
+            user-select: none;
+            display: flex;
+            align-items: center;
+        }
+
+            .checkbox-container input {
+                position: absolute;
+                opacity: 0;
+                cursor: not-allowed;
+                height: 0;
+                width: 0;
+            }
+
+        .checkmark {
+            position: absolute;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: var(--clr-surface);
+            border: 1px solid var(--clr-border);
+            border-radius: 3px;
+        }
+
+        .status-none .checkmark {
+            background-color: #e0e0e0;
+        }
+
+        .status-absent .checkmark {
+            background-color: #ffcdd2;
+        }
+
+            .status-absent .checkmark:after {
+                content: "✕";
+                position: absolute;
+                display: block;
+                left: 2px;
+                top: -2px;
+                color: #d32f2f;
+                font-weight: bold;
+            }
+
+        .status-attended .checkmark {
+            background-color: #c8e6c9;
+        }
+
+            .status-attended .checkmark:after {
+                content: "✓";
+                position: absolute;
+                display: block;
+                left: 2px;
+                top: -2px;
+                color: #388e3c;
+                font-weight: bold;
+            }
+    </style>
+}
+
+<div class="col-12">
+    <div class="group-card">
+        <div class="group-image">
+            <img src="~/images/default_cover.png" alt="Group Cover Image">
+            <div class="group-overlay">
+                <div class="center-name">@Model?.Subject?.Topic (@Model.Subject?.Major)</div>
+                <div class="subject-name">
+                    <i class="fas fa-book"></i>
+                    @switch ((int)(Model?.Subject?.Year!))
+                    {
+                        case 0:
+                            <span>Primary One</span>
+                            break;
+                        case 1:
+                            <span>Primary Two</span>
+                            break;
+                        case 2:
+                            <span>Primary Three</span>
+                            break;
+                        case 3:
+                            <span>Primary Four</span>
+                            break;
+                        case 4:
+                            <span>Primary Five</span>
+                            break;
+                        case 5:
+                            <span>Primary Six</span>
+                            break;
+                        case 6:
+                            <span>Preparatory One</span>
+                            break;
+                        case 7:
+                            <span>Preparatory Two</span>
+                            break;
+                        case 8:
+                            <span>Preparatory Three</span>
+                            break;
+                        case 9:
+                            <span>Secondary One</span>
+                            break;
+                        case 10:
+                            <span>Secondary Two</span>
+                            break;
+                        case 11:
+                            <span>Secondary Three</span>
+                            break;
+                        default:
+                            <span>Unknown Grade</span>
+                            break;
+                    } -
+                    @switch ((int)Model?.Subject?.Semester!)
+                    {
+                        case 1:
+                            <span>First Semester</span>
+                            break;
+                        case 2:
+                            <span>Second Semester</span>
+                            break;
+                        case 3:
+                            <span>Full Year</span>
+                            break;
+                        default:
+                            <span>Unknown</span>
+                            break;
+                    }
+                </div>
+                <div class="group-price">@Model?.PricePerSession <b>EGP</b> per session</div>
+            </div>
+        </div>
+        <div class="group-content">
+            <div class="group-meta">
+                <div class="meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    @if (Model?.CenterName == "" || Model?.CenterName == null)
+                    {
+                        <span>@Model?.Address?.Governorate / @Model?.Address?.City / @Model?.Address?.Street</span>
+                    }
+                    else
+                    {
+                        <span>@Model.CenterName</span>
+                    }
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>@@keshk</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-building"></i>
+                    @if (Model?.CenterName == "" || Model?.CenterName == null)
+                    {
+                        <span>Private Location</span>
+                    }
+                    else
+                    {
+                        <span>@Model?.CenterName</span>
+                    }
+                </div>
+            </div>
+
+            <div class="session-days">
+                @if (Model?.Sessions?.Count() <= 0)
+                {
+                    <div class="session-title">NO DEFAULT SESSION DAYS</div>
+                }
+                else
+                {
+                    <div class="session-title">DEFAULT SESSION DAYS</div>
+                    @foreach (var session in Model?.Sessions!)
+                    {
+                        <div class="session-time">
+                            <div class="day-circle">
+                                @switch ((int)(session.WeekDay!))
+                                {
+                                    case 1:
+                                        <div class="day-circle">SAT</div>
+                                        break;
+                                    case 2:
+                                        <div class="day-circle">SUN</div>
+                                        break;
+                                    case 4:
+                                        <div class="day-circle">MON</div>
+                                        break;
+                                    case 8:
+                                        <div class="day-circle">TUE</div>
+                                        break;
+                                    case 16:
+                                        <div class="day-circle">WED</div>
+                                        break;
+                                    case 32:
+                                        <div class="day-circle">THU</div>
+                                        break;
+                                    case 64:
+                                        <div class="day-circle">FRI</div>
+                                        break;
+                                    default:
+                                        <div class="day-circle"> - </div>
+                                        break;
+                                }
+                            </div>
+                            <div>@session.StartTime - @session.EndTime</div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="mt-3">
+                @if (Model.IsActive == false)
+                {
+                    <span class="badge badge-status">Not Active</span>
+                }
+                else
+                {
+                    <span class="badge badge-status">Active</span>
+                }
+                @if (Model.IsOnline == false)
+                {
+                    <span class="badge badge-offline">Offline</span>
+                }
+                else
+                {
+                    <span class="badge badge-online">Online</span>
+                }
+                @if (Model.IsPrivate == true)
+                {
+                    <span class="badge badge-private">Private</span>
+                }
+                else
+                {
+                    <span class="badge badge-private">Public</span>
+                }
+
+                @if (Model.IsGirlsOnly == true)
+                {
+                    <span class="badge badge-girls">Girls Only</span>
+                }
+                else
+                {
+                    <span class="badge badge-status">Mixed</span>
+                }
+            </div>
+
+            @{
+                int percentageOfStudents = Model.CurrentStudents / Model.MaxStudents;
+            }
+            <div class="students-count mt-4">
+                <div class="students-progress" style="width: @percentageOfStudents%;"></div>
+            </div>
+            <div class="students-text">
+                <span>Current Students: @Model.CurrentStudents</span>
+                <span>Maximum: @Model.MaxStudents</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Students Table-->
+<!-- Table -->
+<div class="col-12">
+    <div class="header">
+        <h1 class="title">Student Attendance Tracker</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="search-controls col-6">
+            <input type="text" id="searchInput" class="search-input"
+                   placeholder="Search by name or email...">
+        </div>
+        <div class="col-3"></div>
+    </div>
+
+    <div class="table-container">
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Attendance (Last 5 Classes)</th>
+                    <th>Latest Exam Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model?.Students!)
+                {
+                    <tr>
+                        <td>@student.AppUser?.FirstName @student.AppUser?.LastName</td>
+                        <td class="email">@student.AppUser?.Email</td>
+                        <td>
+                            <div class="attendance-container">
+                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+                                <label class="checkbox-container status-absent"><input type="checkbox" disabled><span class="checkmark"></span></label>
+                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+                            </div>
+                        </td>
+                        <td class="exam-score high-score">92</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        <div class="pagination-info">
+            Showing <span id="startIndex">1</span> to <span id="endIndex">2</span> of <span id="totalItems">2</span> students
+        </div>
+        <div class="pagination-controls">
+            <button id="prevPage" disabled>Previous</button>
+            <span id="currentPage">1</span> of <span id="totalPages">1</span>
+            <button id="nextPage" disabled>Next</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/datatables.net/datatables.min.js"></script>
+    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+            const table = document.getElementById("studentsTable");
+            const rowsPerPage = 10;
+            let currentPage = 1;
+            const rows = Array.from(table.querySelectorAll("tbody tr"));
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+            function renderTable() {
+                rows.forEach((row, index) => {
+                    row.style.display = (index >= (currentPage - 1) * rowsPerPage && index < currentPage * rowsPerPage) ? "" : "none";
+                });
+                document.getElementById("currentPage").textContent = currentPage;
+                document.getElementById("totalPages").textContent = totalPages;
+                document.getElementById("prevPage").disabled = currentPage === 1;
+                document.getElementById("nextPage").disabled = currentPage === totalPages;
+                document.getElementById("startIndex").textContent = (rows.length === 0) ? 0 : (currentPage - 1) * rowsPerPage + 1;
+                document.getElementById("endIndex").textContent = Math.min(currentPage * rowsPerPage, rows.length);
+                document.getElementById("totalItems").textContent = rows.length;
+            }
+
+            document.getElementById("prevPage").addEventListener("click", function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+
+            document.getElementById("nextPage").addEventListener("click", function () {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+
+            document.getElementById("searchInput").addEventListener("input", function () {
+                const searchTerm = this.value.toLowerCase();
+                let filteredRows = rows.filter(row => row.textContent.toLowerCase().includes(searchTerm));
+                rows.forEach(row => row.style.display = "none");
+                filteredRows.forEach((row, index) => {
+                    if (index < rowsPerPage) row.style.display = "";
+                });
+            });
+
+            renderTable();
+        });
+
+
+    </script>
+}

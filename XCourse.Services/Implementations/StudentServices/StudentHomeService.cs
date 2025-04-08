@@ -235,10 +235,12 @@ namespace XCourse.Services.Implementations.Student
 
         public async Task<List<Announcement>> GetStudentAnnouncements(int studentId)
         {
-            var announcements = await _unitOfWork.Announcements.FindAllAsync(
-                a => a.Group.Students.Any(st => st.ID == studentId)&&
-                a.Group.IsActive == true,
-                [ "Group", "Group.Teacher.AppUser" ]
+            
+            var groups = await _unitOfWork.Groups.FindAllAsync(g => g.Students!.Any(std => std.ID == studentId));
+            var groupIds = groups.Select(g => g.ID).ToList();
+
+            var announcements = await _unitOfWork.Announcements.FindAllAsync(announcement =>
+                announcement.Groups!.Any(g => groupIds.Contains(g.ID))
             );
 
             return await Task.FromResult(announcements.ToList());
