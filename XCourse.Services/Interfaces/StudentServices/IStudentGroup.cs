@@ -1,4 +1,11 @@
-﻿using XCourse.Core.ViewModels.StudentsViewModels;
+using XCourse.Core.ViewModels.StudentsViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using XCourse.Core.Entities;
+using XCourse.Core.ViewModels.StudentsViewModels;
 
 namespace XCourse.Services.Interfaces.StudentServices
 {

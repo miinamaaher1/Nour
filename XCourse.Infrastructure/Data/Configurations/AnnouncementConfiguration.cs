@@ -13,9 +13,8 @@ namespace XCourse.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Announcement> builder)
         {
-            builder.HasOne(a => a.Group)
-                .WithMany(g => g.Announcements)
-                .HasForeignKey(a => a.GroupID);
+            builder.HasMany(a => a.Groups)
+                .WithMany(g => g.Announcements);
         }
     }
 }

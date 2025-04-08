@@ -1,0 +1,1613 @@
+﻿@section Styles {
+    <!--Form-->
+    <style>
+        /* General Form Section Styling */
+        .form-error-message {
+            color: #721c24; /* Dark red */
+            background-color: #f8d7da; /* Light red */
+            border: 1px solid #f5c6cb; /* Medium red */
+            padding: 10px 15px;
+            margin: 10px;
+            border-radius: 6px; /* Match input border-radius */
+            display: none; /* Initially hidden */
+        }
+
+            .form-error-message i {
+                margin-right: 8px;
+            }
+        .form-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .form-container {
+            background-color: var(--clr-surface);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;             
+            border-radius : 20px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .form-header {
+            text-align: center;
+            padding: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        /* Input Fields Styling */
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--clr-border);
+            border-radius: 6px;
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1rem;
+        }
+
+            input:focus,
+            select:focus,
+            textarea:focus {
+                outline: none;
+                border-color: var(--clr-primary);
+                box-shadow: 0 0 8px rgba(93, 42, 102, 0.5);
+            }
+
+            /* Date & Time Inputs */
+            input[type="date"],
+            input[type="time"] {
+                margin-right: 10px;
+                cursor: pointer;
+            }
+
+                input[type="date"]::-webkit-calendar-picker-indicator,
+                input[type="time"]::-webkit-calendar-picker-indicator {
+                    cursor: pointer;
+                }
+
+        /* Select Dropdown Styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 35px;
+        }
+
+            select::-ms-expand {
+                display: none;
+            }
+
+            select option {
+                background-color: var(--clr-background);
+                color: var(--clr-text-primary);
+            }
+
+        /* Textarea Resizing */
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Radio & Checkbox Styling - FIXED */
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+            .radio-group label,
+            .checkbox-group label {
+                display: flex;
+                align-items: center;
+                font-weight: normal;
+                margin-right: 0;
+                cursor: pointer;
+            }
+
+        /* Fixed checkbox and radio styling */
+        input[type="radio"],
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--clr-border);
+            background-color: var(--clr-background);
+            margin-right: 8px;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        input[type="checkbox"] {
+            border-radius: 4px;
+        }
+
+        input[type="radio"] {
+            border-radius: 50%;
+        }
+
+            /* Fix for radio button checked state */
+            input[type="radio"]:checked {
+                border-color: var(--clr-primary);
+                border-width: 2px;
+            }
+
+                input[type="radio"]:checked::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background-color: var(--clr-primary);
+                }
+
+        /* Fix for checkbox checked state */
+        input[type="checkbox"]:checked {
+            background-color: var(--clr-primary);
+            border-color: var(--clr-primary);
+        }
+
+            input[type="checkbox"]:checked::after {
+                content: '';
+                position: absolute;
+                top: 4px;
+                left: 9px;
+                width: 5px;
+                height: 10px;
+                border: solid var(--clr-text-on-primary);
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+            }
+
+        /* Hover state */
+        input[type="radio"]:hover,
+        input[type="checkbox"]:hover {
+            border-color: var(--clr-primary);
+        }
+
+        /* Focus state */
+        input[type="radio"]:focus,
+        input[type="checkbox"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(93, 42, 102, 0.25);
+        }
+
+        /* Form Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+            }
+
+        .btn-primary {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+        }
+
+            .btn-primary:hover {
+                background-color: var(--clr-primary);
+                opacity: 0.9;
+            }
+
+        .btn-secondary {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+            .btn-secondary:hover {
+                background-color: var(--clr-secondary);
+                opacity: 0.9;
+            }
+    </style>
+    
+    <!--Animation styling-->
+    <style>
+    .demo-container {
+        background-color: var(--clr-surface);
+        border-radius: 8px;
+        border: 1px solid var(--clr-border);
+        padding: 20px;
+        margin-bottom: 20px;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+        color: var(--clr-primary);
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        color: var(--clr-secondary);
+        margin: 1.5rem 0;
+    }
+
+    /* Spinner 1 - Pulsing Circle */
+    .spinner-pulse {
+        width: 50px;
+        height: 50px;
+        background-color: var(--clr-primary);
+        border-radius: 50%;
+        animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @@keyframes pulse {
+        0%
+
+    {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+
+    }
+
+    /* Spinner 2 - Dot Wave */
+    .dot-wave {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .dot-wave .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--clr-accent);
+            animation: wave 1.5s infinite ease-in-out;
+        }
+
+            .dot-wave .dot:nth-child(1) {
+                animation-delay: 0s;
+            }
+
+            .dot-wave .dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .dot-wave .dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+            .dot-wave .dot:nth-child(4) {
+                animation-delay: 0.6s;
+            }
+
+    @@keyframes wave {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    }
+
+    /* Spinner 3 - Growing Bars */
+    .growing-bars {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .growing-bars .bar {
+            width: 8px;
+            height: 30px;
+            background-color: var(--clr-secondary);
+            animation: grow 1.2s infinite ease-in-out;
+        }
+
+            .growing-bars .bar:nth-child(1) {
+                animation-delay: 0s;
+            }
+
+            .growing-bars .bar:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .growing-bars .bar:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+            .growing-bars .bar:nth-child(4) {
+                animation-delay: 0.6s;
+            }
+
+            .growing-bars .bar:nth-child(5) {
+                animation-delay: 0.8s;
+            }
+
+    @@keyframes grow {
+        0%, 100%
+
+    {
+        transform: scaleY(0.5);
+    }
+
+    50% {
+        transform: scaleY(1);
+    }
+
+    }
+
+    /* Spinner 4 - FontAwesome Spin */
+    .fa-spinner-container {
+        font-size: 50px;
+        color: var(--clr-primary);
+        animation: spin 2s infinite linear;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Spinner 5 - Rotating Dots */
+    .rotating-dots {
+        position: relative;
+        width: 60px;
+        height: 60px;
+    }
+
+        .rotating-dots .dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--clr-primary);
+            animation: dots 1.5s infinite ease-in-out;
+        }
+
+            .rotating-dots .dot:nth-child(1) {
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                animation-delay: 0s;
+            }
+
+            .rotating-dots .dot:nth-child(2) {
+                top: 25%;
+                right: 0;
+                animation-delay: 0.2s;
+            }
+
+            .rotating-dots .dot:nth-child(3) {
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                animation-delay: 0.4s;
+            }
+
+            .rotating-dots .dot:nth-child(4) {
+                top: 25%;
+                left: 0;
+                animation-delay: 0.6s;
+            }
+
+    @@keyframes dots {
+        0%, 100%
+
+    {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    }
+
+    /* Spinner 6 - FontAwesome Pulse */
+    .fa-pulse-container {
+        font-size: 50px;
+        color: var(--clr-accent);
+        animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    /* Spinner 7 - Circular Progress */
+    .circular-progress {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: conic-gradient(var(--clr-primary) 0%, transparent 0%);
+        position: relative;
+        animation: progress 2s infinite linear;
+    }
+
+        .circular-progress::before {
+            content: '';
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background-color: var(--clr-surface);
+        }
+
+    @@keyframes progress {
+        0%
+
+    {
+        background: conic-gradient(var(--clr-primary) 0%, transparent 0%);
+    }
+
+    25% {
+        background: conic-gradient(var(--clr-primary) 90deg, transparent 0%);
+    }
+
+    50% {
+        background: conic-gradient(var(--clr-primary) 180deg, transparent 0%);
+    }
+
+    75% {
+        background: conic-gradient(var(--clr-primary) 270deg, transparent 0%);
+    }
+
+    100% {
+        background: conic-gradient(var(--clr-primary) 360deg, transparent 0%);
+    }
+
+    }
+
+    /* Spinner 8 - Text Dots */
+    .text-dots {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--clr-secondary);
+    }
+
+        .text-dots span {
+            animation: fadeInOut 1.5s infinite;
+        }
+
+            .text-dots span:nth-child(1) {
+                animation-delay: 0s;
+            }
+
+            .text-dots span:nth-child(2) {
+                animation-delay: 0.5s;
+            }
+
+            .text-dots span:nth-child(3) {
+                animation-delay: 1s;
+            }
+
+    @@keyframes fadeInOut {
+        0%, 100%
+
+    {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    }
+
+    /* Spinner 9 - Dual Ring */
+    .dual-ring {
+        width: 60px;
+        height: 60px;
+        position: relative;
+    }
+
+        .dual-ring::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 10px;
+            border-radius: 50%;
+            border: 5px solid var(--clr-primary);
+            border-color: var(--clr-primary) transparent var(--clr-primary) transparent;
+            animation: dual-ring 1.2s linear infinite;
+        }
+
+    @@keyframes dual-ring {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Spinner 10 - FontAwesome Staggered */
+    .fa-staggered {
+        display: flex;
+        gap: 8px;
+    }
+
+        .fa-staggered i {
+            font-size: 20px;
+            animation: fadeInOut 1.5s infinite;
+        }
+
+            .fa-staggered i:nth-child(1) {
+                animation-delay: 0s;
+                color: var(--clr-primary);
+            }
+
+            .fa-staggered i:nth-child(2) {
+                animation-delay: 0.3s;
+                color: var(--clr-secondary);
+            }
+
+            .fa-staggered i:nth-child(3) {
+                animation-delay: 0.6s;
+                color: var(--clr-accent);
+            }
+
+            .fa-staggered i:nth-child(4) {
+                animation-delay: 0.9s;
+                color: var(--clr-primary);
+            }
+
+    /* Spinner 11 - Gradient Progress Bar */
+    .gradient-progress {
+        width: 200px;
+        height: 10px;
+        background: var(--clr-surface);
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .gradient-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent));
+            animation: progressMove 1.5s infinite ease-in-out;
+        }
+
+    @@keyframes progressMove {
+        0%
+
+    {
+        left: -50%;
+    }
+
+    100% {
+        left: 100%;
+    }
+
+    }
+
+    /* Spinner 12 - Bouncing Ball */
+    .bouncing-ball {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: var(--clr-accent);
+        position: relative;
+        animation: bounce 1s infinite alternate;
+    }
+
+        .bouncing-ball::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            width: 100%;
+            height: 5px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            filter: blur(2px);
+            animation: shadow 1s infinite alternate;
+        }
+
+    @@keyframes bounce {
+        0%
+
+    {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-30px);
+    }
+
+    }
+
+    @@keyframes shadow {
+        0%
+
+    {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0.5);
+        opacity: 0.2;
+    }
+
+    }
+    </style>
+}
+
+<div class="row-12">
+                      <div class="form-container">
+
+        <div class="form-header">
+            <h1>Create a New Group</h1>
+            <h4 id="xmodal-step-index">Loading...</h4>
+        </div>
+
+        <div id="xmodal-error" class="form-error-message">
+            </div>
+
+        <form id="createGroupForm" onsubmit="return false;">
+
+            <div id="xmodal-body">
+                <p>Loading form fields...</p>
+            </div>
+
+            <div class="form-navigation" id="xmodal-footer">
+                <button type="button" id="xmodal-previous-button" class="btn btn-secondary" disabled>
+                    <i class="fas fa-arrow-left icon"></i> Previous
+                </button>
+                <button type="button" id="xmodal-next-button" class="btn btn-primary">
+                     <i class="fas fa-arrow-right icon"></i> Next
+                </button>
+                <button type="button" id="xmodal-submit" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-check icon"></i> Submit
+                </button>
+            </div>
+                     </form>
+</div>
+
+@section Scripts {
+    <script>
+                // Helper function for fetching data
+        async function fetchData(url, method, requestBody) {
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status} ${response.statusText}`); 
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Fetch Error:", error); 
+
+                return null; 
+            }
+        }
+
+        class CreateGroupForm {
+            constructor() {
+                this.governoratesList = [
+                    "Alexandria", "Aswan", "Asyut", "Beheira", "Beni Suef", "Cairo",
+                    "Dakahlia", "Damietta", "Faiyum", "Gharbia", "Giza", "Ismailia",
+                    "Kafr El Sheikh", "Luxor", "Matruh", "Minya", "Monufia", "New Valley",
+                    "North Sinai", "Port Said", "Qalyubia", "Qena", "Red Sea", "Sharqia",
+                    "Sohag", "South Sinai", "Suez"
+                ];
+                this.yearsList = [
+                    { key: 0, value: "primary One" }, { key: 1, value: "primary Two" },
+                    { key: 2, value: "primary Three" }, { key: 3, value: "primary Four" },
+                    { key: 4, value: "primary Five" }, { key: 5, value: "primary Six" },
+                    { key: 6, value: "preparatory One" }, { key: 7, value: "preparatory Two" },
+                    { key: 8, value: "preparatory Three" }, { key: 9, value: "secondary One" },
+                    { key: 10, value: "secondary Two" }, { key: 11, value: "secondary Three" }
+                ];
+                this.semestersList = [
+                    { key: 1, value: "First Semester" }, { key: 2, value: "Second Semester" },
+                    { key: 3, value: "Full Year" }
+                ];
+                this.weekDays = [
+                    { key: "-- Choose Day --", value: 0 }, 
+                    { key: "Saturday", value: 1 }, { key: "Sunday", value: 2 },
+                    { key: "Monday", value: 4 }, { key: "Tuesday", value: 8 },
+                    { key: "Wednesday", value: 16 }, { key: "Thursday", value: 32 },
+                    { key: "Friday", value: 64 }
+                ];
+
+                this.groupData = {
+                    governorate: "",
+                    governorateName: "",
+                    yearId: "", 
+                    yearName: "",
+                    semesterId: "",
+                    semesterName: "",
+                    centerId: "", 
+                    centerName: "",
+                    subjectId: "",
+                    subjectName: "",
+                    numberOfSessions: 0,
+                    capacity: "",
+                    sessions: [] 
+                    
+                };
+
+                this.modalParts = {
+                    modalBody: document.getElementById("xmodal-body"),
+                    stepIndex: document.getElementById("xmodal-step-index"),
+                    nextButton: document.getElementById("xmodal-next-button"),
+                    previousButton: document.getElementById("xmodal-previous-button"),
+                    submitButton: document.getElementById("xmodal-submit"),
+                    errorMessage: document.getElementById("xmodal-error") 
+                };
+
+                this.maxSteps = 5; 
+                this._stepNumber = 0; 
+
+                if (this.modalParts.nextButton) {
+                    this.modalParts.nextButton.addEventListener("click", () => this.next());
+                }
+                if (this.modalParts.previousButton) {
+                    this.modalParts.previousButton.addEventListener("click", () => this.previous());
+                }
+                if (this.modalParts.submitButton) {
+                     this.modalParts.submitButton.addEventListener("click", () => this.SubmitFinal()); 
+                }
+
+                this.RenderStage01();
+            }
+
+            set stepNumber(value) {
+                if (value > this.maxSteps || value < 1) return;
+
+                this._stepNumber = value;
+
+                if (this.modalParts.stepIndex) {
+                    this.modalParts.stepIndex.innerHTML = `Step ${value} of ${this.maxSteps}`;
+                }
+
+                if (this.modalParts.previousButton) {
+                    this.modalParts.previousButton.disabled = (value <= 1);
+                }
+                if (this.modalParts.nextButton) {
+                    this.modalParts.nextButton.disabled = (value >= this.maxSteps);
+                    this.modalParts.nextButton.style.display = (value === this.maxSteps) ? 'none' : 'inline-block';
+                }
+                if (this.modalParts.submitButton) {
+                    this.modalParts.submitButton.style.display = (value === this.maxSteps) ? 'inline-block' : 'none';
+                }
+
+                this.ClearError();
+            }
+
+            get stepNumber() {
+                return this._stepNumber;
+            }
+
+            // --- Navigation ---
+
+            next() {
+                let result = { isValid: false, errors: ["Unknown validation error"] };
+                switch (this.stepNumber) {
+                    case 1:
+                        result = this.SubmitStage01();
+                        break;
+                    case 2:
+                        result = this.SubmitStage02();
+                        break;
+                    case 3:
+                        result = this.SubmitStage03();
+                        break;
+                    case 4:
+                        result = this.SubmitStage04();
+                        break;
+                    case 5:
+                         result.isValid = true; 
+                         break; 
+                    default:
+                        console.error("Invalid step number in next():", this.stepNumber);
+                        this.RenderError("Invalid step number.");
+                        return; 
+                }
+
+                if (result.isValid) {
+                    this.ClearError(); 
+                    const nextStep = this.stepNumber + 1;
+                    if (nextStep <= this.maxSteps) {
+                         this.stepNumber = nextStep; 
+                        switch (this.stepNumber) {
+                            case 2: this.RenderStage02(); break;
+                            case 3: this.RenderStage03(); break;
+                            case 4: this.RenderStage04(); break;
+                            case 5: this.RenderFinalSubmit(); break;
+                        }
+                    }
+                } else {
+
+                    this.RenderError(result.errors ? result.errors[0] : "Validation failed.");
+                }
+            }
+
+            previous() {
+                if (this.stepNumber <= 1) {
+                    console.warn("Cannot go back from the first step.");
+                    return;
+                }
+
+                this.ClearError(); 
+                this.stepNumber -= 1;
+
+                switch (this.stepNumber) {
+                    case 1: this.RenderStage01(); break;
+                    case 2: this.RenderStage02(); break;
+                    case 3: this.RenderStage03(); break;
+                    case 4: this.RenderStage04(); break;
+                    default:
+                        console.error("Invalid step number in previous():", this.stepNumber);
+                        break;
+                }
+            }
+
+             // --- Rendering Stages ---
+            RenderBodyLoadingAnimation() {
+                if (this.modalParts.modalBody) {
+                    this.modalParts.modalBody.innerHTML = `
+                            <div class="dot-wave">
+                                        <div class="dot"></div>
+                                        <div class="dot"></div>
+                                        <div class="dot"></div>
+                                        <div class="dot"></div>
+                                    </div>`;
+                }
+                 this.modalParts.errorMessage.style.display = 'none'; // Hide error message during loading
+            }
+
+            RenderButtonLoadingAnimation() {
+                 if (this.modalParts.nextButton) this.modalParts.nextButton.disabled = true; 
+                 if (this.modalParts.previousButton) this.modalParts.previousButton.disabled = true; 
+                 if (this.modalParts.submitButton) this.modalParts.submitButton.disabled = true;
+            }
+
+            StopButtonLoadingAnimation() {
+                 this.stepNumber = this.stepNumber; 
+            }
+
+            
+            RenderError(message) {
+                if (this.modalParts.errorMessage) {
+                    this.modalParts.errorMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`; 
+                    this.modalParts.errorMessage.style.display = 'block';
+                    
+                }
+            }
+
+
+            ClearError() {
+                if (this.modalParts.errorMessage) {
+                    this.modalParts.errorMessage.innerHTML = '';
+                    this.modalParts.errorMessage.style.display = 'none'; 
+                }
+            }
+
+            RenderStage01() {
+                const governorateItems = this.governoratesList
+                    .map(element => `<option value="${element}">${element}</option>`)
+                    .join('');
+                const yearItems = this.yearsList
+                    .map(element => `<option value="${element.key}">${element.value}</option>`)
+                    .join('');
+                const semesterItems = this.semestersList
+                    .map(element => `<option value="${element.key}">${element.value}</option>`)
+                    .join('');
+
+                this.modalParts.modalBody.innerHTML = `
+                    <div class="form-group">
+                        <label for="governorateSelect">Governorate:</label>
+                        <select id="governorateSelect" name="governorate">
+                            <option value="" selected disabled>-- choose the governorate --</option>
+                            ${governorateItems}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="yearSelect">Grade:</label> 
+                        <select id="yearSelect" name="year"> 
+                            <option value="" selected disabled>-- choose the grade --</option>
+                            ${yearItems}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="semesterSelect">Semester:</label> 
+                        <select id="semesterSelect" name="semester"> 
+                            <option value="" selected disabled>-- choose the semester --</option>
+                            ${semesterItems}
+                        </select>
+                    </div>
+                `;
+
+                const governorateSelect = document.getElementById("governorateSelect");
+                if (governorateSelect) governorateSelect.value = this.groupData.governorate || ""; 
+
+                const yearSelect = document.getElementById("yearSelect"); 
+                if (yearSelect) yearSelect.value = this.groupData.yearId || ""; 
+
+                const semesterSelect = document.getElementById("semesterSelect"); 
+                if (semesterSelect) semesterSelect.value = this.groupData.semesterId || ""; 
+
+                this.stepNumber = 1;
+            }
+
+            SubmitStage01() {
+                const status = { errors: [], isValid: true };
+
+                const governorateSelect = document.getElementById("governorateSelect");
+                const yearSelect = document.getElementById("yearSelect"); 
+                const semesterSelect = document.getElementById("semesterSelect");
+
+                if (!governorateSelect || !yearSelect || !semesterSelect) {
+                     status.errors.push("Form elements not found."); 
+                     status.isValid = false;
+                     return status;
+                }
+
+
+
+                this.groupData.governorate = governorateSelect.value;
+                this.groupData.governorateName = governorateSelect.options[governorateSelect.selectedIndex]?.text || "";
+
+                this.groupData.yearId = yearSelect.value;
+                this.groupData.yearName = yearSelect.options[yearSelect.selectedIndex]?.text || "";
+
+                this.groupData.semesterId = semesterSelect.value;
+                this.groupData.semesterName = semesterSelect.options[semesterSelect.selectedIndex]?.text || "";
+
+                // Validation
+                if (!this.groupData.governorate) {
+                    status.errors.push("Governorate selection is required.");
+                    status.isValid = false;
+                }
+                if (!this.groupData.yearId) { 
+                    status.errors.push("Grade selection is required.");
+                    status.isValid = false;
+                }
+                if (!this.groupData.semesterId) { 
+                    status.errors.push("Semester selection is required.");
+                    status.isValid = false;
+                }
+
+                return status;
+            }
+
+            async RenderStage02() {
+                // this.stepNumber = 2; // Set step number at the end after content is ready
+                this.RenderBodyLoadingAnimation();
+                this.RenderButtonLoadingAnimation();
+
+                try {
+                    const [centersData, subjectsData] = await Promise.all([
+                        fetchData("http://localhost:5041/Teachers/Group/Centers", "POST", {
+                            governorate: this.groupData.governorate
+                        }),
+                        fetchData("http://localhost:5041/Teachers/Group/Subjects", "POST", {
+                            Year: Number(this.groupData.yearId),
+                            Semester: Number(this.groupData.semesterId)
+                        })
+                    ]);
+
+                    if (centersData === null || subjectsData === null) {
+                         this.RenderError("Failed to load required data. Please try again."); 
+                         this.StopButtonLoadingAnimation();
+
+                         return;
+                    }
+
+
+        
+                    const centerItems = centersData.map(element => {
+                        const selected = String(element.centerId) === String(this.groupData.centerId) ? "selected" : ""; 
+                        return `<option value="${element.centerId}" ${selected}>${element.centerName}</option>`;
+                    }).join('');
+
+                    const subjectItems = subjectsData.map(element => {
+                        const selected = String(element.id) === String(this.groupData.subjectId) ? "selected" : ""; 
+                        return `<option value="${element.id}" ${selected}>${element.topic}</option>`;
+                    }).join('');
+
+                    let sessionItems = "";
+                    for (let i = 1; i <= 7; i++) {
+                        const selected = String(i) === String(this.groupData.numberOfSessions) ? "selected" : ""; 
+                        sessionItems += `<option value="${i}" ${selected}>${i}</option>`;
+                    }
+
+                    this.modalParts.modalBody.innerHTML = `
+                        <div class="form-group">
+                            <label for="centerSelect">Center:</label>
+                            <select id="centerSelect" name="center">
+                                <option value="" disabled ${!this.groupData.centerId ? 'selected' : ''}>-- Choose the center --</option> 
+                                ${centerItems}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subjectSelect">Subject:</label>
+                            <select id="subjectSelect" name="subject">
+                                <option value="" disabled ${!this.groupData.subjectId ? 'selected' : ''}>-- Choose the subject --</option> 
+                                ${subjectItems}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="numberOfSessionsSelect">Sessions per week:</label>
+                            <select id="numberOfSessionsSelect" name="numberOfSessions">
+                                <option value="" disabled ${!this.groupData.numberOfSessions ? 'selected' : ''}>-- Choose number of sessions --</option> 
+                                ${sessionItems}
+                            </select>
+                        </div>
+                    `;
+
+                     this.stepNumber = 2;
+                     this.StopButtonLoadingAnimation(); 
+
+                } catch (error) {
+                    console.error("Error fetching or rendering stage 2:", error);
+                    this.RenderError("An error occurred while loading options. Please go back and try again.");
+                    this.StopButtonLoadingAnimation();
+                }
+            }
+
+             SubmitStage02() {
+                const status = { errors: [], isValid: true };
+
+                const centerSelect = document.getElementById("centerSelect");
+                const subjectSelect = document.getElementById("subjectSelect");
+                const numberOfSessionsSelect = document.getElementById("numberOfSessionsSelect");
+
+                if (!centerSelect || !subjectSelect || !numberOfSessionsSelect) {
+                    status.errors.push("Form elements not found.");
+                    status.isValid = false;
+                    return status;
+                }
+
+                // Get values
+                this.groupData.centerId = centerSelect.value;
+                this.groupData.centerName = centerSelect.options[centerSelect.selectedIndex]?.text || "";
+
+                this.groupData.subjectId = subjectSelect.value;
+                this.groupData.subjectName = subjectSelect.options[subjectSelect.selectedIndex]?.text || "";
+
+                this.groupData.numberOfSessions = parseInt(numberOfSessionsSelect.value, 10) || 0;
+
+                // Validation
+                if (!this.groupData.centerId) {
+                    status.errors.push("Center selection is required.");
+                    status.isValid = false;
+                }
+                if (!this.groupData.subjectId) {
+                    status.errors.push("Subject selection is required.");
+                    status.isValid = false;
+                }
+                if (this.groupData.numberOfSessions <= 0) {
+                    status.errors.push("Number of sessions must be selected and greater than zero.");
+                    status.isValid = false;
+                }
+
+                if (this.groupData.sessions.length !== this.groupData.numberOfSessions) {
+                     this.groupData.sessions = []; // Resettt
+                }
+
+
+                return status;
+            }
+
+
+            RenderStage03() {
+                const numberOfSessions = parseInt(this.groupData.numberOfSessions, 10);
+                if (isNaN(numberOfSessions) || numberOfSessions <= 0) {
+                    this.RenderError("Invalid number of sessions selected. Please go back."); 
+                     if (this.modalParts.nextButton) this.modalParts.nextButton.disabled = true;
+                    return; 
+                }
+
+
+                let innerHtml = "";
+
+                // Capacity 
+                innerHtml += `
+                    <div class="form-group">
+                        <label for="capacity">Maximum Students:</label> 
+                        <input type="number" id="capacity" name="capacity" placeholder="Enter max students" min="1" value="${this.groupData.capacity || ''}"> 
+                    </div>
+                    <hr/> 
+                    <h4>Session Details:</h4> 
+                `;
+
+                for (let i = 0; i < numberOfSessions; i++) {
+                    const sessionData = (this.groupData.sessions && this.groupData.sessions[i]) || {};
+
+                                innerHtml += `
+                <div class="form-group border rounded p-3 mb-3"> 
+                    <h5>Session ${i + 1}</h5>
+                    <div class="row g-3"> 
+
+                        
+                        <div class="col-md-4"> 
+                            <label for="Session-${i + 1}-Day">Day:</label>
+                            <select id="Session-${i + 1}-Day" name="sessionDay${i+1}">
+                                ${this.weekDays.map(day => {
+                                    const selected = String(sessionData.dayId) === String(day.value) ? "selected" : "";
+                                    const disabled = day.value === 0 ? "disabled" : ""; // Assuming 0 is placeholder
+                                    return `<option value="${day.value}" ${selected} ${disabled}>${day.key}</option>`;
+                                }).join('')}
+                            </select>
+                        </div>
+
+                        
+                        <div class="col-md-4"> 
+                            <label for="Session-${i + 1}-StartTime">Start Time:</label>
+                            <input type="time" id="Session-${i + 1}-StartTime" name="sessionStartTime${i+1}" value="${sessionData.startTime || ''}">
+                        </div>
+
+                        
+                        <div class="col-md-4"> 
+                            <label for="Session-${i + 1}-EndTime">End Time:</label>
+                            <input type="time" id="Session-${i + 1}-EndTime" name="sessionEndTime${i+1}" value="${sessionData.endTime || ''}">
+                        </div>
+
+                        
+                        <div class="col-md-6"> 
+                            <label for="Session-${i + 1}-StartDate">Start Date:</label>
+                            <input type="date" id="Session-${i + 1}-StartDate" name="sessionStartDate${i+1}" value="${sessionData.startDate || ''}">
+                        </div>
+
+                        
+                        <div class="col-md-6"> 
+                            <label for="Session-${i + 1}-EndDate">End Date:</label>
+                            <input type="date" id="Session-${i + 1}-EndDate" name="sessionEndDate${i+1}" value="${sessionData.endDate || ''}">
+                        </div>
+
+                    </div> 
+                </div> 
+            `;
+                }
+                this.modalParts.modalBody.innerHTML = innerHtml;
+                this.stepNumber = 3;
+            }
+
+
+             SubmitStage03() {
+                const status = { errors: [], isValid: true };
+                const numberOfSessions = parseInt(this.groupData.numberOfSessions, 10); 
+
+                // Validate and Save capacity
+                const capacityElem = document.getElementById("capacity");
+                if (!capacityElem) {
+                     status.errors.push("Capacity input element not found.");
+                     status.isValid = false;
+                } else {
+                     const capacityValue = parseInt(capacityElem.value, 10);
+                     if (isNaN(capacityValue) || capacityValue <= 0) {
+                         status.isValid = false;
+                         status.errors.push("Maximum Students must be a valid positive number.");
+                     } else {
+                         this.groupData.capacity = capacityValue;
+                     }
+                }
+
+                const tempSessions = []; 
+                const uniqueDays = new Set();
+
+
+                for (let i = 0; i < numberOfSessions; i++) {
+                    let session = {
+                        sessionId: i + 1,
+                        startTime: "", endTime: "", startDate: "", endDate: "",
+                        dayId: "", dayName: ""
+                    };
+
+                    const daySelect = document.getElementById(`Session-${i + 1}-Day`);
+                    const startTimeElem = document.getElementById(`Session-${i + 1}-StartTime`);
+                    const endTimeElem = document.getElementById(`Session-${i + 1}-EndTime`);
+                    const startDateElem = document.getElementById(`Session-${i + 1}-StartDate`);
+                    const endDateElem = document.getElementById(`Session-${i + 1}-EndDate`);
+
+                     if (!daySelect || !startTimeElem || !endTimeElem || !startDateElem || !endDateElem) {
+                          status.errors.push(`Form elements for Session ${i + 1} not found.`);
+                          status.isValid = false;
+                          continue;
+                     }
+
+
+                    session.startTime = startTimeElem.value;
+                    session.endTime = endTimeElem.value;
+                    session.startDate = startDateElem.value;
+                    session.endDate = endDateElem.value;
+                    session.dayId = daySelect.value;
+                    session.dayName = daySelect.options[daySelect.selectedIndex]?.text || "";
+
+
+                    // --- Validation for the current session ---
+                    let sessionValid = true; 
+
+
+                    if (!session.startTime) {
+                        status.errors.push(`Session ${i + 1}: Start Time is required.`);
+                        sessionValid = false; 
+                    }
+                    if (!session.endTime) {
+                        status.errors.push(`Session ${i + 1}: End Time is required.`);
+                         sessionValid = false; 
+                    }
+                     
+                     if (!session.dayId || session.dayId === "0") {
+                        status.errors.push(`Session ${i + 1}: Day selection is required.`);
+                         sessionValid = false; 
+                     } else {
+                          if (uniqueDays.has(session.dayId)) {
+                               status.errors.push(`Session ${i + 1}: The day '${session.dayName}' is already selected for another session.`);
+                               sessionValid = false;
+                          } else {
+                               uniqueDays.add(session.dayId);
+                          }
+                     }
+
+
+                    if (!session.startDate) {
+                        status.errors.push(`Session ${i + 1}: Start Date is required.`);
+                         sessionValid = false;
+                    }
+                    if (!session.endDate) {
+                        status.errors.push(`Session ${i + 1}: End Date is required.`);
+                         sessionValid = false;
+                    }
+
+                     if (session.startDate && session.endDate) {
+                        const startDateObj = new Date(session.startDate);
+                        const endDateObj = new Date(session.endDate);
+                        if (endDateObj < startDateObj) {
+                            status.errors.push(`Session ${i + 1}: End Date cannot be earlier than Start Date.`);
+                             sessionValid = false; 
+                        }
+
+                         if (session.startTime && session.endTime && session.startDate === session.endDate) {
+                             if (session.endTime <= session.startTime) { 
+                                status.errors.push(`Session ${i + 1}: End Time must be later than Start Time on the same day.`);
+                                 sessionValid = false; 
+                             }
+                         }
+                     }
+
+                     tempSessions.push(session);
+
+
+                     if (!sessionValid) {
+                          status.isValid = false; 
+                     }
+
+                } 
+                 if (status.isValid) {
+                     this.groupData.sessions = tempSessions;
+                 }
+
+
+                return status;
+            }
+
+
+            async RenderStage04() {
+                this.RenderBodyLoadingAnimation();
+                this.RenderButtonLoadingAnimation();
+
+                if (!this.groupData.sessions || this.groupData.sessions.length === 0) {
+                    console.error("Sessions data is missing or empty for stage 4.");
+                    this.RenderError("Session details are missing. Please go back and complete Step 3.");
+                    this.StopButtonLoadingAnimation();
+                    return;
+                }
+
+                let innerHtml = `<h4>Select Rooms for Sessions:</h4>`;
+                let allRoomsFetched = true;
+
+                try {
+                     const roomFetchPromises = this.groupData.sessions.map(async (session, i) => {
+                        const requestBody = {
+                            centerID: Number(this.groupData.centerId),
+                            startDate: session.startDate,
+                            startTime: `${session.startTime}:00`,
+                            endDate: session.endDate,
+                            endTime: `${session.endTime}:00`,
+                            capacity: Number(this.groupData.capacity),
+                            day: Number(session.dayId)
+                        };
+
+                        const roomsData = await fetchData("http://localhost:5041/Teachers/Group/Rooms", "POST", requestBody);
+
+                         if (roomsData === null) {
+                              console.error(`Failed to fetch rooms for Session ${i + 1}`);
+                              allRoomsFetched = false; 
+                              return { sessionIndex: i, roomsHTML: `<p class="text-danger">Error loading rooms for ${session.dayName} (${session.startTime}-${session.endTime}). Please try again.</p>` }; 
+                         }
+
+                         if (!Array.isArray(roomsData) || roomsData.length === 0) {
+
+                               return { sessionIndex: i, roomsHTML: `<p class="text-warning">No available rooms found for ${session.dayName} (${session.startTime}-${session.endTime}) with the specified criteria.</p>` };
+                         }
+
+                        const roomItems = roomsData.map(room => {
+                            const selected = String(session.roomId) === String(room.id) ? "selected" : "";
+                            return `<option value="${room.id}" ${selected}>${room.name} (Capacity: ${room.capacity}, Price: ${room.pricePerSession})</option>`;
+                        }).join('');
+
+                         return {
+                              sessionIndex: i,
+                              roomsHTML: `
+                                  <div class="form-group border rounded p-3 mb-3"> 
+                                      <h5>Room for Session ${i + 1} (${session.dayName} ${session.startTime} - ${session.endTime})</h5>
+                                      <label for="Session-${i + 1}-Room">Available Rooms:</label>
+                                      <select id="Session-${i + 1}-Room" name="sessionRoom${i+1}">
+                                          <option value="" disabled ${!session.roomId ? 'selected' : ''}>-- Select a room --</option> 
+                                          ${roomItems}
+                                      </select>
+                                  </div>
+                              `
+                         };
+                     });
+
+                     const sessionRoomResults = await Promise.all(roomFetchPromises);
+
+                     sessionRoomResults.sort((a, b) => a.sessionIndex - b.sessionIndex); 
+                     sessionRoomResults.forEach(result => {
+                          innerHtml += result.roomsHTML;
+                     });
+
+
+                } catch (error) {
+                    console.error("Error fetching rooms for sessions:", error);
+                    innerHtml += `<p class="text-danger">An unexpected error occurred while fetching available rooms. Please try again.</p>`
+                }
+
+
+                this.modalParts.modalBody.innerHTML = innerHtml;
+                this.StopButtonLoadingAnimation(); 
+
+                if (allRoomsFetched) {
+                     this.stepNumber = 4;
+                } else {
+
+                      if(this.modalParts.nextButton) this.modalParts.nextButton.disabled = true;
+                      this.RenderError("Could not load all room options. Please check details or try again.");
+                }
+
+            }
+
+
+             SubmitStage04() {
+                const status = { errors: [], isValid: true };
+                const numberOfSessions = parseInt(this.groupData.numberOfSessions, 10); 
+
+                if (!this.groupData.sessions || this.groupData.sessions.length !== numberOfSessions) {
+                     status.errors.push("Session data mismatch. Please go back and review session details.");
+                     status.isValid = false;
+                     return status;
+                }
+
+
+                for (let i = 0; i < numberOfSessions; i++) {
+                    const roomSelect = document.getElementById(`Session-${i + 1}-Room`);
+
+                     if (!roomSelect) {
+                         status.errors.push(`Room selection element for Session ${i + 1} not found. Loading may have failed.`);
+                          status.isValid = false;
+                          continue; 
+
+                     }
+
+
+                    const selectedRoomId = roomSelect.value;
+                    const selectedRoomOption = roomSelect.options[roomSelect.selectedIndex];
+
+
+                     if (!selectedRoomId || selectedRoomId === "") {
+                        status.errors.push(`Session ${i + 1} (${this.groupData.sessions[i].dayName}): Please select a room.`);
+                        status.isValid = false;
+                     } else {
+                         this.groupData.sessions[i].roomId = selectedRoomId;
+                         const roomText = selectedRoomOption?.text || "";
+                         this.groupData.sessions[i].roomName = roomText.split(' (')[0]; 
+                         
+                     }
+                }
+
+                return status;
+            }
+
+
+            RenderFinalSubmit() {
+                
+                let summaryHtml = `
+                    <h3 class="form-header">Confirm Group Details</h3> 
+
+                    <div class="summary-section"> 
+                        <h4>Basic Information</h4>
+                        <p><strong>Governorate:</strong> ${this.groupData.governorateName || 'N/A'}</p>
+                        <p><strong>Grade:</strong> ${this.groupData.yearName || 'N/A'}</p>
+                        <p><strong>Semester:</strong> ${this.groupData.semesterName || 'N/A'}</p>
+                        <p><strong>Center:</strong> ${this.groupData.centerName || 'N/A'}</p>
+                        <p><strong>Subject:</strong> ${this.groupData.subjectName || 'N/A'}</p>
+                        <p><strong>Max Students:</strong> ${this.groupData.capacity || 'N/A'}</p>
+                    </div>
+
+                    <hr/>
+
+                    <div class="summary-section"> 
+                        <h4>Session Schedule</h4>
+                `;
+
+                if (this.groupData.sessions && this.groupData.sessions.length > 0) {
+                    this.groupData.sessions.forEach((session, i) => {
+                        summaryHtml += `
+                            <div class="session-summary mb-2 p-2 border rounded"> 
+                                <strong>Session ${i + 1}:</strong><br/>
+                                <strong>Day:</strong> ${session.dayName || 'N/A'}<br/>
+                                <strong>Time:</strong> ${session.startTime || 'N/A'} - ${session.endTime || 'N/A'}<br/>
+                                <strong>Dates:</strong> ${session.startDate || 'N/A'} to ${session.endDate || 'N/A'}<br/>
+                                <strong>Room:</strong> ${session.roomName || 'Not Selected'} 
+                            </div>
+                        `;
+                    });
+                } else {
+                    summaryHtml += "<p>No session details available.</p>";
+                }
+
+                summaryHtml += `</div>`;
+
+                this.modalParts.modalBody.innerHTML = summaryHtml;
+                this.stepNumber = 5; 
+            }
+
+            async SubmitFinal() {
+                 console.log("Final Submit Initiated. Preparing data...");
+                 this.RenderButtonLoadingAnimation(); 
+                 this.ClearError();
+
+
+                 
+                 const finalPayload = {
+                     
+                     governorate: this.groupData.governorate,
+                     yearId: Number(this.groupData.yearId),
+                     semesterId: Number(this.groupData.semesterId),
+                     centerId: Number(this.groupData.centerId),
+                     subjectId: Number(this.groupData.subjectId),
+                     capacity: Number(this.groupData.capacity),
+                    
+                     sessions: this.groupData.sessions.map(session => ({
+                         day: Number(session.dayId),
+                         startTime: `${session.startTime}:00`, // Ensure HH:MM:SS format if needed
+                         endTime: `${session.endTime}:00`,   // Ensure HH:MM:SS format if needed
+                         startDate: session.startDate,       // Already YYYY-MM-DD
+                         endDate: session.endDate,         // Already YYYY-MM-DD
+                         roomId: Number(session.roomId)
+                         
+                     }))
+                 };
+
+
+                 console.log("Final Payload:", JSON.stringify(finalPayload, null, 2)); 
+
+
+              
+                 const apiUrl = "http://localhost:5041/Teachers/Group/Create"; 
+
+                 try {
+                     const result = await fetchData(apiUrl, "POST", finalPayload);
+
+
+                     if (result !== null) { 
+                         console.log("Group Creation Successful:", result); 
+                         this.modalParts.modalBody.innerHTML = `
+                             <div class="alert alert-success"> 
+                                 <h4><i class="fas fa-check-circle"></i> Success!</h4>
+                                 <p>The group has been created successfully.</p>
+                                 </div>`;
+
+                          if(this.modalParts.nextButton) this.modalParts.nextButton.style.display = 'none';
+                          if(this.modalParts.previousButton) this.modalParts.previousButton.style.display = 'none';
+                          if(this.modalParts.submitButton) this.modalParts.submitButton.style.display = 'none';
+
+
+                     } else {
+
+                          console.error("Group Creation Failed (API Error or Network Issue)");
+                          this.RenderError("Failed to create the group. The server might be unreachable or an error occurred. Please try again.");
+                          this.StopButtonLoadingAnimation(); 
+                     }
+
+
+                 } catch (error) {
+
+                     console.error("Unexpected error during final submission:", error);
+                     this.RenderError("An unexpected error occurred during submission. Please try again."); 
+                     this.StopButtonLoadingAnimation(); 
+                 }
+             }
+
+
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const groupForm = new CreateGroupForm();
+        });
+    </script>
+}
