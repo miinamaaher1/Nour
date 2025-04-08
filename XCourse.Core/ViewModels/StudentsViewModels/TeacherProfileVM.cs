@@ -8,5 +8,6 @@
         public decimal? PrivateGroupPrice { get; set; }
         public byte[]? TeacherProfilePicture { get; set; }
         public List<CompactGroupVM> AvailbleGroups { get; set; }
+        public int StudentID { get; set; }
     }
 }

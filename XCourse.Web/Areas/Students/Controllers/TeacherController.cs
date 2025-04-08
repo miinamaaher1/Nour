@@ -14,7 +14,7 @@ namespace XCourse.Web.Areas.Students.Controllers
         }
         public IActionResult Profile(int id)
         {
-            TeacherProfileVM model = _teacherProfileService.CompileTeacherProfile(id);
+            TeacherProfileVM model = _teacherProfileService.CompileTeacherProfile(id, User);
             if (model == null) return NotFound();
             return View(model);
         }
