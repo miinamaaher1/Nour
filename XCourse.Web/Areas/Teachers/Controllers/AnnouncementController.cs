@@ -63,5 +63,12 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 return BadRequest(responseDTO);
             }
         }
+
+        [HttpPost]
+        async public Task<IActionResult> GetAllGroups()
+        {
+            var groups = await _announcementService.GetAllGroups(1); // 01 temporarily to be 
+            return Json(groups);
+        }
     }
 }
