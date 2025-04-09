@@ -18,36 +18,50 @@ namespace XCourse.Services.Implementations.TeacherServices
         {
             this._unitOfWork = unitOfWork;
         }
+
+        async public Task<IEnumerable<AnnouncementGroupDTO>> GetAllGroups(int teacherId)
+        {
+            List<AnnouncementGroupDTO> groupDTOs = new List<AnnouncementGroupDTO>();
+
+            var groups = await _unitOfWork.Groups.FindAllAsync(
+                g => g.Teacher!.ID == teacherId && g.IsDeleted == false,
+                includes: ["Subject"]
+            );
+
+            foreach (var group in groups)
+            {
+                var groupDTO = new AnnouncementGroupDTO
+                {
+                    GroupID = group.ID,
+                    GroupName = $"{group.Subject?.Topic ?? "No Subject"} - {group.DefaultSessionDays}"
+                };
+
+                groupDTOs.Add(groupDTO);
+            }
+
+            return groupDTOs;
+        }
+
+
         async public Task<IEnumerable<Announcement>> GetAnnouncementById(int announcementId)
         {
             throw new NotImplementedException();
         }
         async public Task<IEnumerable<Announcement>> GetAnnouncements(int teacherId, int? take, int? skip)
         {
-            //IEnumerable<Group> groups = await _unitOfWork.Groups.FindAllAsync(g => g.TeacherID == teacherId);
-            //var groupIds = groups.Select(g => g.ID).ToList();
+            var teacherGroups = await _unitOfWork.Groups.FindAllAsync(g => g.TeacherID == teacherId);
+            var groupIds = teacherGroups.Select(g => g.ID).ToList();
 
-            //IEnumerable<Announcement> announcements = await _unitOfWork.Announcements
-            //    .FindAllAsync(a => groupIds.Contains(a.GroupID));
+            var announcements = await _unitOfWork.Announcements.FindAllAsync(a =>
+                a.Groups!.Any(g => groupIds.Contains(g.ID))
+            );
 
-            //foreach (var announcement in announcements)
-            //{
-            //    foreach (var group in groups)
-            //    {
-            //        if (announcement.GroupID == group.ID)
-            //        {
-            //            announcement.Group = group;
-            //        }
-            //    }
-            //}
-            var announcements = new List<Announcement>();
             return announcements;
         }
         async public Task<IEnumerable<Announcement>> GetAnnouncementsByGroubId(int teacherId, int? take, int groupId, int? skip)
         {
             throw new NotImplementedException();
         }
-
         async public Task<PostAnnouncementResponseDTO> PostAnnouncement(int teacherId, int[] groupIds, string? announcementBody, string? announcementTitle)
         {
             PostAnnouncementResponseDTO responseDTO = new PostAnnouncementResponseDTO
