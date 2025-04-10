@@ -5,16 +5,12 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <!-- Show Logout when user is signed in -->
-
+    
     <li class="nav-item">
-        <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            @* <button type="submit" style="background-color : transparent; border: none; padding:0;" class="nav-link"> *@
-            <button class="nav-link">
-                    <i class="fa-solid fa-power-off nav-icon"></i>
-                    <span class="nav-text">Logout</span>
-            </button>
-
-        </form>
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <i class="fa-solid fa-power-off nav-icon"></i>
+            <span class="nav-text">Logout</span>
+        </a>
     </li>
 }
 else
