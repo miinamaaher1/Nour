@@ -22,11 +22,11 @@ namespace XCourse.Web.Areas.Students.Controllers
             StudentGroup = group;
         }
 
-        public IActionResult DetailsNotEnrolled(int id)
+        public async Task<IActionResult> Preview(int id)
         {
-            var group = _unitOfWork.Groups.Find(g => g.ID == id, ["Subject", "Teacher.AppUser", "GroupDefaults"]);
-            if (group == null) return NotFound();
-            return View(group);
+            var groupVM = await _enrollStudentService.GetGroupInfo(id, User);
+            if (groupVM == null) return NotFound();
+            return View(groupVM);
         }
 
         [HttpPost]
@@ -34,11 +34,11 @@ namespace XCourse.Web.Areas.Students.Controllers
         {
             if (_enrollStudentService.Enroll(studentID, groupID))
             {
-                return RedirectToAction("Details", new { id = groupID }); // your groups
+                return RedirectToAction("Details", new { id = groupID });
             }
             else
             {
-                return RedirectToAction("DetailsNotEnrolled", new { id = groupID });
+                return RedirectToAction("Preview", new { id = groupID });
             }
         }
 

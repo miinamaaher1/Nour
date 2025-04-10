@@ -4,115 +4,428 @@
     ViewData["Title"] = $"{Model.TeacherName}";
 }
 
-<div class="container">
-    <div class="card mb-3 mx-auto" style="max-width: 800px;">
-        <div class="row g-0 align-items-center">
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">@Model.TeacherName</h5>
-                    @if (Model.IsAvailableForPrivateGroups)
-                    {
-                        <button id="open-modal" class="btn btn-warning">Request A Private Group For L.E. @Model.PrivateGroupPrice</button>
-                        <div id="succ-msg" style="margin-top: 5px; background-color:darkgreen; border-left: solid green 2px; border-radius: 5px" class="d-none"></div>
-                    }
-                </div>
-            </div>
-            <div class="col-md-4">
-                @if (Model.TeacherProfilePicture != null)
+<div class="col-12 container">
+    <div class="profile-container">
+        <div class="profile-header">
+            @if (Model.TeacherProfilePicture != null)
+            {
+                <img src="data:image/*;base64,@(Convert.ToBase64String(Model.TeacherProfilePicture))"
+                    alt="Student Profile" class="profile-image" />
+            }
+            else
+            {
+                <img src="~/images/default_profile.png" alt="Student Profile" class="profile-image" />
+            }
+            <div class="profile-details">
+                <h2 class="profile-name">@Model.TeacherName</h2>
+                <h3 class="profile-tagline">@Model.TagLine</h3>
+                @if (Model.TeacherEmail != null)
                 {
-                    <img alt="profile" class="mid-pfp"
-                    src="data:image/*;base64,@(Convert.ToBase64String(Model.TeacherProfilePicture))" />
+                    <div class="profile-info">
+                        <i class="fas fa-envelope"></i>
+                        &nbsp;<span>@Model.TeacherEmail</span>
+                    </div>
                 }
-                else
+                @if (Model.TeacherPhone != null)
                 {
-                    <img alt="profile" class="mid-pfp"
-                    src="~/images/default_profile.png" />
+                    <div class="profile-info">
+                        <i class="fas fa-phone"></i>
+                        &nbsp;<span>@Model.TeacherPhone</span>
+                    </div>
+                }
+                @if(Model.IsAvailableForPrivateGroups)
+                {
+                    <div class="profile-info">
+                        <i class="fa-solid fa-circle-info"></i>
+                        &nbsp;<span>Offers private groups for L.E. @Model.PrivateGroupPrice</span>
+                    </div>
                 }
             </div>
         </div>
+        @if (Model.IsAvailableForPrivateGroups)
+        {
+            <div class="book-now-btn" id="open-modal" >
+                <button>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    &nbsp;Request Now
+                </button>
+            </div>
+            <div id="succ-msg" style="margin-top: 5px; background-color:darkgreen; border-left: solid green 2px; border-radius: 5px" class="d-none"></div>
+        }
     </div>
+</div>
 
-    @foreach (var group in Model.AvailbleGroups)
-    {
-        <div class="card mb-3 mx-auto" style="max-width: 640px;">
-            <div class="row g-0">
-                <div class="col-md-4">
-                    @if (group.CoverPicture != null)
-                    {
-                        <img alt="cover" class="img-fluid rounded-start"
-                        src="data:image/*;base64,@(Convert.ToBase64String(group.CoverPicture))" />
-                    }
-                    else
-                    {
-                        <img alt="cover" class="img-fluid rounded-start"
-                        src="~/images/default_cover.png" />
-                    }
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">@group.SubjectName</h5>
-                        <h6 class="card-subtitle mb-2 text-body-secondary">@group.Year, @group.Semester</h6>
-                        @if (group.IsOnline)
+<div class="container">
+    <div class="container row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var group in Model.AvailbleGroups)
+        {
+            <div class="group-card__container">
+                <div class="group-card">
+                    <div class="group-card__image">
+                        @if (group.CoverPicture != null)
                         {
-                            <i class="fa-solid fa-globe" style="color: lightgreen"></i>
+                            <img alt="cover" src="data:image/*;base64,@(Convert.ToBase64String(group.CoverPicture))" />
                         }
-                        @if (group.IsGirlsOnly)
+                        else
                         {
-                            <i class="fa-solid fa-child-dress" style="color: pink"></i>
+                            <img alt="cover" src="~/images/default_cover.png" />
                         }
-                        <p class="card-text">Seats Available: @(group.MaxStudents - group.CurrentStudents) / @group.MaxStudents<br />Session Price: L.E. @group.PricePerSession</p>
-                        <a asp-area="Students" asp-controller="Group" asp-action="DetailsNotEnrolled" asp-route-id="@group.GroupID" class="btn btn-primary">Details</a>
+                    </div>
+                    <div class="group-card__content">
+                        <div class="group-card__subject">@group.SubjectName</div>
+                        <div class="group-card__subtitle">@group.Year, @group.Semester</div>
+                        <div class="group-card__features">
+                            @if (group.IsOnline)
+                            {
+                                <span class="group-card__feature">
+                                    <i class="fas fa-globe"></i>&nbsp;Online
+                                </span>
+                            }
+                            @if(group.IsGirlsOnly)
+                            {
+                                <span class="group-card__feature">
+                                    <i class="fas fa-child-dress"></i>&nbsp;Girls Only
+                                </span>
+                            }
+                        </div>
+                        <a asp-area="Students" asp-controller="Group" asp-action="Preview" asp-route-id="@group.GroupID" class="group-card__button"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span> Details</span></a>
+                        <div class="group-card__footer">
+                            <div class="group-card__price">
+                                L.E. @group.PricePerSession
+                            </div>
+                            <div class="group-card__capacity">
+                                <i class="fas fa-users"></i>&nbsp;@(group.MaxStudents - group.CurrentStudents) / @group.MaxStudents
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-    <div id="xmodal-container" class="d-none">
-        <div id="xmodal-overlay">
-            <div id="xmodal">
-                <div id="xmodal-header">
-                    <h2>Request A Private Group</h2>
-                    <div id="err-msg" style="background-color:darkred; border-left: solid red 2px; border-radius: 5px" class="d-none"></div>
+        }
+    </div>
+</div>
+
+<div id="xmodal-container" class="d-none">
+    <div id="xmodal-overlay">
+        <div class="form-container">
+            <h1 class="form-header">Request A Private Group</h1>
+            <div id="err-msg" style="background-color:darkred; border-left: solid red 2px; border-radius: 5px" class="d-none"></div>
+            <form>
+                <div class="form-group">
+                    <label for="subject-select">Subject</label>
+                    <select id="subject-select"></select>
                 </div>
-                <div id="xmodal-body">
-                    <div class="form-group">
-                        <label for="subject-select" class="form-label">Subject</label>
-                        <select id="subject-select" class="form-select"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="governorate-select" class="form-label"></label>
-                        <select id="governorate-select" class="form-select"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="city-input" class="form-label">City</label>
-                        <input type="text" id="city-input" class="form-control" placeholder="City" />
-                    </div>
-                    <div class="form-group">
-                        <label for="neighborhood-input" class="form-label">Neighborhood</label>
-                        <input type="text" id="neighborhood-input" class="form-control" placeholder="Neighborhood" />
-                    </div>
-                    <div class="form-group">
-                        <label for="street-input" class="form-label">Street</label>
-                        <input type="text" id="street-input" class="form-control" placeholder="Street" />
-                    </div>
-                    <div class="form-group">
-                        <label for="details-input" class="form-label">Details</label>
-                        <textarea id="details-input" class="form-control" rows="3"></textarea>
-                    </div>
+                <div class="form-group">
+                    <label for="governorate-select">Governorate</label>
+                    <select id="governorate-select"></select>
                 </div>
-                <div id="xmodal-footer">
-                    <div class="form-group">
-                        <button id="submit-request" class="btn btn-primary">Submit</button>
-                        <button id="close-modal" class="btn btn-danger">Cancel</button>
-                    </div>
+                <div class="form-group">
+                    <label for="city-input">City</label>
+                    <input type="text" id="city-input" placeholder="City" />
                 </div>
-            </div>
+                <div class="form-group">
+                    <label for="neighborhood-input">Neighborhood</label>
+                    <input type="text" id="neighborhood-input" placeholder="Neighborhood" />
+                </div>
+                <div class="form-group">
+                    <label for="street-input">Street</label>
+                    <input type="text" id="street-input" placeholder="Street" />
+                </div>
+                <div class="form-group">
+                    <label for="details-input">Details</label>
+                    <textarea id="details-input" rows="3"></textarea>
+                </div>
+                <div class="form-navigation">
+                    <button id="close-modal" class="btn btn-secondary">
+                        <i class="fa-solid fa-xmark"></i>
+                        &nbsp;Cancel
+                    </button>
+                    <button id="submit-request" class="btn btn-primary">
+                        <i class="fas fa-check icon"></i>
+                        &nbsp;Submit
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 @section Styles {
     <style>
+        .group-card {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--clr-border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Element - Group Card Image */
+        .group-card__image {
+            width: 100%;
+            height: 140px;
+            /* decreased from 180px */
+            background-color: var(--clr-primary);
+            overflow: hidden;
+        }
+
+        .group-card__image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+        /* Element - Group Card Content */
+        .group-card__content {
+            padding: 15px;
+            /* reduced padding */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .group-card__button {
+            font-size: 1rem;
+            font-weight: normal;
+            color: var(--clr-primary);
+            margin-bottom: 10px;
+            display: flex;
+            column-gap: 5px;
+            cursor: pointer;
+        }
+
+        .group-card__button span {
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .group-card__button:hover {
+            cursor: pointer;
+            color: var(--clr-text-secondary)
+        }
+
+        .group-card__subject {
+            font-size: 1rem;
+            color: var(--clr-text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .group-card__subtitle {
+            font-size: 0.8rem;
+            color: var(--clr-text-secondary);
+            margin-bottom: 15px;
+        }
+
+        /* Element - Group Card Features */
+        .group-card__features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .group-card__feature {
+            display: flex;
+            align-items: center;
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .group-card__feature i {
+            margin-right: 5px;
+        }
+
+        /* Element - Group Card Footer */
+        .group-card__footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid var(--clr-border);
+        }
+
+        .group-card__price {
+            font-weight: 700;
+            color: var(--clr-secondary);
+            font-size: 1.2rem;
+        }
+
+        .group-card__capacity {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .group-card__capacity i {
+            margin-right: 5px;
+        }
+
+        .group-card__container {
+            flex: 0 0 100%;
+            padding: 10px 15px;
+            box-sizing: border-box;
+        }
+
+        @@media (min-width: 768px) {
+            .group-card__container {
+            flex: 0 0 50%;
+            }
+        }
+
+        @@media (min-width: 992px) {
+            .group-card__container {
+                flex: 0 0 33.333%;
+            }
+        }
+
+        @@media (min-width: 1200px) {
+            .group-card__container {
+                flex: 0 0 25%;
+            }
+
+        }
+
+        .profile-container {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--clr-border);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+            /* Allow wrapping on smaller screens */
+            flex-wrap: wrap;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: 20px;
+            border: 3px solid var(--clr-primary);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-details {
+            margin-left: 24px;
+        }
+
+        .profile-name {
+            color: var(--clr-primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .profile-tagline {
+            color: var(--clr-primary);
+            font-weight: normal;
+            opacity: 0.8;
+            font-size: 1rem;
+            margin-top: -10px;
+            margin-bottom: 12px;
+        }
+
+        .profile-info {
+            display: flex;
+            row-gap: 5px;
+            align-items: center;
+            margin-bottom: 8px;
+            margin-left: 15px;
+            color: var(--clr-text-secondary);
+        }
+
+        .profile-info i {
+            margin-right: 12px;
+            color: var(--clr-secondary);
+            width: 20px;
+            text-align: center;
+        }
+
+        .book-now-btn {
+            position: absolute;
+            right: 25px;
+            bottom: 25px;
+            padding: 10px;
+        }
+
+        .book-now-btn button {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            padding: 12px 12px;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            gap: 15px;
+        }
+
+        .book-now-btn button:hover {
+            background-color: var(--clr-secondary);
+        }
+
+        /* Responsive adjustments: for screens 768px and below */
+        @@media only screen and (max-width: 768px) {
+            .profile-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .profile-image {
+                width: 100px;
+                height: 100px;
+                margin: 0 0 15px;
+            }
+
+            .profile-details {
+                margin-left: 0;
+            }
+
+            .profile-info {
+                margin-left: 0;
+                justify-content: center;
+            }
+
+            /* Remove absolute positioning for the button and place it below content */
+            .book-now-btn {
+                position: static;
+                margin-top: 20px;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+        }
+
         #xmodal-container {
             position: fixed;
             top: 0;
@@ -123,38 +436,154 @@
         }
 
         #xmodal-overlay {
-            width: 100%;
-            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
             background: rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 10px;
         }
 
-        #xmodal {
-            background: #fff;
-            width: 400px;
+        .form-container {
+            background-color: var(--clr-surface);
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80%;
+            overflow-y: auto;
+            margin: auto;
         }
 
-        #xmodal-header {
-            background: #007bff;
-            color: #fff;
-            padding: 15px;
-            font-size: 18px;
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-header {
             text-align: center;
+            padding: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
         }
 
-        #xmodal-body {
-            padding: 20px;
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
         }
 
-        #xmodal-footer {
-            background: #f1f1f1;
-            padding: 15px;
-            text-align: center;
+        /* Input Fields Styling */
+        input,
+        select,
+        textarea {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--clr-border);
+            border-radius: 6px;
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1rem;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--clr-primary);
+            box-shadow: 0 0 8px rgba(93, 42, 102, 0.5);
+        }
+
+        /* Select Dropdown Styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 35px;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        select option {
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+        }
+
+        /* Textarea Resizing */
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Form Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--clr-primary);
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--clr-secondary);
+            opacity: 0.9;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--clr-surface);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--clr-primary);
+            border-radius: 10px;
+            border: 2px solid var(--clr-surface);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--clr-secondary);
         }
     </style>
 }

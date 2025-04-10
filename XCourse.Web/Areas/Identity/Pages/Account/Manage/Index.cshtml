@@ -90,6 +90,11 @@
                         <label asp-for="Input.PrivatePrice" class="form-label">Private Group Price Per Session</label>
                         <span asp-validation-for="Input.PrivatePrice" class="text-danger"></span>
                     </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.TagLine" class="form-control" aria-required="false" placeholder="dynasour el chemiaa" />
+                        <label asp-for="Input.TagLine" class="form-label">Tag Line</label>
+                        <span asp-validation-for="Input.TagLine" class="text-danger"></span>
+                    </div>
                 }
             }
             <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
