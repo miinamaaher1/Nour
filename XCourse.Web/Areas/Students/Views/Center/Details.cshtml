@@ -60,7 +60,7 @@
                             }
                             <div class="card-body">
                                 <h5 class="card-title">@room.Name</h5>
-                                @if ((room.Equipment & Equipment.Study) == Equipment.Study)
+                                @if (room.Equipment.HasFlag(Equipment.Study))
                                 {
                                     <div class="px-2 mb-2 bg-success text-white" style="width: fit-content; border-radius: 20px;">
                                         <small>
@@ -68,7 +68,7 @@
                                         </small>
                                     </div>
                                 }
-                                @if ((room.Equipment & Equipment.Meeting) == Equipment.Meeting)
+                                @if (room.Equipment.HasFlag(Equipment.Meeting))
                                 {
                                     <div class="px-2 mb-2 bg-danger text-white" style="width: fit-content; border-radius: 20px;">
                                         <small>

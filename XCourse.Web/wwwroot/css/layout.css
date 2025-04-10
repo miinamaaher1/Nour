@@ -8,6 +8,25 @@
     /* You can define font-style if needed (e.g., italic) */
 }
 
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--clr-surface);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--clr-primary);
+    border-radius: 10px;
+    border: 2px solid var(--clr-surface);
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--clr-secondary);
+    }
 
 
 :root, [data-theme="light"] {

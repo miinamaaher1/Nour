@@ -1,27 +1,29 @@
 ﻿@model XCourse.Core.DTOs.StudentDTOs.MapInfoDTO;
 
+<fieldset style="height:100%;width:100%; padding: 0; margin: 0">
+    <div id="googleMap" style="height:100%;width:100%;"></div>
+    
+    <script>
+        function myMap() {
+            var myCenter = new google.maps.LatLng(@Model.OriginY, @Model.OriginX);
+            var mapProp = {
+                center: myCenter,
+                zoom: 12,
+                scrollwheel: false,
+                draggable: true,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+            var marker = new google.maps.Marker({ position: myCenter });
+            marker.setMap(map);
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=myMap"></script>
+</fieldset>
 
-    <fieldset>
 
-       
-        <div id="googleMap" style="height:200px;width:100%;"></div>
 
-       
-        <script>
-            function myMap() {
-                var myCenter = new google.maps.LatLng(@Model.OriginY, @Model.OriginX);
-                var mapProp = {
-                    center: myCenter,
-                    zoom: 12,
-                    scrollwheel: false,
-                    draggable: true,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-                var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-                var marker = new google.maps.Marker({ position: myCenter });
-                marker.setMap(map);
-            }
-        </script>
 
-        <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=myMap"></script>
-    </fieldset>
+
+
+
