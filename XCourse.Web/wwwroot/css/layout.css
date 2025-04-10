@@ -43,6 +43,14 @@
     --clr-text-on-accent: #210F37;
     --clr-border: #D1C5B8;
     --clr-overlay: rgba(33, 15, 55, 0.5);
+
+    /* Updated Toast specific colors */
+    --toast-success-bg: #E6F2E9;
+    --toast-success-border: #5D8A66;
+    --toast-success-text: #355D40;
+    --toast-error-bg: #FCEBE9;
+    --toast-error-border: #B57256;
+    --toast-error-text: #5D2A26;
 }
 
 /* Explicit Dark Mode Handling */
@@ -59,62 +67,15 @@
     --clr-text-on-accent: #1E1E1E;
     --clr-border: #424242;
     --clr-overlay: rgba(0, 0, 0, 0.7);
-}
 
-[data-theme="night-black"] {
-    --clr-background: #010203;
-    /* Dark Black */
-    --clr-surface: #131313;
-    /* Eerie Black */
-    --clr-primary: #2D2D2D;
-    /* Jet */
-    --clr-secondary: #3C3C3C;
-    /* Dark Charcoal */
-    --clr-accent: #4A4A4A;
-    /* Outer Space */
-    --clr-text-primary: #E0E0E0;
-    /* Light Gray */
-    --clr-text-secondary: #B0B0B0;
-    /* Silver */
-    --clr-text-on-primary: #FFFFFF;
-    /* White */
-    --clr-text-on-secondary: #FFFFFF;
-    /* White */
-    --clr-text-on-accent: #FFFFFF;
-    /* White */
-    --clr-border: #2A2A2A;
-    /* Charleston Green */
-    --clr-overlay: rgba(1, 2, 3, 0.7);
-    /* Dark Black with transparency */
+    /* Updated Toast specific colors - dark mode */
+    --toast-success-bg: #324D3A;
+    --toast-success-border: #7EBE84;
+    --toast-success-text: #CDEAC0;
+    --toast-error-bg: #3B1F1F;
+    --toast-error-border: #C96A5B;
+    --toast-error-text: #FFB5A7;
 }
-
-[data-theme="muted-crimson"] {
-    --clr-background: #09122C;
-    /* Deep Navy */
-    --clr-surface: #1C1C2E;
-    /* Dark Charcoal */
-    --clr-primary: #872341;
-    /* Dark Maroon */
-    --clr-secondary: #E17564;
-    /* Soft Coral */
-    --clr-accent: #BE3144;
-    /* Muted Crimson */
-    --clr-text-primary: #E0E0E0;
-    /* Light Gray */
-    --clr-text-secondary: #B0B0B0;
-    /* Medium Gray */
-    --clr-text-on-primary: #FFFFFF;
-    /* White */
-    --clr-text-on-secondary: #FFFFFF;
-    /* White */
-    --clr-text-on-accent: #FFFFFF;
-    /* White */
-    --clr-border: #44475A;
-    /* Slate Gray */
-    --clr-overlay: rgba(9, 18, 44, 0.7);
-    /* Deep Navy with transparency */
-}
-
 
 
 
@@ -368,6 +329,157 @@ button.nav-link {
 .sidebar.collapsed .profile {
     padding-right: 0;
     /*    padding-left: 10px;*/
+}
+
+
+/*Toaster styling*/
+.toast-container {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* Toast Message */
+.toast {
+    display: flex;
+    align-items: center;
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+    .toast.success {
+        background-color: var(--toast-success-bg);
+        border-left: 6px solid var(--toast-success-border);
+        color: var(--toast-success-text);
+    }
+
+    .toast.error {
+        background-color: var(--toast-error-bg);
+        border-left: 6px solid var(--toast-error-border);
+        color: var(--toast-error-text);
+    }
+
+.toast-icon {
+    margin-right: 16px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.toast.success .toast-icon {
+    background-color: rgba(79, 138, 16, 0.1);
+    color: var(--toast-success-text);
+}
+
+.toast.error .toast-icon {
+    background-color: rgba(216, 0, 12, 0.1);
+    color: var(--toast-error-text);
+}
+
+.checkmark {
+    stroke-dasharray: 70;
+    stroke-dashoffset: 70;
+    animation: draw-checkmark 0.6s ease-in-out forwards;
+}
+
+.xmark {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: draw-xmark 0.6s ease-in-out forwards;
+}
+
+@keyframes draw-checkmark {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes draw-xmark {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.toast-content {
+    flex-grow: 1;
+}
+
+.toast-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-size: 18px;
+}
+
+.toast-message {
+    font-size: 16px;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+}
+
+.toast.success .toast-progress {
+    background-color: var(--toast-success-border);
+}
+
+.toast.error .toast-progress {
+    background-color: var(--toast-error-border);
+}
+
+.toast.zoom-in {
+    animation: zoom-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.toast.zoom-out {
+    animation: zoom-out 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes zoom-in {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes zoom-out {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
 }
 
 /* Responsive styles */
