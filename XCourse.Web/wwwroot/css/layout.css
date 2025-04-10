@@ -8,6 +8,8 @@
     /* You can define font-style if needed (e.g., italic) */
 }
 
+
+
 :root, [data-theme="light"] {
     /* Default Light Mode */
     --clr-background: #FAF6F0;
@@ -102,7 +104,7 @@ body {
     background-color: var(--clr-background);
     color: var(--clr-text-primary);
     font-family: 'Graphik LC Web';
-/*    margin: 0;*/
+    /*    margin: 0;*/
     padding: 10px;
     height: 100%;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -158,7 +160,7 @@ body {
 
 .logo {
     font-size: 1.5rem;
-    font-weight: bold;
+    font-weight: bold !important;
     color: var(--clr-primary);
     display: flex;
     align-items: center;
@@ -169,6 +171,7 @@ body {
 .logo-text {
     margin-left: 10px;
     transition: opacity 0.3s ease;
+    font-weight: bold !important;
 }
 
 .sidebar.collapsed .logo-text {
@@ -208,7 +211,19 @@ body {
     overflow: hidden;
     white-space: nowrap;
 }
-
+button.nav-link {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--clr-text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+}
     .nav-link:hover {
         background-color: rgba(0, 0, 0, 0.05);
         color: var(--clr-primary);
@@ -297,7 +312,7 @@ body {
 .sidebar .profile-photo {
     width: 50px;
     height: 50px;
-    margin-left : -10px;
+    margin-left: -10px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -333,7 +348,7 @@ body {
 
 .sidebar.collapsed .profile {
     padding-right: 0;
-/*    padding-left: 10px;*/
+    /*    padding-left: 10px;*/
 }
 
 /* Responsive styles */
