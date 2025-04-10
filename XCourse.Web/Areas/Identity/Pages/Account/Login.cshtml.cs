@@ -121,7 +121,29 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    var user = await _userManager.GetUserAsync(User);
+
+                    if (user.AccountType == AccountType.Student)
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Students" });
+                    }
+                    else if (user.AccountType == AccountType.Teacher)
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Teachers" });
+                    }
+                    else if (user.AccountType == AccountType.CenterAdmin)
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
+                    }
+                    else if (user.AccountType == AccountType.Assistant)
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Assistants" });
+                    }
+                    else
+                    {
+                        return LocalRedirect(returnUrl);
+                    }
+
                 }
                 if (result.RequiresTwoFactor)
                 {

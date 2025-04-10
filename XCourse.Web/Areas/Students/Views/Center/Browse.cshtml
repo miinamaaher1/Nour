@@ -5,62 +5,224 @@
 	ViewData["Title"] = "Browse Centers";
 }
 
-<div id="map" style=""></div>
-<div id="panel">
-    <div id="panel-header">
-        <input type="text" />
-        <i class="fas fa-search"></i>
-    </div>
-    <div id="panel-body">
+<div class="col">
+    <div id="panel">
+        <div id="panel-header">
+            <input type="text" id="search-box" placeholder="Search by name or city..." />
+            <i id="search-button" class="fas fa-search" onclick="searchCenters()"></i>
+        </div>
+        <div id="panel-body">
+        </div>
     </div>
 </div>
 
 @section Styles {
     <style>
-        #map {
+        #main-content {
             position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 75vh;
         }
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;  
+            z-index:-1000;
+        }
+
         #panel {
-            position: fixed;
-            top: 100px;
-            left: 150px;
-            z-index: 1000;
-            background: #fff;
+            height: 94vh;
+            padding: 0;
+            margin-left: 1rem;
             width: 400px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            overflow: auto;
+            box-shadow: 0 4px 10px var(--clr-overlay);
+            border-radius: 15px;
+            overflow: hidden;
         }
+
         #panel-header {
-            background: #0FFF50;
-            color: #fff;
+            box-sizing: border-box;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--clr-text-on-primary);
+            width:100%;
             padding: 15px;
+            height: 10%;
             font-size: 18px;
             text-align: center;
+            background-color: var(--clr-primary);
         }
+
         #panel-body {
+            box-sizing: border-box;
+            margin: auto;
+            width: 100%;
             padding: 20px;
+            height: 90%;
+            overflow-y: auto;
+            background-color: var(--clr-surface);
+        }
+
+        #search-button {
+            cursor: pointer;
+        }
+
+        #search-button:hover {
+            color: var(--clr-accent);
+        }
+
+        #search-button:active {
+            color: var(--clr-secondary);
+        }
+
+        #search-box {
+            outline: none;
+            border: none;
+            border-bottom: 1pt solid var(--clr-text-on-primary);
+            color: var(--clr-text-on-primary);
+            font-size: 1rem;
+            width: 80%;
+            background: none;
+            background-color: transparent;
+            box-shadow: none;
+            transition: background-color 9999s ease-in-out 0s; /* Autofill hack */
+        }
+
+        #search-box::placeholder {
+            color: var(--clr-text-on-primary);
+            opacity: 0.7;
+        }
+
+        #search-box:focus {
+            outline: none;
+            border-bottom: 1pt solid var(--clr-text-on-primary);
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+        #search-box:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+            -webkit-text-fill-color: var(--clr-text-on-primary) !important;
+            background-color: transparent !important;
+            background: none !important;
+            transition: background-color 9999s ease-in-out 0s; /* Keeps autofill from applying color */
+        }
+
+        .info-card {
+            padding: 10px;
+            width: 250px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
         }
     </style>
 }
 
 @section Scripts {
-	<script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=initMap&loading=async" async defer></script>
     <script>
-        async function initMap() {
+        let map;
+        let markers = [];
+
+        function initMap() {
             // Specify map options
             var mapOptions = {
-                center: { lat: @Model.OriginX, lng: @Model.OriginY },
-                zoom: 10
+                center: { lat: @Model.OriginY, lng: @Model.OriginX },
+                zoom: 12
             };
 
             // Create the map
-            var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
         }
+
+        function loadCenters(query) {
+            fetch(`/students/center/search?query=${query}`)
+            .then(response => response.json())
+            .then(centers => {
+                clearMarkers();
+                document.getElementById("panel-body").innerHTML = "";
+
+                centers.forEach(center => {
+                    const position = { lat: center.latitude, lng: center.longitude };
+                    const marker = new google.maps.Marker({
+                        position,
+                        map,
+                        title: center.name
+                    });
+
+                    let infoWindow
+                        
+                    if(center.isGirlsOnly) {
+                        infoWindow = new google.maps.InfoWindow({
+                            content: `<div class="info-card d-flex flex-column">
+                                        <h3 style="text-align: center; color: seagreen;">${center.name}</h3>
+                                        <p> 
+                                            <i class="fa-solid fa-location-dot"></i> ${center.street} street, ${center.city}, ${center.governorate}
+                                        </p>
+                                        <div class="px-2 mb-2 bg-danger text-white" style="width: fit-content; border-radius: 20px;">
+                                            <small>
+                                                <i class="fa-solid fa-child-dress"></i> girls only
+                                            </small>
+                                        </div>
+                                        <a class="btn btn-success" href="/students/Center/Details/${center.id}">Visit</a>
+                                    </div>`
+                            });
+                    } else {
+                        infoWindow = new google.maps.InfoWindow({
+                            content: `<div class="info-card d-flex flex-column">
+                                        <h3 style="text-align: center; color: seagreen;">${center.name}</h3>
+                                        <p>
+                                            <i class="fa-solid fa-location-dot"></i> ${center.street} street, ${center.city}, ${center.governorate}
+                                        </p>
+                                        <a class="btn btn-success" href="/students/Center/Details/${center.id}">Visit</a>
+                                    </div>`
+                            });
+                    }
+                        
+                    marker.addListener("click", () => {
+                        infoWindow.open(map, marker);
+                    });
+
+                    markers.push(marker);
+
+                    document.getElementById("panel-body").innerHTML += `
+                        <div onclick="focusMarker(${center.latitude}, ${center.longitude})" class="panel-item">
+                            <strong>${center.name}</strong>
+                            <p> <i class="fa-solid fa-location-dot"></i>  ${center.street} street, ${center.city}, ${center.governorate}</p>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+        }
+
+        function focusMarker(lat, lng) {
+            map.setCenter({ lat, lng });
+            map.setZoom(14);
+        }
+
+        function searchCenters() {
+            const query = document.getElementById("search-box").value;
+            loadCenters(query);
+        }
+
+        window.addEventListener("load", function () {
+            loadCenters("");
+        });
     </script>
 }
