@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "/Views/Shared/_XCourseLayout.cshtml";
+}
+
+@section Styles {
+    @RenderSection("Styles", false)
+}
+
+@RenderBody()
+
+@section NavigationMenu {
+        <li class="nav-item">
+            <a href="#" class="nav-link active">
+                <i class="fa-solid fa-house nav-icon"></i>
+                <span class="nav-text">Home</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link submenu-toggle">
+                <i class="fa-solid fa-users nav-icon"></i>
+                <span class="nav-text">Groups</span>
+                <i class="fa-solid fa-chevron-down arrow"></i>
+            </a>
+            <ul class="submenu">
+                <li class="submenu-item">
+                    <a asp-area="Teachers" asp-controller="Group" asp-action="Index" class="submenu-link">
+                        <i class="fa-solid fa-circle-user nav-icon"></i>
+                        <span>My Groups</span>
+                    </a>
+                </li>
+                <li class="submenu-item">
+                    <a asp-area="Teachers" asp-controller="Group" asp-action="Create" class="submenu-link">
+                        <i class="fa-solid fa-plus nav-icon"></i>
+                        <span>Create Group</span>
+                    </a>
+                </li>
+                <li class="submenu-item">
+                    <a href="#" class="submenu-link">
+                        <i class="fa-solid fa-users-gear nav-icon"></i>
+                        <span>Manage Groups</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fa-solid fa-video nav-icon"></i>
+                <span class="nav-text">Sessions</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fa-solid fa-bullhorn nav-icon"></i>
+                <span class="nav-text">Announcements</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fa-solid fa-building nav-icon"></i>
+                <span class="nav-text">Centers</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fa-solid fa-file-pen nav-icon"></i>
+                <span class="nav-text">Exams</span>
+            </a>
+        </li>
+}
+
+@section Scripts {
+    @RenderSection("Scripts", false)
+}
