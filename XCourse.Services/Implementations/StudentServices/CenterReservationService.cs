@@ -50,7 +50,7 @@ namespace XCourse.Services.Implementations.StudentServices
 
             if (centerVM.IncompatibleGender) return centerVM;
 
-            var rooms = _unitOfWork.Rooms.FindAll(r => r.CenterID == center.ID && r.Equipment != Equipment.Lecture);
+            var rooms = _unitOfWork.Rooms.FindAll(r => r.CenterID == center.ID && !r.Equipment.HasFlag(Equipment.Lecture));
 
             foreach (var room in rooms)
             {

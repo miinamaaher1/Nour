@@ -30,6 +30,9 @@ namespace XCourse.Services.Implementations.StudentServices
             {
                 TeacherID = teacherID,
                 TeacherName = teacher.AppUser.FirstName + " " + teacher.AppUser.LastName,
+                TeacherPhone = teacher.AppUser.PhoneNumber,
+                TeacherEmail = teacher.AppUser.Email,
+                TagLine = teacher.TagLine,
                 IsAvailableForPrivateGroups = teacher.IsAvailableForPrivateGroups,
                 PrivateGroupPrice = teacher.PrivatePrice,
                 TeacherProfilePicture = teacher.AppUser.ProfilePicture,
@@ -37,8 +40,19 @@ namespace XCourse.Services.Implementations.StudentServices
                 AvailbleGroups = new()
             };
 
-            var groups = _unitOfWork.Groups.FindAll(g => g.TeacherID == teacherID && g.IsActive && g.CurrentStudents < g.MaxStudents);
+            var groups = _unitOfWork.Groups.FindAll(g => g.TeacherID == teacherID 
+                                                         && g.IsActive
+                                                         && g.CurrentStudents < g.MaxStudents
+                                                         && g.Subject.Year == stud.Year
+                                                         && g.Subject.Major == stud.Major
+                                                         , ["Subject"]);
+
             var availableGroups = groups.Except(stud.Groups).ToList();
+
+            if (auser.Gender == Gender.Male)
+            {
+                availableGroups = availableGroups.Where(g => g.IsGirlsOnly == false).ToList();
+            }
 
             foreach (var group in availableGroups)
             {
