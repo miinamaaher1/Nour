@@ -11,8 +11,8 @@ namespace XCourse.Core.ViewModels.StudentsViewModels
     {
 
         public List<SessionViewModel> UpcomingSessions { get; set; } = new();
-        public List<GroupViewModel> RecommendedGroups { get; set; } = new();
-        public List<Announcement> Announcements { get; set; } = new();
+        public List<RecommendedGroupViewModel> RecommendedGroups { get; set; } = new();
+        public List<AnnouncementVM> Announcements { get; set; } = new();
         public int NumOfAnnouncements { get; set; }
 
     }
