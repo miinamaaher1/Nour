@@ -94,6 +94,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account.Manage
             public Major? Major { get; set; }
             public bool IsAvailableForPrivateGroups { get; set; }
             public decimal? PrivatePrice { get; set; }
+            public string? TagLine { get; set; }
         }
 
         private async Task LoadAsync(AppUser user)
@@ -195,6 +196,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account.Manage
                 Teacher teacher = _unitOfWork.Teachers.Find(s => s.AppUserID == user.Id);
                 teacher.IsAvailableForPrivateGroups = Input.IsAvailableForPrivateGroups;
                 teacher.PrivatePrice = Input.PrivatePrice;
+                teacher.TagLine = Input.TagLine;
                 _unitOfWork.Teachers.Update(teacher);
                 _unitOfWork.Save();
             }

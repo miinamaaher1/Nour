@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using XCourse.Core.Entities;
-using XCourse.Infrastructure.Repositories.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using XCourse.Core.DTOs.StudentDTOs;
 using XCourse.Services.Interfaces.StudentServices;
 
 namespace XCourse.Web.Areas.Students.Controllers
@@ -9,20 +8,46 @@ namespace XCourse.Web.Areas.Students.Controllers
     [Area("Students")]
     public class CenterController : Controller
     {
-        private readonly UserManager<AppUser> _userManager;
         private readonly IMapService _mapService;
+        private readonly ICenterReservationService _centerReservationService;
 
-        public CenterController(UserManager<AppUser> userManager, IMapService mapService)
+        public CenterController(IMapService mapService, ICenterReservationService centerReservationService)
         {
-            _userManager = userManager;
             _mapService = mapService;
+            _centerReservationService = centerReservationService;
         }
 
-        async public Task<IActionResult> Browse()
+        public async Task<IActionResult> Browse()
         {
-            AppUser user = await _userManager.GetUserAsync(User);
-            var mapInfo = _mapService.InitializeMap(user);
+            var mapInfo = await _mapService.InitializeMapAsync(User);
             return View(mapInfo);
+        }
+
+        [HttpGet]
+        public IActionResult Search(string query = "")
+        {
+            var centers = _mapService.SearchCenters(query);
+            return Json(centers);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var center = await _centerReservationService.GetCenterDetailsAsync(id, User);
+            return View(center);
+        }
+
+        [HttpPost]
+        public IActionResult GetReservations([FromBody] GetReservationsDTO request)
+        {
+            var result = _centerReservationService.GetDayReservations(request.Id, request.Date);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReserveRoom([FromBody] ReservationDTO request)
+        {
+            var response = await _centerReservationService.ReserveRoomAsync(request.RoomID, request.Date, request.Start, request.End, User);
+            return Json(response);
         }
     }
 }

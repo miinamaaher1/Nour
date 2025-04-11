@@ -12,6 +12,7 @@ namespace XCourse.Core.Entities
         [Display(Name = "App User")]
         public string AppUserID { get; set; }
         public virtual AppUser? AppUser { get; set; }
+        public string? TagLine { get; set; }
         public bool IsAvailableForPrivateGroups { get; set; }
 
         [Display(Name = "Private Price")]

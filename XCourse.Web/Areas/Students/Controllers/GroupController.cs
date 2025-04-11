@@ -1,13 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using XCourse.Core.DTOs.StudentDTOs;
-using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.StudentServices;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Operations;
-using XCourse.Services.Implementations.StudentServices;
 
 namespace XCourse.Web.Areas.Students.Controllers
 {
@@ -19,7 +15,7 @@ namespace XCourse.Web.Areas.Students.Controllers
         private readonly IEnrollStudentService _enrollStudentService;
         private readonly IRequestPrivateGroupService _requestPrivateGroupService;
         IStudentGroup StudentGroup { get; set; }
-        
+
         public GroupController(IUnitOfWork unitOfWork, IEnrollStudentService enrollStudentService, IRequestPrivateGroupService requestPrivateGroupService, IStudentGroup group)
         {
             _unitOfWork = unitOfWork;
@@ -27,24 +23,24 @@ namespace XCourse.Web.Areas.Students.Controllers
             _requestPrivateGroupService = requestPrivateGroupService;
             StudentGroup = group;
         }
-        
-        public IActionResult DetailsNotEnrolled(int id)
+
+        public async Task<IActionResult> Preview(int id)
         {
-            var group = _unitOfWork.Groups.Find(g => g.ID == id, ["Subject", "Teacher.AppUser", "GroupDefaults"]);
-            if (group == null) return NotFound();
-            return View(group);
+            var groupVM = await _enrollStudentService.GetGroupInfo(id, User);
+            if (groupVM == null) return NotFound();
+            return View(groupVM);
         }
-        
+
         [HttpPost]
         public IActionResult Enroll(int studentID, int groupID)
         {
             if (_enrollStudentService.Enroll(studentID, groupID))
             {
-                return RedirectToAction("YourGroups"); // your groups
+                return RedirectToAction("Details", new { id = groupID });
             }
             else
             {
-                return RedirectToAction("Details");
+                return RedirectToAction("Preview", new { id = groupID });
             }
         }
 
@@ -61,12 +57,11 @@ namespace XCourse.Web.Areas.Students.Controllers
             var requestStatus = _requestPrivateGroupService.SendRequest(request);
             return Json(requestStatus);
         }
-        
+
         public IActionResult getAll()
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            var groups =  StudentGroup.GetStudentGroup(userID);
+            var groups = StudentGroup.GetStudentGroup(userID);
             if (groups == null) return NotFound();
 
             return View(groups);
@@ -76,8 +71,19 @@ namespace XCourse.Web.Areas.Students.Controllers
         {
             var group = StudentGroup.Details(id);
             if (group == null) return NotFound();
-          
+
             return View(group);
+        }
+
+        public async Task<IActionResult> RecommendedGroups()
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var groups = await StudentGroup.RecommendedGroupService(userID!);
+            if (groups == null)
+            {
+                groups = new List<RecommendedGroupViewModel>();
+            }
+            return await Task.FromResult( View(groups));
         }
     }
 }

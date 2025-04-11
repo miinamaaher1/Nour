@@ -23,6 +23,21 @@ namespace XCourse.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AnnouncementGroup", b =>
+                {
+                    b.Property<int>("AnnouncementsID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GroupsID")
+                        .HasColumnType("int");
+
+                    b.HasKey("AnnouncementsID", "GroupsID");
+
+                    b.HasIndex("GroupsID");
+
+                    b.ToTable("AnnouncementGroup");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -201,9 +216,6 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<DateTime?>("DateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GroupID")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsImportant")
                         .HasColumnType("bit");
 
@@ -212,8 +224,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("GroupID");
 
                     b.ToTable("Announcements");
                 });
@@ -376,6 +386,9 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<bool?>("HasAttended")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasPaid")
                         .HasColumnType("bit");
 
                     b.Property<double?>("HomeWorkGrade")
@@ -791,6 +804,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<decimal?>("PrivatePrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("TagLine")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ID");
 
                     b.HasIndex("AppUserID")
@@ -861,6 +877,21 @@ namespace XCourse.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("AnnouncementGroup", b =>
+                {
+                    b.HasOne("XCourse.Core.Entities.Announcement", null)
+                        .WithMany()
+                        .HasForeignKey("AnnouncementsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("XCourse.Core.Entities.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -942,17 +973,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasForeignKey("TeachersID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("XCourse.Core.Entities.Announcement", b =>
-                {
-                    b.HasOne("XCourse.Core.Entities.Group", "Group")
-                        .WithMany("Announcements")
-                        .HasForeignKey("GroupID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("XCourse.Core.Entities.AppUser", b =>
@@ -1382,8 +1402,6 @@ namespace XCourse.Infrastructure.Migrations
 
             modelBuilder.Entity("XCourse.Core.Entities.Group", b =>
                 {
-                    b.Navigation("Announcements");
-
                     b.Navigation("AssistantInvitations");
 
                     b.Navigation("GroupDefaults");

@@ -2,285 +2,493 @@
 
 
 
-    @{
-        ViewData["Title"] = "Home";
-    }
+@{
+    ViewData["Title"] = "Home";
+}
 
-    @section Styles{
+@section Styles {
     <link rel="stylesheet" href="~/Content/tui-calendar/tui-calendar.min.css">
-    <style>
-        .carousel-container {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .carousel-scroll {
-            scroll-behavior: smooth;
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding: 20px 40px;
-            gap: 15px;
-        }
-
-            .carousel-scroll::-webkit-scrollbar {
-                display: none;
-            }
-
-        .scroll-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .scroll-btn.prev {
-                left: 5px;
-            }
-
-            .scroll-btn.next {
-                right: 5px;
-            }
-
-        .card-item {
-            min-width: 250px;
-            transition: transform 0.3s;
-        }
-
-            .card-item:hover {
-                transform: translateY(-5px);
-            }
-
-        .sidebar {
-            border-left: 1px solid #dee2e6;
-            padding-left: 15px;
-        }
-
-        .teacher-img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border: 2px solid #ddd;
-        }
-
-        .announcement-item {
-            border-left: 4px solid #007bff;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f8f9fa;
-        }
-
-        .tui-calendar {
-            height: 300px;
-            margin-bottom: 20px;
-        }
-
-        .calendar-container {
-            margin-bottom: 20px;
-        }
-    </style>
+    <link  rel="stylesheet" href="~/css/Students/StudentsHomeGroups.css"/>
     }
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <!-- Main Content - 75% -->
-            <div class="col-lg-9 mb-4">
-                <!-- Upcoming Sessions -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="fas fa-clock me-2"></i>Upcoming Sessions</h4>
-                        <a asp-area="Students" asp-action="Index" asp-controller="Session" class="btn btn-light btn-sm">
-                            View All <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    <div class="carousel-container">
-                        <button class="btn btn-dark scroll-btn prev" id="prevSession"><i class="fas fa-chevron-left"></i></button>
-                        <div id="sessionCarousel" class="carousel-scroll">
-                            @foreach (var session in Model.UpcomingSessions)
-                            {
-                                <div class="card shadow-sm card-item">
-                                    <div class="card-body text-center">
-                                        <div class="d-flex flex-column align-items-center mb-3">
-                                            <img class="rounded-circle teacher-img mb-2" 
-                                                 src="@(session.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(session.TeacherProfilePicture) : Url.Content("~/images/default_teacher.jpg"))" 
-                                                 alt="Teacher Profile">
-                                            <h5 class="text-primary fw-bold">@session.SubjectName</h5>
-                                        </div>
-                                        <p class="mb-1">
-                                            <i class="fas fa-user-tie text-secondary me-2"></i>
-                                            <strong>Teacher:</strong> <span class="text-secondary">@session.GroupTeacherName</span>
-                                        </p>
-                                        <p class="mb-1">
-                                            <i class="fas fa-calendar-alt text-secondary me-2"></i>
-                                            <strong>Date:</strong> <span class="text-secondary">@session.StartDateTime.ToString("MMM d, yyyy")</span>
-                                        </p>
-                                        <p class="mb-1">
-                                            <i class="fas fa-clock text-secondary me-2"></i>
-                                            <strong>Time:</strong> <span class="text-secondary">@session.StartDateTime.ToString("h:mm tt")</span>
-                                        </p>
-                                        <p class="mb-1">
-                                            <i class="fas fa-hourglass-half text-secondary me-2"></i>
-                                            <strong>Duration:</strong> <span class="text-secondary">@session.Duration?.ToString(@"hh\:mm")</span>
-                                        </p>
-                                        <div class="mt-3">
-                                            <span class="badge bg-success p-2">
-                                                <i class="fas fa-@(session.IsOnline ? "video" : "map-marker-alt") me-1"></i>
-                                                @(session.IsOnline ? "Online" : "Offline")
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        <button class="btn btn-dark scroll-btn next" id="nextSession"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
+<div class="col-12">
 
-                <!-- Recommended Groups -->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="fas fa-users me-2"></i>Recommended Groups</h4>
-                        <a href="#" class="btn btn-light btn-sm">
-                            View All <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                    <div class="carousel-container">
-                        <button class="btn btn-dark scroll-btn prev" id="prevGroup"><i class="fas fa-chevron-left"></i></button>
-                        <div id="groupCarousel" class="carousel-scroll">
-                            @foreach (var group in Model.RecommendedGroups)
-                            {
-                                <div class="card shadow-sm card-item">
-                                    <img class="card-img-top" 
-                                         src="@(group.GroupPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.GroupPicture) : Url.Content("~/images/default_Group.jpg"))" 
-                                         alt="Group Cover" 
-                                         style="height: 150px; object-fit: cover;">
-                                    <div class="card-body text-center">
-                                        <h5 class="text-success fw-bold">@group.SubjectName</h5>
-                                        <p class="mb-1">
-                                            <i class="fas fa-user-tie text-secondary me-2"></i>
-                                            <strong>Teacher:</strong> <span class="text-secondary">@group.GroupTeacherName</span>
-                                        </p>
-                                        <p class="mb-1">
-                                            <i class="fas fa-tag text-secondary me-2"></i>
-                                            <strong>Price:</strong> <span class="text-secondary">$@group.PricePerSession per session</span>
-                                        </p>
-                                        <p class="mb-1">
-                                            <i class="fas fa-users text-secondary me-2"></i>
-                                            <strong>Capacity:</strong> <span class="text-secondary">@group.CurrentStudentsCount/@group.MaxStudents</span>
-                                        </p>
-                                        <div class="mt-3 d-flex flex-wrap justify-content-center gap-2">
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-@(group.IsOnline ? "video" : "map-marker-alt") me-1"></i>
-                                                @(group.IsOnline ? "Online" : "Offline")
-                                            </span>
-                                            <span class="badge bg-warning text-dark">
-                                                <i class="fas fa-@(group.IsGirlsOnly ? "venus" : "venus-mars") me-1"></i>
-                                                @(group.IsGirlsOnly ? "Girls Only" : "Mixed Group")
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        <button class="btn btn-dark scroll-btn next" id="nextGroup"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
+
+    <!-- Announcement Notification Button -->
+    <div class="circle-btn btn-top-right-offset announcement-btn" id="announcement-notifications">
+        <i class="fa-solid fa-bell"></i>
+        <div class="notification-badge" id="announcement-notifications-number"></div>
+    </div>
+
+
+    <!-- Modal for announcements -->
+    <div class="announcements-modal" id="announcementsModal">
+        <div class="announcements-modal__content">
+            <div class="announcements-modal__header">
+                <h2 class="announcements-modal__title">Announcements</h2>
+                <button class="announcements-modal__close" id="closeAnnouncementsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
+            <div class="announcements-modal__body">
+                <div class="announcement-list">
+                    <!-- Announcement 1 -->
 
-            <!-- Sidebar - 25% -->
-            <div class="col-lg-3 sidebar">
-                <!-- Calendar -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Calendar</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="calendar" class="calendar-container"></div>
-                    </div>
-                </div>
+                    @foreach(var Announcement in Model.Announcements)
+                    {
 
-                <!-- Announcements -->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-bullhorn me-2"></i>Announcements</h5>
-                        <span class="badge bg-primary rounded-pill">@Model.NumOfAnnouncements</span>
-                    </div>
-                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                        @if (Model.Announcements != null && Model.Announcements.Any())
-                        {
-                            foreach (var announcement in Model.Announcements)
+                        <div class="announcement-item announcement-item--important">
+                            <div class="announcement-item__header">
+                                <div>
+                                    <h3 class="announcement-item__title">@Announcement.Title</h3>
+                                    @if(Announcement!=null && Announcement.GroupSubjectNames!=null)
+                                    {
+                                        <div class="announcement-item__groups">
+                                            @foreach (var group in Announcement.GroupSubjectNames!)
+                                            {
+                                                <a asp-action="Details" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupID" class="announcement-item__group">
+                                                    <i class="fas fa-users"></i>
+                                                    @group.GroupSubject Group
+                                                </a>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="announcement-item__date">
+                                <i class="far fa-calendar-alt"></i>
+                                @Announcement.DateTime?.ToString("dddd, MMMM dd yyyy - hh:mm tt")
+                            </div>
+                            <div class="announcement-item__body">
+                                @Announcement.Body
+                            </div>
+                            @if (Announcement.IsImportant)
                             {
-                                <div class="announcement-item">
-                                    <h6 class="fw-bold">@announcement.Title</h6>
-                                    <p class="mb-1">@announcement.Body</p>
-                                    <small class="text-muted">
-                                        <i class="fas fa-clock me-1"></i>
-                                    @(announcement.DateTime?.ToString("MMM d, yyyy") ?? "No date")
-                                    </small>
+                                <div class="announcement-item__badge">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Important
                                 </div>
                             }
-                        }
-                        else
-                        {
-                            <div class="text-center py-4">
-                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                <p>No announcements available</p>
-                            </div>
-                        }
-                    </div>
+                        </div>
+
+                    }
                 </div>
             </div>
         </div>
     </div>
 
-    @section Scripts{
+
+
+
+    <!--Upcoming sessions-->
+    <div class="container col-11">
+        <div class="group-carousel container">
+            <div class="group-carousel__container">
+                <div class="session-section__title">
+                    <h2>Upcoming Sessions</h2>
+                    <a asp-actio="Index" asp-controller="Session" asp-area="Students" class="view-all-link"> View All</a>
+                </div>
+                <div class="group-carousel__track" id="sessionsCarouselTrack">
+                    <!-- Session 1 -->
+                    @foreach(var session in Model.UpcomingSessions)
+                    {
+                        <div class="group-carousel__slide">
+							<a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Students" asp-route-Id="@session.SessionID">
+                            <div class="session-card">
+                                <div class="session-card__header">
+                                    @if (session.IsOnline)
+                                    {
+                                        <div class="session-card__status session-card__status--online">
+                                            <i class="fas fa-circle"></i>
+                                            Online
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="session-card__status session-card__status--offline">
+                                            <i class="fas fa-circle"></i>
+                                            Offline
+                                        </div>
+                                    }
+                                 
+                                    <div class="session-card__duration">
+                                        <i class="fas fa-clock"></i>
+                                            @session.Duration!.Value.ToString(@"hh\:mm")
+                                    </div>
+                                </div>
+                                    <div class="session-card__date">@session.StartDateTime.ToString("MMMM dd, yyyy - HH:mm")</div>
+                                <div class="session-card__subject">@session.SubjectName</div>
+                                <div class="session-card__teacher">
+                                    <div class="session-card__teacher-img">
+                                        <img src="@(session.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(session.TeacherProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                                             alt="Teacher">
+                                    </div>
+                                    <div class="session-card__teacher-name">@session.GroupTeacherName</div>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+
+            <div class="group-carousel__controls">
+                <button class="group-carousel__button" id="sessionPrevButton">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="group-carousel__button" id="sessionNextButton">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="group-carousel__dots" id="sessionsCarouselDots">
+                <!-- Dots will be added here via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommended Groups -->
+    <div class="container col-11">
+        <div class="group-carousel container">
+            <div class="container">
+                <div class="group-section__title">
+                    <h2>Recommended Groups</h2>
+                    <a  asp-action="RecommendedGroups" asp-controller="Group" asp-area="Students" class="view-all-link"> View All</a>
+                </div>
+
+                <div class="group-carousel">
+                    <div class="group-carousel__container">
+                        <div class="group-carousel__track" id="carouselTrack">
+
+                            @foreach (var group in Model.RecommendedGroups)
+                            {
+
+                                <!-- Group 1 -->
+                                <div class="group-carousel__slide">
+                                    <a class="group-card" style="text-decoration:none;" asp-action="DetailsNotEnrolled" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupID">
+                                    <div class="group-card">
+                                        <div class="group-card__image">
+                                            <img 
+                                            src="@(group.GroupPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.GroupPicture) : Url.Content("~/images/default_Group.jpg"))"
+                                            alt="@group.SubjectName Group">
+                                            <div class="group-card__teacher">
+                                                <div class="group-card__teacher-img">
+                                                    <img src="@(group.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.TeacherProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                                                    alt="@group.GroupTeacherName">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group-card__content">
+                                            <div class="group-card__title">@group.GroupTeacherName</div>
+                                            <div class="group-card__subject">@group.SubjectName</div>
+                                            <div class="group-card__features">
+                                                @if (group.IsOnline)
+                                                {
+                                                    <span class="group-card__feature">
+                                                        <i class="fas fa-laptop"></i> Online
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="group-card__feature">
+                                                        <i class="fas fa-building"></i> Offline
+                                                    </span>
+                                                }
+                                                @if(group.IsGirlsOnly)
+                                                {
+                                                    <span class="group-card__feature">
+                                                        <i class="fas fa-female"></i> Girls Only
+                                                    </span>
+                                                }
+                                            </div>
+                                        <div class="group-card__footer">
+                                            <div class="group-card__price">@group.PricePerSession EGP</div>
+                                            <div class="group-card__capacity">
+                                                <i class="fas fa-users"></i>
+                                                @group.CurrentStudentsCount/@group.MaxStudents
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </a>
+
+                            </div>
+
+                            }
+                  
+                        </div>
+                    </div>
+
+                    <div class="group-carousel__controls">
+                        <button class="group-carousel__button" id="prevButton">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="group-carousel__button" id="nextButton">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="group-carousel__dots" id="carouselDots">
+                        <!-- Dots will be added here via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@section Scripts {
     <script src="@Url.Content("~/Scripts/tui-code-snippet.min.js")"></script>
     <script src="@Url.Content("~/Scripts/tui-calendar.min.js")"></script>
-
     <script>
-        // Set up carousels
-        function setupCarousel(prevBtnId, nextBtnId, containerId) {
-            document.getElementById(prevBtnId).addEventListener("click", function() {
-                document.getElementById(containerId).scrollBy({ left: -300, behavior: "smooth" });
-            });
-            document.getElementById(nextBtnId).addEventListener("click", function() {
-                document.getElementById(containerId).scrollBy({ left: 300, behavior: "smooth" });
-            });
-        }
+        // Function to initialize the carousel
+        function initCarousel() {
+            const carouselTrack = document.getElementById('carouselTrack');
+            const carouselDots = document.getElementById('carouselDots');
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
 
-        // Initialize carousels
-        setupCarousel("prevSession", "nextSession", "sessionCarousel");
-        setupCarousel("prevGroup", "nextGroup", "groupCarousel");
+            // Get all slides
+            const slides = carouselTrack.querySelectorAll('.group-carousel__slide');
 
-        // Initialize Toast UI Calendar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Create calendar instance
-            var calendar = new tui.Calendar('#calendar', {
-                defaultView: 'month',
-                taskView: false,
-                useDetailPopup: true,
-                month: {
-                    daynames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                    startDayOfWeek: 0,
-                    narrowWeekend: false
-                },
-                template: {
-                    monthDayname: function(dayname) {
-                        return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
+            // Variables for carousel functionality
+            let currentSlide = 0;
+            let slidesPerView = getSlidesPerView();
+            let totalSlides = Math.ceil(slides.length / slidesPerView);
+
+            // Create dot indicators
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = i === 0 ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                dot.dataset.slide = i;
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                carouselDots.appendChild(dot);
+            }
+
+            // Add event listeners to buttons
+            prevButton.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
+            });
+
+            nextButton.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+
+            // Function to go to a specific slide
+            function goToSlide(slideIndex) {
+                // Handle wrapping
+                if (slideIndex < 0) {
+                    slideIndex = totalSlides - 1;
+                } else if (slideIndex >= totalSlides) {
+                    slideIndex = 0;
+                }
+
+                currentSlide = slideIndex;
+                updateCarousel();
+            }
+
+            // Function to update carousel display
+            function updateCarousel() {
+                // Update track position
+                const offset = -1 * currentSlide * (100 / slidesPerView) * slidesPerView;
+                carouselTrack.style.transform = `translateX(${offset}%)`;
+
+                // Update active dot
+                const dots = carouselDots.querySelectorAll('.group-carousel__dot');
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('group-carousel__dot--active');
+                    } else {
+                        dot.classList.remove('group-carousel__dot--active');
                     }
+                });
+            }
+
+            // Function to determine slides per view based on viewport width
+            function getSlidesPerView() {
+                if (window.innerWidth >= 1200) return 4;
+                if (window.innerWidth >= 992) return 3;
+                if (window.innerWidth >= 768) return 2;
+                return 1;
+            }
+
+            // Update slides per view on window resize
+            window.addEventListener('resize', () => {
+                const newSlidesPerView = getSlidesPerView();
+                if (newSlidesPerView !== slidesPerView) {
+                    slidesPerView = newSlidesPerView;
+                    totalSlides = Math.ceil(slides.length / slidesPerView);
+
+                    // Reset dots
+                    carouselDots.innerHTML = '';
+                    for (let i = 0; i < totalSlides; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = i === currentSlide ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                        dot.dataset.slide = i;
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                        carouselDots.appendChild(dot);
+                    }
+
+                    // Reset current slide if needed
+                    if (currentSlide >= totalSlides) {
+                        currentSlide = totalSlides - 1;
+                    }
+
+                    updateCarousel();
                 }
             });
 
-          
-            // Today highlight
-            calendar.setDate(new Date());
-            calendar.render();
+            // Initialize carousel display
+            updateCarousel();
+        }
+        // Initialize the carousel when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initCarousel);
+
+        const openBtn = document.getElementById('announcement-notifications');
+        const closeBtn = document.getElementById('closeAnnouncementsBtn');
+        const modal = document.getElementById('announcementsModal');
+
+        // Open modal
+        openBtn.addEventListener('click', function () {
+            modal.classList.add('announcements-modal--active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
         });
+
+        // Close modal
+        closeBtn.addEventListener('click', function () {
+            modal.classList.remove('announcements-modal--active');
+            document.body.style.overflow = ''; // Re-enable scrolling
+        });
+
+        // Close modal when clicking outside content
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                modal.classList.remove('announcements-modal--active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Close modal on Escape key press
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal.classList.contains('announcements-modal--active')) {
+                modal.classList.remove('announcements-modal--active');
+                document.body.style.overflow = '';
+            }
+        });
+
+
+        // Function to initialize the sessions carousel
+        function initSessionsCarousel() {
+            const sessionsCarouselTrack = document.getElementById('sessionsCarouselTrack');
+            const sessionsCarouselDots = document.getElementById('sessionsCarouselDots');
+            const sessionPrevButton = document.getElementById('sessionPrevButton');
+            const sessionNextButton = document.getElementById('sessionNextButton');
+
+            // Get all slides
+            const slides = sessionsCarouselTrack.querySelectorAll('.group-carousel__slide');
+
+            // Variables for carousel functionality
+            let currentSlide = 0;
+            let slidesPerView = getSlidesPerView();
+            let totalSlides = Math.ceil(slides.length / slidesPerView);
+
+            // Create dot indicators
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = i === 0 ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                dot.dataset.slide = i;
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                sessionsCarouselDots.appendChild(dot);
+            }
+
+            // Add event listeners to buttons
+            sessionPrevButton.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
+            });
+
+            sessionNextButton.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+
+            // Function to go to a specific slide
+            function goToSlide(slideIndex) {
+                // Handle wrapping
+                if (slideIndex < 0) {
+                    slideIndex = totalSlides - 1;
+                } else if (slideIndex >= totalSlides) {
+                    slideIndex = 0;
+                }
+
+                currentSlide = slideIndex;
+                updateCarousel();
+            }
+
+            // Function to update carousel display
+            function updateCarousel() {
+                // Update track position
+                const offset = -1 * currentSlide * (100 / slidesPerView) * slidesPerView;
+                sessionsCarouselTrack.style.transform = `translateX(${offset}%)`;
+
+                // Update active dot
+                const dots = sessionsCarouselDots.querySelectorAll('.group-carousel__dot');
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('group-carousel__dot--active');
+                    } else {
+                        dot.classList.remove('group-carousel__dot--active');
+                    }
+                });
+            }
+
+            // Function to determine slides per view based on viewport width
+            function getSlidesPerView() {
+                if (window.innerWidth >= 1200) return 4;
+                if (window.innerWidth >= 992) return 3;
+                if (window.innerWidth >= 768) return 2;
+                return 1;
+            }
+
+            // Update slides per view on window resize
+            window.addEventListener('resize', () => {
+                const newSlidesPerView = getSlidesPerView();
+                if (newSlidesPerView !== slidesPerView) {
+                    slidesPerView = newSlidesPerView;
+                    totalSlides = Math.ceil(slides.length / slidesPerView);
+
+                    // Reset dots
+                    sessionsCarouselDots.innerHTML = '';
+                    for (let i = 0; i < totalSlides; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = i === currentSlide ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                        dot.dataset.slide = i;
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                        sessionsCarouselDots.appendChild(dot);
+                    }
+
+                    // Reset current slide if needed
+                    if (currentSlide >= totalSlides) {
+                        currentSlide = totalSlides - 1;
+                    }
+
+                    updateCarousel();
+                }
+            });
+
+            // Initialize carousel display
+            updateCarousel();
+        }
+
+        // Initialize the sessions carousel when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initSessionsCarousel);
     </script>
-    }
+}

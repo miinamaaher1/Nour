@@ -149,7 +149,28 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                return LocalRedirect(returnUrl);
+                var user = await _userManager.GetUserAsync(User);
+
+                if (user.AccountType == AccountType.Student)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Students" });
+                }
+                else if (user.AccountType == AccountType.Teacher)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Teachers" });
+                }
+                else if (user.AccountType == AccountType.CenterAdmin)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
+                }
+                else if (user.AccountType == AccountType.Assistant)
+                {
+                    return RedirectToAction("Index", "Home", new { area = "Assistants" });
+                }
+                else
+                {
+                    return LocalRedirect(returnUrl);
+                }
             }
             if (result.IsLockedOut)
             {
@@ -279,7 +300,27 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         }
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                        return LocalRedirect(returnUrl);
+
+                        if (user.AccountType == AccountType.Student)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "Students" });
+                        }
+                        else if (user.AccountType == AccountType.Teacher)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "Teachers" });
+                        }
+                        else if (user.AccountType == AccountType.CenterAdmin)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
+                        }
+                        else if (user.AccountType == AccountType.Assistant)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "Assistants" });
+                        }
+                        else
+                        {
+                            return LocalRedirect(returnUrl);
+                        }
                     }
                 }
                 foreach (var error in result.Errors)

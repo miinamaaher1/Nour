@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Students\Data\**" />
+    <Compile Remove="Areas\Students\Models\**" />
+    <Compile Remove="Areas\Teachers\Data\**" />
+    <Compile Remove="Areas\Teachers\Models\**" />
+    <Content Remove="Areas\Students\Data\**" />
+    <Content Remove="Areas\Students\Models\**" />
+    <Content Remove="Areas\Teachers\Data\**" />
+    <Content Remove="Areas\Teachers\Models\**" />
+    <EmbeddedResource Remove="Areas\Students\Data\**" />
+    <EmbeddedResource Remove="Areas\Students\Models\**" />
+    <EmbeddedResource Remove="Areas\Teachers\Data\**" />
+    <EmbeddedResource Remove="Areas\Teachers\Models\**" />
+    <None Remove="Areas\Students\Data\**" />
+    <None Remove="Areas\Students\Models\**" />
+    <None Remove="Areas\Teachers\Data\**" />
+    <None Remove="Areas\Teachers\Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.3" />
@@ -31,12 +50,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Students\Data\" />
-    <Folder Include="Areas\Students\Models\" />
     <Folder Include="Areas\Teachers\Controllers\" />
-    <Folder Include="Areas\Teachers\Data\" />
-    <Folder Include="Areas\Teachers\Models\" />
     <Folder Include="Areas\Teachers\Views\" />
+    <Folder Include="wwwroot\js\Students\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,800 @@
+﻿::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--clr-surface);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--clr-primary);
+    border-radius: 10px;
+    border: 2px solid var(--clr-surface);
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--clr-secondary);
+    }
+
+
+
+.group-card {
+    background-color: var(--clr-surface);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--clr-border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+    .group-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+/* Element - Group Card Image */
+.group-card__image {
+    width: 100%;
+    height: 140px;
+    /* decreased from 180px */
+    background-color: var(--clr-primary);
+    overflow: hidden;
+}
+
+    .group-card__image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+/* Element - Group Card Teacher */
+.group-card__teacher {
+    bottom: -25px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    /* Ensure this layer appears above others */
+}
+
+.group-card__teacher-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid var(--clr-surface);
+    background-color: var(--clr-accent);
+    overflow: hidden;
+    z-index: 11000;
+    position: absolute;
+    top: 32%;
+    left: 15px;
+}
+
+    .group-card__teacher-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+/* Element - Group Card Content */
+.group-card__content {
+    padding: 35px 15px 15px;
+    /* reduced padding */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.group-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    margin-bottom: 10px;
+}
+
+.group-card__subject {
+    font-size: 1rem;
+    color: var(--clr-text-secondary);
+    margin-bottom: 15px;
+}
+
+/* Element - Group Card Features */
+.group-card__features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.group-card__feature {
+    display: flex;
+    align-items: center;
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+    .group-card__feature i {
+        margin-right: 5px;
+    }
+
+/* Element - Group Card Footer */
+.group-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--clr-border);
+}
+
+.group-card__price {
+    font-weight: 700;
+    color: var(--clr-secondary);
+    font-size: 1.2rem;
+}
+
+.group-card__capacity {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--clr-text-secondary);
+}
+
+    .group-card__capacity i {
+        margin-right: 5px;
+    }
+
+/* Block - Carousel */
+.group-carousel {
+    position: relative;
+    /* Make sure the container is a positioned element */
+    padding: 20px 0;
+    /* Reduced overall vertical padding */
+}
+
+.group-carousel__container {
+    overflow: hidden;
+}
+
+.group-carousel__track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.group-carousel__slide {
+    flex: 0 0 100%;
+    padding: 10px 15px;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .group-carousel__slide {
+        flex: 0 0 50%;
+    }
+}
+
+@media (min-width: 992px) {
+    .group-carousel__slide {
+        flex: 0 0 33.333%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .group-carousel__slide {
+        flex: 0 0 25%;
+    }
+}
+
+/* Element - Carousel Controls */
+.group-carousel__controls {
+    position: absolute;
+    top: 50%;
+    left: -35px;
+    right: -35px;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none;
+    /* Allow clicks to pass through except on buttons */
+}
+
+.group-carousel__button {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    pointer-events: auto;
+    /* Enable interaction for buttons */
+    z-index: 15;
+    /* Ensure controls are above the carousel slides */
+}
+
+    /* Hover effect on buttons remains unchanged */
+    .group-carousel__button:hover {
+        background-color: var(--clr-secondary);
+    }
+
+.group-carousel__dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 8px;
+}
+
+.group-carousel__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--clr-border);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.group-carousel__dot--active {
+    background-color: var(--clr-primary);
+    transform: scale(1.2);
+}
+
+/* Container for the entire component */
+.group-section {
+    margin-top: 20px;
+}
+
+.group-section__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    padding-left: 20px;
+}
+
+    .group-section__title h2 {
+        color: var(--clr-primary);
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+
+
+
+    .group-section__title .view-all-link {
+        /* Example: */
+        color: var(--clr-primary);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: semi-bold;
+        padding-right: 20px;
+        cursor: pointer;
+    }
+
+        /* Example hover effect for the link */
+        .group-section__title .view-all-link:hover {
+            text-decoration: underline;
+        }
+
+
+/* Sessions */
+/* Sessions Carousel Specific Styles */
+.sessions-carousel {
+    position: relative;
+    padding: 20px 0;
+}
+
+.sessions-carousel__container {
+    overflow: hidden;
+    margin-top: -20px;
+}
+
+.sessions-carousel__track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.sessions-carousel__slide {
+    flex: 0 0 100%;
+    padding: 10px 15px;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .sessions-carousel__slide {
+        flex: 0 0 50%;
+    }
+}
+
+@media (min-width: 992px) {
+    .sessions-carousel__slide {
+        flex: 0 0 33.333%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .sessions-carousel__slide {
+        flex: 0 0 25%;
+    }
+}
+
+/* Session Card Styles */
+.session-card {
+    background-color: var(--clr-surface);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--clr-border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 15px;
+}
+
+    .session-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px var(--clr-overlay);
+    }
+
+.session-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.session-section__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+    .session-section__title h2 {
+        color: var(--clr-primary);
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .session-section__title .view-all-link {
+        /* Example: */
+        color: var(--clr-primary);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: semi-bold;
+        padding-right: 20px;
+        cursor: pointer;
+    }
+
+        /* Example hover effect for the link */
+        .session-section__title .view-all-link:hover {
+            text-decoration: underline;
+        }
+
+.session-card__status {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.session-card__status--online {
+    background-color: #e6f7ea;
+    color: #28a745;
+}
+
+.session-card__status--offline {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.session-card__status i {
+    margin-right: 5px;
+}
+
+.session-card__duration {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--clr-text-secondary);
+}
+
+    .session-card__duration i {
+        margin-right: 5px;
+    }
+
+.session-card__date {
+    font-size: 0.9rem;
+    color: var(--clr-text-secondary);
+    margin-bottom: 10px;
+}
+
+.session-card__subject {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    margin-bottom: 15px;
+}
+
+.session-card__teacher {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--clr-border);
+}
+
+.session-card__teacher-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+    .session-card__teacher-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.session-card__teacher-name {
+    font-size: 0.9rem;
+    color: var(--clr-text-secondary);
+}
+
+/* Sessions Carousel Controls */
+.sessions-carousel__controls {
+    position: absolute;
+    top: 50%;
+    left: -35px;
+    right: -35px;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.sessions-carousel__button {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    pointer-events: auto;
+    z-index: 15;
+}
+
+    .sessions-carousel__button:hover {
+        background-color: var(--clr-secondary);
+    }
+
+.sessions-carousel__dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 8px;
+}
+
+.sessions-carousel__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--clr-border);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sessions-carousel__dot--active {
+    background-color: var(--clr-primary);
+    transform: scale(1.2);
+}
+
+
+
+
+/* Base circle button */
+.circle-btn {
+    position: fixed;
+    height: 45px;
+    width: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    transition: background-color 0.3s ease;
+}
+
+    /* Hover effect using modifier class */
+    .circle-btn:hover {
+        background-color: var(--clr-secondary);
+    }
+
+/* Specific position modifiers */
+.btn-top-right {
+    top: 15px;
+    right: 15px;
+}
+
+.btn-top-right-offset {
+    top: 15px;
+    right: 30px;
+}
+
+
+.notification-badge {
+    position: absolute;
+    top: -10px;
+    right: -5px;
+    height: 25px;
+    width: 25px;
+    font-size: small;
+    border-radius: 50%;
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Invert badge colors when parent is hovered */
+.announcement-btn:hover .notification-badge {
+    background-color: var(--clr-text-on-primary);
+    color: var(--clr-secondary);
+}
+
+
+
+/* Modal Styling */
+
+/* Block - Modal */
+.announcements-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--clr-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Scrollable content area */
+.announcements-content {
+    max-height: 90vh;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+    .announcements-content::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+
+    .announcements-content::-webkit-scrollbar-thumb {
+        width: 0;
+        height: 0;
+    }
+
+.announcements-modal--active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.announcements-modal__content {
+    background-color: var(--clr-surface);
+    border-radius: 12px;
+    width: 95%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    animation: modal-slide-in 0.3s ease;
+    border: 1px solid var(--clr-border);
+}
+
+@keyframes modal-slide-in {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.announcements-modal__header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--clr-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: var(--clr-surface);
+    z-index: 10;
+    border-radius: 12px 12px 0 0;
+}
+
+.announcements-modal__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    margin: 0;
+}
+
+.announcements-modal__close {
+    background: none;
+    border: none;
+    color: var(--clr-text-secondary);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s ease;
+}
+
+    .announcements-modal__close:hover {
+        color: var(--clr-secondary);
+    }
+
+.announcements-modal__body {
+    padding: 24px;
+}
+
+/* Block - Announcement List */
+.announcement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Block - Announcement Item */
+.announcement-item {
+    background-color: var(--clr-background);
+    border-radius: 8px;
+    padding: 16px;
+    border-left: 4px solid var(--clr-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .announcement-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+.announcement-item--important {
+    border-left-color: var(--clr-secondary);
+}
+
+.announcement-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.announcement-item__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--clr-text-primary);
+    margin: 0 0 4px 0;
+}
+
+
+
+.announcement-item__group {
+    font-size: 0.9rem;
+    color: var(--clr-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s ease;
+/*    margin-right: 12px;*/
+}
+
+    .announcement-item__group:last-child {
+        margin-right: 0;
+    }
+
+    .announcement-item__group i {
+        font-size: 0.85rem;
+    }
+
+    .announcement-item__group:hover {
+        color: var(--clr-secondary);
+        text-decoration: underline;
+    }
+
+.announcement-item__groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.announcement-item__date {
+    font-size: 0.85rem;
+    color: var(--clr-text-secondary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.announcement-item__body {
+    font-size: 0.95rem;
+    color: var(--clr-text-primary);
+    line-height: 1.5;
+}
+
+.announcement-item__badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .announcements-modal__content {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+        height: 100%;
+        max-height: 100%;
+    }
+
+    .announcements-modal__header {
+        border-radius: 0;
+    }
+
+    .announcement-item__header {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+}

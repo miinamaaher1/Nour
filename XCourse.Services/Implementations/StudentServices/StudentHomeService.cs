@@ -49,7 +49,7 @@ namespace XCourse.Services.Implementations.Student
             var upcomingSessions = await MapSessionsToVMSessions(sessions,10);
 
             var groupViewModels = recommendedGroups
-            .Select(g => new GroupViewModel
+            .Select(g => new RecommendedGroupViewModel
             {
                 GroupID = g.ID,
                 GroupTeacherName = g.Teacher != null && g.Teacher.AppUser != null
@@ -233,15 +233,41 @@ namespace XCourse.Services.Implementations.Student
 
         }
 
-        public async Task<List<Announcement>> GetStudentAnnouncements(int studentId)
+        public async Task<List<AnnouncementVM>> GetStudentAnnouncements(int studentId)
         {
-            var announcements = await _unitOfWork.Announcements.FindAllAsync(
-                a => a.Group.Students.Any(st => st.ID == studentId)&&
-                a.Group.IsActive == true,
-                [ "Group", "Group.Teacher.AppUser" ]
+
+            var studentGroups = await _unitOfWork.Groups.FindAllAsync(g => g.Students!.Any(std => std.ID == studentId));
+            var groupIds = studentGroups.Select(g => g.ID).ToList();
+
+            var announcements = await _unitOfWork.Announcements.FindAllAsync(announcement =>
+                announcement.Groups!.Any(g => groupIds.Contains(g.ID)), ["Groups", "Groups.Subject"]
             );
 
-            return await Task.FromResult(announcements.ToList());
+            var announcementVMs = new List<AnnouncementVM>();
+            foreach (var announcement in announcements)
+            {
+                
+                var relevantGroups = announcement.Groups!
+                    .Where(g => groupIds.Contains(g.ID))
+                    .Select(g => new AnnouncementGroup
+                    {
+                        GroupID = g.ID,
+                        GroupSubject = g.Subject?.Topic ?? string.Empty
+                    })
+                    .ToList();
+
+                announcementVMs.Add(new AnnouncementVM
+                {
+                    ID = announcement.ID,
+                    IsImportant = announcement.IsImportant,
+                    Title = announcement.Title,
+                    Body = announcement.Body,
+                    DateTime = announcement.DateTime,
+                    GroupSubjectNames = relevantGroups
+                });
+            }
+
+            return announcementVMs;
         }
 
         private async Task<ICollection<SessionViewModel>> MapSessionsToVMSessions(ICollection<Session> sessions , int numOfRows=0)
