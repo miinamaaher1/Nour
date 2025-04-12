@@ -1,0 +1,248 @@
+﻿@model List<TeacherCardVM>
+@{
+    ViewData["Title"] = "Teachers";
+}
+
+<div class="col-12 row">
+    
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-lg-6 col-12">
+            <div class="search-container">
+                <input class="search" id="sessionSearch" placeholder="Search..." />
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+    <div class="row">
+        <div class="col-12 teacher-cards-container">
+            @foreach (var card in Model)
+            {
+                <div class="group-carousel__slide">
+                    <a style="text-decoration:none;" asp-action="Profile" asp-controller="Teacher" asp-area="Students" asp-route-Id="@card.TeacherID">
+                        <div class="session-card">
+                            <div class="session-card__teacher">
+                                <div class="session-card__teacher-img">
+                                    <img src="@(card.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(card.TeacherProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                                         alt="Teacher">
+                                </div>
+                                <div class="session-card__subject">@card.TeacherName</div>
+                            </div>
+                            <div class="session-card__header">
+                                @if (card.IsAvailableForPrivateGroups)
+                                {
+                                    <span class="group-card__feature">
+                                        <i class="fa-solid fa-circle-info"></i>&nbsp;Offers Private Groups
+                                    </span>
+                                }
+                                <div class="session-card__teacher-name">@card.TagLine</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Layout: Search bar */
+        .search {
+            margin-bottom: 20px; /* Space between search bar and cards */
+            padding: 10px 35px 10px 15px; /* Add padding for text and icon space */
+            border: 1px solid var(--clr-border);
+            border-radius: 25px;
+            font-size: 1rem;
+            color: var(--clr-text-primary);
+            background-color: var(--clr-surface);
+            width: 100%; /* Make it take full width of its container */
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+            transition: border-color 0.3s ease; /* Smooth transition for focus state */
+        }
+
+        .search::placeholder {
+            color: var(--clr-text-secondary);
+        }
+
+        .search:focus {
+            outline: none; /* Remove default focus outline */
+            border-color: var(--clr-primary); /* Change border color on focus */
+        }
+
+        /* Styling for the container to hold the input and the icon */
+        .search-container {
+            position: relative;
+            margin: 15px auto;
+        }
+
+        .search-container i, .search-container svg { /* Style the Font Awesome icon */
+            position: absolute;
+            top: 35%;
+            right: 15px; /* Adjust as needed */
+            transform: translateY(-50%);
+            color: var(--clr-text-secondary);
+            font-size: 1.2rem; /* Adjust icon size */
+            cursor: pointer;
+        }
+
+        .teacher-cards-container{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .session-card {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--clr-border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 15px;
+            width: 100%;
+            height: 160px;
+        }
+
+        .session-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px var(--clr-overlay);
+        }
+
+        .session-card__header {
+            margin-bottom: 15px;
+            margin-top: 5px;
+            border-top: 1px solid var(--clr-border);
+        }
+
+        .session-card__teacher {
+            display: flex;
+            align-items: center;
+            padding-top: 15px;
+        }
+
+        .session-card__teacher-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+
+        .session-card__teacher-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .session-card__teacher-name {
+            font-size: 0.9rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .session-card__subject {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--clr-primary);
+        }
+
+        .group-carousel__slide {
+            flex: 0 0 100%;
+            padding: 10px 15px;
+            box-sizing: border-box;
+            min-width: 250px;
+        }
+
+        .group-card__feature {
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        @@media (max-width: 575.98px) {
+            .search {
+                padding: 8px 35px 8px 12px;
+                font-size: 0.95rem;
+            }
+
+            .search-container i {
+                font-size: 1rem;
+                top: 50%;
+            }
+        }
+
+        @@media (min-width: 768px) {
+            .group-carousel__slide {
+                flex: 0 0 50%;
+            }
+        }
+
+        @@media (min-width: 992px) {
+            .group-carousel__slide {
+                flex: 0 0 33.333%;
+            }
+        }
+
+        @@media (min-width: 1200px) {
+            .group-carousel__slide {
+                flex: 0 0 25%;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('sessionSearch').addEventListener('keyup', function () {
+            const searchQuery = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.teacher-cards-container .group-carousel__slide');
+
+            let matchFound = false;
+
+            cards.forEach(card => {
+                const teacherName = card.querySelector('.session-card__subject')?.textContent.toLowerCase() || '';
+                const subjectName = card.querySelector('.session-card__teacher-name')?.textContent.toLowerCase() || '';
+                const isOnline = card.querySelector('.group-card__feature')?.textContent.toLowerCase() || '';
+
+                const isVisible = teacherName.includes(searchQuery) || subjectName.includes(searchQuery)|| isOnline.includes(searchQuery);
+
+                card.style.display = isVisible ? 'block' : 'none';
+
+                if (isVisible) {
+                    matchFound = true;
+                }
+            });
+
+            // Optional: Add empty state message
+            if (!matchFound) {
+                if (!document.getElementById('emptyMessage')) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.id = 'emptyMessage';
+                    emptyMsg.textContent = 'No matching teachers found.';
+                    emptyMsg.style.textAlign = 'center';
+                    emptyMsg.style.color = 'var(--clr-text-secondary)';
+                    emptyMsg.style.marginTop = '20px';
+                    document.getElementsByClassName('teacher-cards-container')[0].appendChild(emptyMsg);
+                }
+            } else {
+                const emptyMsg = document.getElementById('emptyMessage');
+                if (emptyMsg) {
+                    emptyMsg.remove();
+                }
+            }
+        });
+    </script>
+}

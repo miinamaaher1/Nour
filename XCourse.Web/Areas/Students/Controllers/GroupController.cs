@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using XCourse.Core.DTOs.StudentDTOs;
+using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.StudentServices;
 
@@ -56,7 +58,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             return Json(requestStatus);
         }
 
-        public IActionResult getAll()
+        public IActionResult MyGroups()
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var groups = StudentGroup.GetStudentGroup(userID);
@@ -71,6 +73,17 @@ namespace XCourse.Web.Areas.Students.Controllers
             if (group == null) return NotFound();
 
             return View(group);
+        }
+
+        public async Task<IActionResult> Recommended()
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var groups = await StudentGroup.RecommendedGroupService(userID!);
+            if (groups == null)
+            {
+                groups = new List<RecommendedGroupViewModel>();
+            }
+            return await Task.FromResult( View(groups));
         }
     }
 }

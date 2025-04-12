@@ -51,6 +51,8 @@
 
   <ItemGroup>
     <Folder Include="Areas\Teachers\Controllers\" />
+    <Folder Include="Areas\Teachers\Views\" />
+    <Folder Include="wwwroot\js\Students\" />
   </ItemGroup>
 
 </Project>

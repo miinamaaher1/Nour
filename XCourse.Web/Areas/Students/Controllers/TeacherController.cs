@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.StudentServices;
 
@@ -11,6 +12,12 @@ namespace XCourse.Web.Areas.Students.Controllers
         public TeacherController(ITeacherProfileService teacherProfileService)
         {
             _teacherProfileService = teacherProfileService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var teachers = await _teacherProfileService.GetAllTeachersAsync(User);
+            return View(teachers);
         }
         public IActionResult Profile(int id)
         {

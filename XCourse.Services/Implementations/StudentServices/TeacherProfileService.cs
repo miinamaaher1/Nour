@@ -77,5 +77,37 @@ namespace XCourse.Services.Implementations.StudentServices
 
             return profile;
         }
+
+        public async Task<ICollection<TeacherCardVM>> GetAllTeachersAsync(ClaimsPrincipal user)
+        {
+            var appUser = await _userManager.GetUserAsync(user);
+
+            var student = _unitOfWork.Students.Find(s => s.AppUserID == appUser.Id  );
+
+            if (student == null) return new List<TeacherCardVM>();
+
+            var teachers = _unitOfWork.Teachers.FindAll( t=> t.Subjects!.Any(s=> s.Year== student.Year && s.Major==student.Major  ), ["Subjects", "AppUser"]);
+
+            if (teachers == null) return new List<TeacherCardVM>();
+
+            var teacherCards = teachers.Select(
+
+                t => new TeacherCardVM()
+                {
+                    TeacherID=t.ID,
+                    TeacherName = t.AppUser!.FirstName + " " + t.AppUser.LastName,
+                    TeacherProfilePicture = t.AppUser.ProfilePicture,
+                    TagLine = t.TagLine!,
+                    IsAvailableForPrivateGroups = t.IsAvailableForPrivateGroups,
+                    PrivateGroupPrice = t.PrivatePrice,
+
+
+                }
+
+            ).ToList();
+
+            return Task.FromResult(teacherCards).Result;
+
+        }
     }
 }

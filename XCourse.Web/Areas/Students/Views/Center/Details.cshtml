@@ -32,8 +32,7 @@
                         </small>
                     </div>
                 }
-                <div id="succ-msg" style="background-color:darkgreen; border-left: solid green 2px; border-radius: 5px"
-                     class="d-none"></div>
+                
             </div>
         </div>
         <div class="row">
@@ -94,8 +93,6 @@
         <div id="xmodal">
             <div id="xmodal-header">
                 <h2>Book A Room</h2>
-                <div id="err-msg" style="background-color:darkred; border-left: solid red 2px; border-radius: 5px"
-                     class="d-none"></div>
             </div>
             <div id="xmodal-body">
                 <div class="day-picker">
@@ -332,8 +329,6 @@
     <script>
         const close_modal = document.getElementById("close-modal")
         const submit_btn = document.getElementById("submit-request")
-        const succ_msg = document.getElementById("succ-msg")
-        const err_msg = document.getElementById("err-msg")
         const modal_container = document.getElementById("xmodal-container")
         const dateDisplay = document.getElementById('date-display');
         const leftArrow = document.getElementById('left-arrow');
@@ -379,14 +374,10 @@
             let result = await getData(url, "POST", request)
 
             if (result.isValid) {
-                succ_msg.innerText = "request sent successfully"
-                succ_msg.classList.remove("d-none")
-                err_msg.classList.add("d-none")
                 modal_container.classList.add("d-none")
+                showSuccessToast("Ok", 'Reserved Successfully',5);
             } else {
-                err_msg.innerText = result.errors[0]
-                err_msg.classList.remove("d-none")
-                succ_msg.classList.add("d-none")
+				showErrorToast("Error", result.errors[0], 5);
             }
         }
 

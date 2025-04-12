@@ -15,6 +15,9 @@ namespace XCourse.Services.Interfaces.StudentServices
         public List<StudentGroup> GetStudentGroup(string id);
         public GroupDetails Details(int id);
 
+        public  Task<ICollection<RecommendedGroupViewModel>> RecommendedGroupService(string guid);
+
+
 
 
 

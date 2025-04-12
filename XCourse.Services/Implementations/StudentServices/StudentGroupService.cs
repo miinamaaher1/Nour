@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.StudentServices;
+using XCourse.Core.Entities;
 
 
 namespace XCourse.Services.Implementations.StudentServices
@@ -97,9 +98,60 @@ namespace XCourse.Services.Implementations.StudentServices
             }
 
             return studentGroups;
+        
+        }
+
+        public async Task<ICollection<RecommendedGroupViewModel>> RecommendedGroupService(string guid)
+        {
+            var student = await _unitOfWork.Students.FindAsync(
+              x => x.AppUserID == guid,
+              ["Groups", "AppUser"]
+             );
+
+
+            if (student == null) return new List<RecommendedGroupViewModel>();
+
+          
+            // Fetch groups based on the student's Major and Year with related data
+            var groups = await _unitOfWork.Groups.FindAllAsync(
+                   g => g.Subject != null &&
+                     g.IsActive == true &&
+                     g.Subject.Major == student.Major &&
+                     g.Subject.Year == student.Year &&
+                     g.IsPrivate == false &&
+                     g.MaxStudents > g.CurrentStudents &&
+                     !(g.IsGirlsOnly == true && student.AppUser.Gender == Gender.Male) &&
+                     g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower() &&
+                     !g.Students.Any(st => st.ID == student.ID),
+                        ["Subject", "Students", "Teacher.AppUser"]
+            );
+
+
+            var recommendedGroups = groups
+          .Select(g => new RecommendedGroupViewModel
+          {
+              GroupID = g.ID,
+              GroupTeacherName = g.Teacher != null && g.Teacher.AppUser != null
+                  ? g.Teacher.AppUser.FirstName + " " + g.Teacher.AppUser.LastName
+                  : "Unknown Group Teacher",
+              SubjectName = g.Subject != null ? g.Subject.Topic : "Unknown Subject",
+              PricePerSession = g.PricePerSession,
+              IsOnline = g.IsOnline,
+              IsGirlsOnly = g.IsGirlsOnly,
+              MaxStudents = g.MaxStudents,
+              CurrentStudentsCount = g.Students != null ? g.CurrentStudents : 0,
+              TeacherProfilePicture = g.Teacher.AppUser != null ? g.Teacher.AppUser.ProfilePicture : null,
+              GroupPicture = g.CoverPicture
+          }).ToList();
+
+
+            return await Task.FromResult(recommendedGroups.ToList());
+
 
 
         }
+
+
     }
 }
 
