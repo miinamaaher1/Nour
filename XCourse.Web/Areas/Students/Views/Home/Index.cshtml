@@ -85,7 +85,7 @@
             <div class="group-carousel__container">
                 <div class="session-section__title">
                     <h2>Upcoming Sessions</h2>
-                    <a asp-actio="Index" asp-controller="Session" asp-area="Students" class="view-all-link"> View All</a>
+                    <a asp-action="Index" asp-controller="Session" asp-area="Students" class="view-all-link"> View All</a>
                 </div>
                 <div class="group-carousel__track" id="sessionsCarouselTrack">
                     <!-- Session 1 -->
@@ -111,7 +111,7 @@
                                     }
                                  
                                     <div class="session-card__duration">
-                                        <i class="fas fa-clock"></i>
+                                            <i class="fa-solid fa-hourglass-half"></i>
                                             @session.Duration!.Value.ToString(@"hh\:mm")
                                     </div>
                                 </div>

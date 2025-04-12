@@ -45,6 +45,7 @@ namespace XCourse.Services.Implementations.StudentServices
                                                          && g.CurrentStudents < g.MaxStudents
                                                          && g.Subject.Year == stud.Year
                                                          && g.Subject.Major == stud.Major
+                                                         && !g.IsPrivate
                                                          , ["Subject"]);
 
             var availableGroups = groups.Except(stud.Groups).ToList();

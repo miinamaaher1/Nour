@@ -1,13 +1,8 @@
 using Microsoft.Extensions.Configuration;
+using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.StudentsViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.StudentServices;
-using XCourse.Core.Entities;
 
 
 namespace XCourse.Services.Implementations.StudentServices
@@ -27,17 +22,13 @@ namespace XCourse.Services.Implementations.StudentServices
         public GroupDetails Details(int id)
         {
             var group = _unitOfWork.Groups.Find(g => g.ID == id,
-
-            new string[] { "Address", "DefaultRoom", "Teacher", "Teacher.AppUser", "Subject" }
-
-
-                );
+                new string[] { "Address", "DefaultRoom.Center", "Teacher.AppUser", "Subject", "GroupDefaults" }
+            );
 
             if (group == null)
             {
                 return new GroupDetails();
             }
-
 
             GroupDetails details = new GroupDetails()
             {
@@ -45,24 +36,30 @@ namespace XCourse.Services.Implementations.StudentServices
                 Address = group.Address,
                 Location = group.Location,
                 Key = _configuration["GoogleMaps:ApiKey"],
-                DefaultSessionDays = group.DefaultSessionDays,
                 DefaultRoom = group.DefaultRoom,
                 Sessions = _unitOfWork.Sessions.FindAll(s => s.GroupID == group.ID, new string[] { "RoomReservation.Room" }, null, 3).ToList(),
                 Teacher = group.Teacher,
-                IsActive = group.IsActive,
                 IsOnline = group.IsOnline,
                 IsPrivate = group.IsPrivate,
                 CoverPicture = group.CoverPicture,
-                Subject = group.Subject.Topic
-
-
-
+                Subject = group.Subject,
+                PricePerSession = group.PricePerSession,
+                Defaults = new List<DefaultTimeVM>()
             };
+
+            foreach (var def in group.GroupDefaults)
+            {
+                var time = new DefaultTimeVM()
+                {
+                    WeekDay = def.WeekDay,
+                    StartTime = def.StartTime,
+                    EndTime = def.EndTime
+                };
+                details.Defaults.Add(time);
+            }
 
             return details;
         }
-
-
 
         public List<StudentGroup> GetStudentGroup(string id)
         {
@@ -77,28 +74,20 @@ namespace XCourse.Services.Implementations.StudentServices
                 studentGroups.Add(new StudentGroup()
                 {
                     GroupId = group.ID,
-                    Address = group.Address,
                     DefaultSessionDays = group.DefaultSessionDays,
-                    IsActive = group.IsActive,
+                    IsGirlsOnly = group.IsGirlsOnly,
 
                     IsPrivate = group.IsPrivate,
                     IsOnline = group.IsOnline,
 
                     CoverPicture = group.CoverPicture,
                     TeacherName = group.Teacher?.AppUser?.FirstName + " " + group.Teacher?.AppUser?.LastName,
-                    Subject = group.Subject?.Topic
+                    Subject = group.Subject?.Topic,
 
-
-
-
-
-
+                    ProfilePicture = group.Teacher?.AppUser?.ProfilePicture
                 });
-
             }
-
             return studentGroups;
-        
         }
 
         public async Task<ICollection<RecommendedGroupViewModel>> RecommendedGroupService(string guid)
@@ -111,10 +100,10 @@ namespace XCourse.Services.Implementations.StudentServices
 
             if (student == null) return new List<RecommendedGroupViewModel>();
 
-          
+
             // Fetch groups based on the student's Major and Year with related data
             var groups = await _unitOfWork.Groups.FindAllAsync(
-                   g => g.Subject != null &&
+                 g => g.Subject != null &&
                      g.IsActive == true &&
                      g.Subject.Major == student.Major &&
                      g.Subject.Year == student.Year &&
@@ -143,15 +132,8 @@ namespace XCourse.Services.Implementations.StudentServices
               TeacherProfilePicture = g.Teacher.AppUser != null ? g.Teacher.AppUser.ProfilePicture : null,
               GroupPicture = g.CoverPicture
           }).ToList();
-
-
             return await Task.FromResult(recommendedGroups.ToList());
-
-
-
         }
-
-
     }
 }
 
