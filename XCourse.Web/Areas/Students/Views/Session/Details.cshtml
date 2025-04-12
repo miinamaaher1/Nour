@@ -1,458 +1,570 @@
-﻿@model XCourse.Core.ViewModels.StudentsViewModels.SessionDetailsViewModel
+﻿@using XCourse.Core.DTOs.StudentDTOs
+@model XCourse.Core.ViewModels.StudentsViewModels.SessionDetailsViewModel
+
 @{
+
     ViewData["Title"] = "Session Details";
+
     bool sessionPassed = DateTime.Now > Model.Session.EndDateTime;
     bool hasAttended = Model.Attendances != null && Model.Attendances.HasAttended.HasValue && Model.Attendances.HasAttended.Value;
+    bool hasFeedback = hasAttended && Model.Attendances.Feedback != null;
+    bool hasExamMark = hasAttended && Model.Attendances.ClassWorkGrade != null;
+    bool hasHomeMark = hasAttended && Model.Attendances.HomeWorkGrade != null;
+    bool isOnline = Model.Session.Group.IsOnline;
+    var startTime = Model.Session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss");
 }
 
-<div class="container mt-4">
-    <div class="row mb-3">
-        <div class="col">
-            <h1><i class="fas fa-calendar-alt"></i> Session Details</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/Sessions">Sessions</a></li>
-                    <li class="breadcrumb-item active">Details</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
+@section Styles {
+<link rel="stylesheet" href="~/css/Students/SessionDetails.css">
+}
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0"><i class="fas fa-info-circle"></i> Session Information</h4>
-        </div>
-        <div class="card-body">
-            <div class="row d-flex align-items-center justify-content-center">
-                        <div class="card-header position-relative text-center p-5" style="
-                                 width:70%; height: 300px;  /* Adjust height as needed */
-                                 background: url('@(Model.Session.Group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session.Group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))')
-                                 center/cover no-repeat;">
-                        </div>
-                        <div class="text-center position-relative" style="margin-top: -60px;">
-                            <img src="@(Model.Session.Group.Teacher.AppUser.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session.Group.Teacher.AppUser.ProfilePicture) : Url.Content("~/images/default_profile.png"))"
-                                 class="rounded-circle border border-3 border-primary shadow"
-                                 style="width: 120px; height: 120px; object-fit: cover;" alt="Teacher Profile">
-                            <h5 class="mt-2 text-primary fw-bold">@Model.Session.Group.Teacher.AppUser.FirstName @Model.Session.Group.Teacher.AppUser.LastName</h5>
-                            <p class="text-muted">@Model.Session.Group.Teacher.AppUser.Email</p>
-                        </div>
-                        <hr />
-                <div class="col-md-6">
+<div class="session">
+    <!-- 1. Profile Section - Improved positioning -->
+    <section class="session__profile">
+        <div class="session__profile__container"
+        style="background-image : url('@(Model.Session.Group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session.Group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))');">
+            <div class="session__profile__overlay"></div>
+            <div class="session__profile__header">
+                <img src="@(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                alt="Student Profile"
+                class="session__profile__image">
 
-                    <div class="mb-3">
-
-
-                        <label class="form-label fw-bold"><i class="fas fa-clock"></i> Date and Time:</label>
-                        <div class="d-flex">
-                            <div class="badge bg-info me-2">
-                                Start: @Model.Session.StartDateTime.ToString("MMM dd, yyyy - h:mm tt")
-                            </div>
-                            <div class="badge bg-warning">
-                                End: @Model.Session.EndDateTime.ToString("MMM dd, yyyy - h:mm tt")
-                            </div>
-                        </div>
+                <div class="session__profile__details">
+                    <h2 class="session__profile__name">@Model.Session?.Group?.Teacher?.AppUser?.FirstName @Model.Session?.Group?.Teacher?.AppUser?.LastName</h2>
+                    <div class="session__profile__info">
+                        <span>@Model.Session?.Group?.Teacher?.AppUser?.Email</span>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold"><i class="fas fa-hourglass-half"></i> Duration:</label>
-                        <p>@(Model.Session.Duration.HasValue ? $"{Model.Session.Duration.Value.Hours}h {Model.Session.Duration.Value.Minutes}m" : "Not specified")</p>
-                    </div>
-
                 </div>
+            </div>
+        </div>
+    </section>
 
-                <div class="col-md-6">
-                    @if (Model.Session.IsOnline)
+    <!-- 2. Info Section -->
+    <section class="session__info">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="session__info-item session__info-time">
+                        Start: @Model.Session.StartDateTime.ToString("MMM dd, yyyy - h:mm tt")
+                    </div>
+                    <div class="session__info-item session__info-time">
+                        Duration: @(Model.Session.Duration.HasValue
+                        ? Model.Session.Duration.Value.ToString(@"hh\:mm")
+                        : "N/A")
+                    </div>
+                    <!-- Countdown Timer -->
+                    <div class="session__info-item session__info-counter">
+                        <span id="sessionCounter" class="session__info-counter-value">00:00:00</span>
+                    </div>
+                    @if (isOnline)
                     {
-                        <div class="mb-3">
-                            <label class="form-label fw-bold"><i class="fas fa-video"></i> Online Session:</label>
-                            <p>
-                                @if (!string.IsNullOrEmpty(Model.Session.URL))
-                                {
-                                    <a href="@Model.Session.URL" target="_blank" class="btn btn-sm btn-success">
-                                        <i class="fas fa-external-link-alt"></i> Join Meeting
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">URL not provided</span>
-                                }
-                            </p>
+                        <div class="session__info-item">
+                            <a href="@Model.Session.URL" class="session__info-link">
+                                Join Session <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
                         </div>
                     }
                     else
                     {
-                        <div class="mb-3">
-                            <label class="form-label fw-bold"><i class="fas fa-map-marker-alt"></i> Location:</label>
-                            @if (Model.Session.Address != null)
-                            {
-                                <p>@Model.Session.Location</p>
-                                <p>@Model.Session.Address.Neighborhood - @Model.Session.Address.City - @Model.Session.Address.Governorate  </p>
-                            }
-                            else
-                            {
-                                <p class="text-muted">No address provided</p>
-                            }
-                        </div>
-                    }
-
-                    @if (Model.Session.RoomReservation != null && Model.Session.RoomReservation.Room != null)
-                    {
-                        <div class="alert alert-info">
-                            <h5><i class="fas fa-door-open"></i> Room Details</h5>
-                            <p><strong>Name:</strong> @Model.Session.RoomReservation.Room.Name</p>
-                            <p><strong>Capacity:</strong> @Model.Session.RoomReservation.Room.Capacity people</p>
-                            <p><strong>Equipment:</strong> @Model.Session.RoomReservation.Room.Equipment</p>
-                            
-                            @if (Model.Session.RoomReservation.Room.PreviewPicture != null)
-                            {
-                                <button type="button" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-image"></i> View Room
-                                </button>
-                            }
+                        <div class="session__info-item session__info-location">
+                            @Model.Session.Address.Street St, @Model.Session.Address.City City, @Model.Session.Address.Governorate
                         </div>
                     }
                 </div>
+
+                @if (!isOnline)
+                {
+                    <div class="col-md-4 d-flex justify-content-center align-items-center">
+                        <div class="session__info-map">
+                            @if (Model.Session.Location != null)
+                            {
+                                <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.MapKey, OriginX=Model.Session.Location.X, OriginY=Model.Session.Location.Y }" style="width:100%; height:100%" />
+                            }
+                            else
+                            {
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
         </div>
-    </div>
+    </section>
 
-    @if (sessionPassed)
+    @if (DateTime.Now > Model.Session.StartDateTime)
     {
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0"><i class="fas fa-clipboard-check"></i> Attendance & Feedback</h4>
-            </div>
-            <div class="card-body">
-                @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue)
-                {
-                    <div class="alert alert-@(hasAttended ? "success" : "danger")">
-                        <i class="fas fa-@(hasAttended ? "check-circle" : "times-circle")"></i>
-                        You are marked as <strong>@(hasAttended ? "Present" : "Absent")</strong> for this session.
-                    </div>
-
-                    @if (hasAttended)
-                    {
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="card border-info">
-                                    <div class="card-header bg-info text-white">
-                                        <i class="fas fa-star"></i> Grades
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <h5>Classwork Grade</h5>
-                                                @if (Model.Attendances.ClassWorkGrade.HasValue)
-                                                {
-                                                    <div class="progress" style="height: 25px;">
-                                                        <div class="progress-bar bg-primary" role="progressbar" 
-                                                             style="width: @(Model.Attendances.ClassWorkGrade.Value)%;" 
-                                                             aria-valuenow="@Model.Attendances.ClassWorkGrade.Value" 
-                                                             aria-valuemin="0" aria-valuemax="100">
-                                                            @Model.Attendances.ClassWorkGrade.Value%
-                                                        </div>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <p class="text-muted">Not graded yet</p>
-                                                }
-                                            </div>
-                                            <div class="col-6">
-                                                <h5>Homework Grade</h5>
-                                                @if (Model.Attendances.HomeWorkGrade.HasValue)
-                                                {
-                                                    <div class="progress" style="height: 25px;">
-                                                        <div class="progress-bar bg-success" role="progressbar" 
-                                                             style="width: @(Model.Attendances.HomeWorkGrade.Value)%;" 
-                                                             aria-valuenow="@Model.Attendances.HomeWorkGrade.Value" 
-                                                             aria-valuemin="0" aria-valuemax="100">
-                                                            @Model.Attendances.HomeWorkGrade.Value%
-                                                        </div>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <p class="text-muted">Not graded yet</p>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                @if (!Model.Attendances.Rating.HasValue || string.IsNullOrEmpty(Model.Attendances.Feedback))
+        <!-- 3. Details Section - Changed to vertical table -->
+        <section class="session__details">
+            @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue )
+            {
+                <table class="session__details-table">
+                    <tbody>
+                        <tr>
+                            <th>Class Work Mark</th>
+                            @if (Model.Attendances.ClassWorkGrade > 0)
+                            {
+                                <td>@Model.Attendances.ClassWorkGrade/100</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                        </tr>
+                        <tr>
+                            <th>Attendance</th>
+                            <td>
+                                @if (hasAttended)
                                 {
-                                    <div class="card border-primary">
-                                        <div class="card-header bg-primary text-white">
-                                            <i class="fas fa-comment-dots"></i> Your Feedback
-                                        </div>
-                                        <div class="card-body">
-                                            <form asp-action="SaveFeedback" method="post">
-                                                <input type="hidden" name="SessionID" value="@Model.Session.ID" />
-
-                                                <div class="mb-3">
-                                                    <label class="form-label">Rating</label>
-                                                    <div class="rating-input">
-                                                        @for (int i = 1; i <= 5; i++)
-                                                        {
-                                                            <div class="form-check form-check-inline">
-                                                                <input class="form-check-input" type="radio" name="Rating"
-                                                                       id="rating@(i)" value="@i"
-                                                                       checked="@(Model.Attendances.Rating == i)" />
-                                                                <label class="form-check-label" for="rating@(i)">
-                                                                    <i class="fas fa-star text-warning"></i> @i
-                                                                </label>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label">Feedback</label>
-                                                    <textarea name="Feedback" class="form-control" rows="4"
-                                                              placeholder="Share your thoughts about this session...">@Model.Attendances.Feedback</textarea>
-                                                    <div class="form-text">
-                                                        Maximum 500 characters.
-                                                        <span id="charCount">0</span>/500
-                                                    </div>
-                                                </div>
-
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="fas fa-paper-plane"></i> Submit Feedback
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
+                                    <div class="session__details-checkbox checked"></div>
                                 }
                                 else
                                 {
-                                    <div class="card border-success">
-                                        <div class="card-header bg-success text-white">
-                                            <i class="fas fa-comment-dots"></i> Your Feedback
-                                        </div>
-                                        <div class="card-body">
-                                            <h5>Rating:</h5>
-                                            <div class="mb-3">
-                                                @for (int i = 1; i <= 5; i++)
-                                                {
-                                                    if (i <= Model.Attendances.Rating)
-                                                    {
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    }
-                                                    else
-                                                    {
-                                                        <i class="far fa-star text-warning"></i>
-                                                    }
-                                                }
-                                            </div>
-                                            
-                                            <h5>Feedback:</h5>
-                                            <p class="border p-3 rounded bg-light">@Model.Attendances.Feedback</p>
-                                            
-                                            <a href="#" class="btn btn-outline-primary btn-sm edit-feedback" 
-                                               data-bs-toggle="modal" data-bs-target="#editFeedbackModal">
-                                                <i class="fas fa-edit"></i> Edit Feedback
-                                            </a>
-                                        </div>
-                                    </div>
+                                    <div class="session__details-checkbox"></div>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Home Mark Grade</th>
+                            @if (Model.Attendances.HomeWorkGrade > 0)
+                            {
+                                <td>@Model.Attendances.HomeWorkGrade/100</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info">You are absent.</div>
+            }
+        </section>
+
+        <!-- 4. Feedback Section - Added star rating -->
+        <section class="session__feedback">
+            <div class="session__feedback-header">
+                <h2 class="session__feedback-title">Feedback</h2>
+                @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue)
+                {
+                    <button class="session__feedback-add" onclick="openAddFeedbackModal()">
+                        <i class="fa-solid fa-plus"></i> Add Feedback
+                    </button>
+                }
+            </div>
+
+            <div class="session__feedback-list" id="feedback-container">
+                <!-- Feedback Item 1 -->
+                <div class="session__feedback-item">
+                    @if (hasFeedback)
+                    {
+                        <div class="session__feedback-rating">
+                            <div class="session__feedback-stars">
+                                @for (int i = 0; i < (Model.Attendances?.Rating ?? 0); i++)
+                                {
+                                    <i class="fa-solid fa-star"></i>
+                                }
+                                @for (int i = (int)(Model.Attendances.Rating ?? 0); i < 5; i++)
+                                {
+                                    <i class="fa-regular fa-star"></i>
                                 }
                             </div>
                         </div>
+                        <div class="session__feedback-text">
+                            @Model.Attendances.Feedback
+                        </div>
+                        <div class="session__feedback-meta">
+                            <div class="session__feedback-actions">
+                                <button class="session__feedback-edit" onclick="openEditFeedbackModal(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="session__feedback-delete" onclick="openDeleteFeedbackModal()">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
                     }
-                }
-                else
-                {
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Your attendance for this session hasn't been recorded yet.
+                    else
+                    {
+                        <div>No Feedback Yet</div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- Add/Edit Feedback Modal - Added star rating -->
+        <div class="session__modal" id="feedbackModal">
+            <div class="session__modal-content">
+                <h3 class="session__modal-title">Add Feedback</h3>
+                <button class="session__modal-close" onclick="closeModal('feedbackModal')">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+                <div class="error-message-container d-none" id="error-message-container">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span id="error-message" class="error-message">Something went wrong </span>
+                </div>
+                <div class="session__modal-rating">
+                    <div class="session__modal-stars" id="session-rating">
+                        <i class="fa-solid fa-star session__modal-star" data-rating="1" onclick="setRating(1)"></i>
+                        <i class="fa-solid fa-star session__modal-star" data-rating="2" onclick="setRating(2)"></i>
+                        <i class="fa-solid fa-star session__modal-star" data-rating="3" onclick="setRating(3)"></i>
+                        <i class="fa-solid fa-star session__modal-star" data-rating="4" onclick="setRating(4)"></i>
+                        <i class="fa-solid fa-star session__modal-star" data-rating="5" onclick="setRating(5)"></i>
                     </div>
-                }
+                </div>
+
+                <textarea class="session__modal-textarea" placeholder="Enter your feedback here..." id="feedback-textarea"></textarea>
+                <div class="session__modal-actions">
+                    <button class="session__modal-cancel" onclick="closeModal('feedbackModal')">Cancel</button>
+                    <button class="session__modal-save" id="save-feedback-btn" onclick="saveFeedback()">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="session__modal" id="deleteModal">
+            <div class="session__modal-content">
+                <h3 class="session__modal-title">Delete Feedback</h3>
+                <button class="session__modal-close" onclick="closeModal('deleteModal')">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+                <div class="session__modal-message">
+                    Are you sure you want to delete this feedback?
+                </div>
+                <div class="session__modal-actions">
+                    <button class="session__modal-cancel-delete" onclick="closeModal('deleteModal')">Cancel</button>
+                    <button class="session__modal-confirm" id="delete-feedback-btn" onclick="deleteFeedback()">Delete</button>
+                </div>
             </div>
         </div>
     }
     else
     {
-        <div class="alert alert-info">
-            <i class="fas fa-calendar-day"></i>
-            This session has not occurred yet. Feedback and attendance will be available after the session ends.
-            <div class="mt-3">
-                <strong>Countdown:</strong>
-                <div id="sessionCountdown" class="fw-bold text-primary fs-5"></div>
-            </div>
-        </div>
+        <section class="session__details">
+            <div class="alert alert-info">This session has not started yet.</div>
+		</section>
     }
-
-    <div class="mt-3">
-        <a asp-action="Index" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to List
-        </a>
-    </div>
 </div>
-
-<!-- Room Preview Modal -->
-@if (Model.Session.RoomReservation?.Room?.PreviewPicture != null)
-{
-    <div class="modal fade" id="roomModal" tabindex="-1" aria-labelledby="roomModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="roomModalLabel">
-                        <i class="fas fa-door-open"></i> @Model.Session.RoomReservation.Room.Name
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    @{
-                        var base64 = Convert.ToBase64String(Model.Session.RoomReservation.Room.PreviewPicture);
-                        var imgSrc = $"data:image/jpeg;base64,{base64}";
-                    }
-                    <img src="@imgSrc" class="img-fluid rounded" alt="Room preview" />
-                    
-                    <div class="room-details mt-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <p><i class="fas fa-users"></i> <strong>Capacity:</strong> @Model.Session.RoomReservation.Room.Capacity</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p><i class="fas fa-tools"></i> <strong>Equipment:</strong> @Model.Session.RoomReservation.Room.Equipment</p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p><i class="fas fa-dollar-sign"></i> <strong>Price/Hour:</strong> $@Model.Session.RoomReservation.Room.PricePerHour</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
-<!-- Edit Feedback Modal -->
-@if (sessionPassed && hasAttended && Model.Attendances.Rating.HasValue && !string.IsNullOrEmpty(Model.Attendances.Feedback))
-{
-    <div class="modal fade" id="editFeedbackModal" tabindex="-1" aria-labelledby="editFeedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editFeedbackModalLabel">
-                        <i class="fas fa-edit"></i> Edit Your Feedback
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form asp-action="SaveFeedback" method="post">
-                        <input type="hidden" name="SessionID" value="@Model.Session.ID" />
-
-                        <div class="mb-3">
-                            <label for="editRating" class="form-label">Rating</label>
-                            <div class="edit-rating-input">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="Rating"
-                                               id="editRating@(i)" value="@i"
-                                        @(Model.Attendances.Rating == i ? "checked" : "") />
-                                        <label class="form-check-label" for="editRating@(i)">
-                                            <i class="fas fa-star text-warning"></i> @i
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="editFeedback" class="form-label">Feedback</label>
-                            <textarea class="form-control" id="editFeedback" name="Feedback"
-                                      rows="4" maxlength="500">@Model.Attendances.Feedback</textarea>
-                            <div class="form-text">
-                                Maximum 500 characters.
-                                <span id="editCharCount">@(Model.Attendances.Feedback?.Length ?? 0)</span>/500
-                            </div>
-                        </div>
-
-                        <div class="text-end">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-}
 
 @section Scripts {
     <script>
-        // Character counter for feedback
-        $(document).ready(function() {
-            // For main feedback form
-            $('textarea[name="Feedback"]').on('input', function() {
-                var charCount = $(this).val().length;
-                $('#charCount').text(charCount);
+        const sessionId = @Model.Session.ID;
+        const studentId = @(Model.Attendances != null ? Model.Attendances.StudentID : 0);
 
-                if (charCount > 500) {
-                    $('#charCount').addClass('text-danger');
-                } else {
-                    $('#charCount').removeClass('text-danger');
+        // utils functions
+        async function sendAsyncRequest(url, method, requestBody) {
+            try {
+                freezeButton(method === "POST" ? "save-feedback-btn" : "delete-feedback-btn");
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            });
-
-            // For edit feedback modal
-            $('#editFeedback').on('input', function() {
-                var charCount = $(this).val().length;
-                $('#editCharCount').text(charCount);
-
-                if (charCount > 500) {
-                    $('#editCharCount').addClass('text-danger');
-                } else {
-                    $('#editCharCount').removeClass('text-danger');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                closeModal('feedbackModal');
+                if (typeof showErrorToast === 'function') {
+                    showErrorToast("Error", "Request failed: " + error.message, 3);
                 }
-            });
+                return new Error(error);
+            }
+        }
 
-            // Initialize character count on page load
-            var initialCount = $('textarea[name="Feedback"]').val().length;
-            $('#charCount').text(initialCount);
-        });
-
-        // Countdown timer for upcoming sessions
-        @if (!sessionPassed)
-        {
-            <text>
-                function updateCountdown() {
-                    const sessionDate = new Date('@Model.Session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss")');
-                    const now = new Date();
-                    const diff = sessionDate - now;
-
-                    if (diff == 0) {
-                        $('#sessionCountdown').text('Session has started!');
-                        return;
+        async function submitFeedback(request) {
+            freezeButton("save-feedback-btn");
+            try {
+                let response = await sendAsyncRequest("https://localhost:7054/Students/Session/SaveFeedBack", "POST", request);
+                if (response.isValid == true) {
+                    if (typeof showSuccessToast === 'function') {
+                        showSuccessToast("OK", "Feedback Saved Successfully", 3);
                     }
 
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    freeButton("save-feedback-btn");
+                    // 2. Append to the added feedback
+                    let feedbackContainer = document.getElementById("feedback-container");
+                    if (feedbackContainer) {
+                        let starsInnerHTML = ``;
+                        for (let i = 0; i < Number(request.rating); i++) {
+                            starsInnerHTML += `<i class="fa-solid fa-star active"></i>`;
+                        }
+                        for (let i = 0; i < Number(5 - request.rating); i++) {
+                            starsInnerHTML += `<i class="fa-regular fa-star"></i>`;
+                        }
+                        feedbackContainer.innerHTML =
+                            `
+                    <!-- Feedback Item 1 -->
+                    <div class="session__feedback-item">
+                    <div class="session__feedback-rating">
+                                    <div class="session__feedback-stars">
+                                    ${starsInnerHTML}
+                                    </div>
+                                </div>
+                                <div class="session__feedback-text">
+                                ${request.feedback}
+                                </div>
+                                <div class="session__feedback-meta">
+                                    <div class="session__feedback-date">${request.dateTime}</div>
+                                    <div class="session__feedback-actions">
+                                        <button class="session__feedback-edit" onclick="openEditFeedbackModal(this)">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button class="session__feedback-delete" onclick="openDeleteFeedbackModal()">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                    `;
+                    }
+                    return response;
+                } else {
+                    if (typeof showErrorToast === 'function') {
+                        showErrorToast("Error", "Something went wrong while saving feedback.", 3);
+                    }
+                    return response;
+                }
+            } catch (err) {
+                freeButton("save-feedback-btn");
+                if (typeof showErrorToast === 'function') {
+                    showErrorToast("Error", "Something went wrong while saving feedback.", 3);
+                }
+                return err;
+            }
+        }
 
-                    $('#sessionCountdown').html(
-                        `<i class="fas fa-clock"></i> ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
-                    );
+        function getFeedbackData() {
+            let feedbackTextarea = document.getElementById("feedback-textarea");
+            if (!feedbackTextarea) return null;
+
+            let sessionRatingStars = document.querySelectorAll("#session-rating .active");
+
+            let feedbackRequest = {
+                feedback: feedbackTextarea.value,
+                rating: sessionRatingStars.length,
+                sessionId: sessionId,
+                studentId: studentId
+            }
+
+            console.log(feedbackRequest);
+            return feedbackRequest;
+        }
+
+        // Modal functionality
+        function openAddFeedbackModal() {
+            freeButton("save-feedback-btn");
+            const modal = document.getElementById('feedbackModal');
+            if (!modal) return;
+
+            modal.classList.add('active');
+            const titleEl = document.querySelector('#feedbackModal .session__modal-title');
+            const textareaEl = document.querySelector('#feedbackModal .session__modal-textarea');
+
+            if (titleEl) titleEl.textContent = 'Add Feedback';
+            if (textareaEl) textareaEl.value = '';
+
+            resetStars();
+        }
+
+        function openEditFeedbackModal(button) {
+            if (!button) return;
+
+            freeButton("save-feedback-btn");
+            const errorContainer = document.getElementById("error-message-container");
+            if (errorContainer) {
+                errorContainer.classList.add("d-none");
+            }
+
+            const modal = document.getElementById('feedbackModal');
+            if (!modal) return;
+
+            modal.classList.add('active');
+
+            const titleEl = document.querySelector('#feedbackModal .session__modal-title');
+            if (titleEl) titleEl.textContent = 'Edit Feedback';
+
+            const feedbackItem = button.closest('.session__feedback-item');
+            if (!feedbackItem) return;
+
+            const feedbackTextEl = feedbackItem.querySelector('.session__feedback-text');
+            const feedbackText = feedbackTextEl ? feedbackTextEl.textContent.trim() : '';
+
+            const starEls = feedbackItem.querySelectorAll('.fa-solid.fa-star');
+            const stars = starEls ? starEls.length : 0;
+
+            const textareaEl = document.querySelector('#feedbackModal .session__modal-textarea');
+            if (textareaEl) textareaEl.value = feedbackText;
+
+            resetStars();
+            setRating(stars);
+        }
+
+        function openDeleteFeedbackModal() {
+            freeButton("delete-feedback-btn");
+            const modal = document.getElementById('deleteModal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('active');
+        }
+
+        function resetStars() {
+            const stars = document.querySelectorAll('.session__modal-star');
+            stars.forEach(star => {
+                star.classList.remove('active');
+            });
+        }
+
+        function setRating(rating) {
+            resetStars();
+            const stars = document.querySelectorAll('.session__modal-star');
+            for (let i = 0; i < rating && i < stars.length; i++) {
+                stars[i].classList.add('active');
+            }
+        }
+
+        async function saveFeedback() {
+            let request = getFeedbackData();
+
+            if (!request) {
+                renderFeedbackErrorMessage("Something went wrong");
+                return;
+            }
+
+            if (request.feedback.trim() === "") {
+                renderFeedbackErrorMessage("Feedback can't be empty");
+                return;
+            }
+
+            // Add current dateTime in readable format
+            request.dateTime = new Date().toLocaleString();
+
+            const response = await submitFeedback(request);
+
+            if (response?.isValid === true) {
+                closeModal('feedbackModal');
+            } else {
+                renderFeedbackErrorMessage("Something went wrong while saving feedback.");
+            }
+        }
+
+        function renderFeedbackErrorMessage(message) {
+            const errorContainer = document.getElementById("error-message-container");
+            const errorMessage = document.getElementById("error-message");
+
+            if (!errorContainer || !errorMessage) return;
+
+            errorContainer.classList.remove("d-none");
+            errorMessage.innerHTML = message;
+
+            setTimeout(() => {
+                errorContainer.classList.add("d-none");
+            }, 4000);
+        }
+
+        async function deleteFeedback() {
+            let request = {
+                studentId: studentId,
+                sessionId: sessionId
+            }
+            console.log(request);
+            try {
+                freezeButton("delete-feedback-btn");
+                const response = await sendAsyncRequest("https://localhost:7054/Students/Session/SaveFeedback", "POST", request);
+                if (response.isValid) {
+                    if (typeof showSuccessToast === 'function') {
+                        showSuccessToast("OK", "Feedback Deleted Successfully", 3);
+                    }
+
+                    // remove the element from the DOM
+                    let feedbackContainer = document.getElementById("feedback-container");
+                    if (feedbackContainer) feedbackContainer.innerHTML = ``;
+
+                    closeModal('deleteModal');
+                    freeButton("delete-feedback-btn");
+                } else {
+                    if (typeof showErrorToast === 'function') {
+                        showErrorToast("Error", "Can't Delete this Feedback", 3);
+                    }
+
+                    closeModal('deleteModal');
+                    freeButton("delete-feedback-btn");
+                }
+            } catch (err) {
+                console.log(err);
+                freeButton("delete-feedback-btn");
+                closeModal('deleteModal');
+
+                if (typeof showErrorToast === 'function') {
+                    showErrorToast("Error", "Can't Delete this Feedback", 3);
+                }
+            }
+        }
+
+        function freezeButton(id) {
+            const button = document.getElementById(id);
+            if (!button) return;
+
+            button.setAttribute("disabled", "true");
+        }
+
+        function freeButton(id) {
+            const button = document.getElementById(id);
+            if (!button) return;
+
+            button.removeAttribute("disabled");
+        }
+
+        /**
+         * Starts a countdown timer to the target time.
+         * param {string} targetTime - A string representation of the target time.
+         */
+        function startCountdown(targetTime) {
+            const countdownElement = document.getElementById('sessionCounter');
+            if (!countdownElement) return;
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const targetDate = new Date(targetTime).getTime();
+                let diff = targetDate - now;
+
+                // If the target time has passed, set diff to 0.
+                if (diff < 0) {
+                    diff = 0;
                 }
 
-                // Update countdown every second
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            </text>
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                countdownElement.textContent =
+                    (days > 0 ? days + 'd ' : '') +
+                    (hours < 10 ? '0' + hours : hours) + ':' +
+                    (minutes < 10 ? '0' + minutes : minutes) + ':' +
+                    (seconds < 10 ? '0' + seconds : seconds);
+
+                if (diff <= 0) {
+                    clearInterval(interval);
+                }
+            }
+
+            updateCountdown();
+            const interval = setInterval(updateCountdown, 1000);
         }
+
+        // Start the countdown to the session's start time.
+        startCountdown('@startTime');
+        
     </script>
 }
