@@ -2,140 +2,454 @@
 @model DetailedGroupVM
 
 @{
-    ViewData["Title"] = "Group Details";
+    ViewData["Title"] = "Preview";
 }
 
-<!-- Group cover -->
-<div class="container">
-    <div class="group-card">
-        <div class="group-image">
-            @if (Model.CoverPicture != null)
-            {
-                <img alt="cover" src="data:image/*;base64,@(Convert.ToBase64String(Model.CoverPicture))" />
-            }
-            else
-            {
-                <img alt="cover" src="~/images/default_cover.png" />
-            }
-            <div class="group-overlay">
-                <div class="subject-name">@Model.SubjectName, @Model.Year, @Model.Semester</div>
-                <div class="group-price">L.E. @Model.PricePerSession</div>
-            </div>
-        </div>
-        <div class="group-content">
-            <div class="group-meta">
-
-                <div class="meta-item">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Teacher: @Model.TeacherName</span>
-                </div>
-
-            </div>
-
-            <div class="badge-container">
-                @if(Model.IsOnline)
-                {
-                    <span class="group-card__feature">
-                        <i class="fas fa-globe"></i>&nbsp;Online
-                    </span>
-                }
-                @if(Model.IsPrivate)
-                {
-                    <span class="group-card__feature">
-                        <i class="fas fa-lock"></i>&nbsp;Private
-                    </span>
-                }
-                @if(Model.IsGirlsOnly)
-                {
-                    <span class="group-card__feature">
-                        <i class="fas fa-child-dress"></i>&nbsp;Girls Only
-                    </span>
-                }
-                <form asp-area="Students" asp-controller="Group" asp-action="Enroll" method="post" class="join-now-button">
-                    <input type="hidden" name="groupID" value="@Model.ID" />
-                    <input type="hidden" name="studentID" value="@Model.StudentID" />
-                    <button type="submit" class="btn btn-primary @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")"
-                    @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")>
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Join Now
-                    </button>
-                </form>
-            </div>
-            <div class="students-count mt-4">
-                <div class="students-progress" style="width: @(((double)Model.CurrentStudents / @Model.MaxStudents)*100)%;"></div>
-            </div>
-            <div class="students-text">
-                <span>Current Students: @Model.CurrentStudents</span>
-                <span>Maximum: @Model.MaxStudents</span>
-            </div>
-        </div>
-    </div>
-    <div class="secondary-card">
-        <div class="session-title">DEFAULT SESSION DAYS</div>
-        @foreach(var def in Model.DefaultTimes)
-        {
-            <div class="session-time">
-                <div class="day-circle">
-                    @switch ((int)(def.WeekDay!))
+<div class="col-12">
+    <!-- 1. Profile Section -->
+    <div class="container">
+        <section class="group__profile">
+            <div class="group__profile__container">
+                <div class="group__profile__overlay"></div>
+                <div class="group__profile__header">
+                    @if (Model.TeacherProfilePicture != null)
                     {
-                        case 1:
-                            <div class="day-circle">SAT</div>
-                            break;
-                        case 2:
-                            <div class="day-circle">SUN</div>
-                            break;
-                        case 4:
-                            <div class="day-circle">MON</div>
-                            break;
-                        case 8:
-                            <div class="day-circle">TUE</div>
-                            break;
-                        case 16:
-                            <div class="day-circle">WED</div>
-                            break;
-                        case 32:
-                            <div class="day-circle">THU</div>
-                            break;
-                        case 64:
-                            <div class="day-circle">FRI</div>
-                            break;
-                        default:
-                            <div class="day-circle"> - </div>
-                            break;
+                        <img alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(Model.TeacherProfilePicture))"
+                        class="group__profile__image" />
+                    }
+                    else
+                    {
+                        <img alt="profile" src="~/images/default_profile.png" class="group__profile__image" />
+                    }
+                    <div class="group__profile__details">
+                        <h2 class="group__profile__name">@Model.TeacherName</h2>
+                        <div class="group__profile__info">
+                            <span>@Model.SubjectName</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--2. Group Details -->
+    <div class="container my-4">
+        <!-- Card 01 -->
+        <div class="group-card">
+            <div class="group-content">
+                <div class="group-card__meta row g-2">
+                    <di class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        @switch ((int)(Model?.Year!))
+                        {
+                            case 0:
+                                <span>Primary One</span>
+                                break;
+                            case 1:
+                                <span>Primary Two</span>
+                                break;
+                            case 2:
+                                <span>Primary Three</span>
+                                break;
+                            case 3:
+                                <span>Primary Four</span>
+                                break;
+                            case 4:
+                                <span>Primary Five</span>
+                                break;
+                            case 5:
+                                <span>Primary Six</span>
+                                break;
+                            case 6:
+                                <span>Preparatory One</span>
+                                break;
+                            case 7:
+                                <span>Preparatory Two</span>
+                                break;
+                            case 8:
+                                <span>Preparatory Three</span>
+                                break;
+                            case 9:
+                                <span>Secondary One</span>
+                                break;
+                            case 10:
+                                <span>Secondary Two</span>
+                                break;
+                            case 11:
+                                <span>Secondary Three</span>
+                                break;
+                            default:
+                                <span>Unknown Grade</span>
+                                break;
+                        }
+                    </di g-2v>
+                    <di class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span>@Model.Major</span>
+                    </di g-2v>
+                    <div class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-school"></i>
+                        @switch ((int)Model?.Semester!)
+                        {
+                            case 1:
+                                <span>First Semester</span>
+                                break;
+                            case 2:
+                                <span>Second Semester</span>
+                                break;
+                            case 3:
+                                <span>Full Year</span>
+                                break;
+                            default:
+                                <span>Unknown</span>
+                                break;
+                        }
+                    </div>
+                    <div class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-tags"></i>
+                        <span>L.E. @Model.PricePerSession</span>
+                    </div>
+                </div>
+                <div class="badge-container">
+                    @if (Model.IsOnline)
+                    {
+                        <span class="group-card__feature">
+                            <i class="fas fa-globe"></i>&nbsp;Online
+                        </span>
+                    }
+                    @if (Model.IsPrivate)
+                    {
+                        <span class="group-card__feature">
+                            <i class="fas fa-lock"></i>&nbsp;Private
+                        </span>
+                    }
+                    @if (Model.IsGirlsOnly)
+                    {
+                        <span class="group-card__feature">
+                            <i class="fas fa-child-dress"></i>&nbsp;Girls Only
+                        </span>
+                    }
+                    <form asp-area="Students" asp-controller="Group" asp-action="Enroll" method="post" class="join-now-button">
+                        <input type="hidden" name="groupID" value="@Model.ID" />
+                        <input type="hidden" name="studentID" value="@Model.StudentID" />
+                        <button type="submit" class="btn btn-primary @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")"
+                        @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")>
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Join Now
+                        </button>
+                    </form>
+                </div>
+                <div class="group-card__students mt-4">
+                    <div class="group-card__progress-bar">
+                        <div class="group-card__progress" style="width: @(((double)Model.CurrentStudents / @Model.MaxStudents)*100)%;"></div>
+                    </div>
+                    <div class="group-card__students-text d-flex justify-content-between mt-1">
+                        <span>Current Students: @Model.CurrentStudents</span>
+                        <span>Maximum: @Model.MaxStudents</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 02 -->
+        <div class="group-card">
+            <div class="group-card__content">
+                <div class="group-card__sessions mt-4">
+                    <div class="group-card__session-title">Default Session Days</div>
+                    @foreach(var def in Model.DefaultTimes)
+                    {
+                        <div class="session-time">
+                            <div class="day-circle">
+                                @switch ((int)(def.WeekDay!))
+                                {
+                                    case 1:
+                                        <div class="day-circle">SAT</div>
+                                        break;
+                                    case 2:
+                                        <div class="day-circle">SUN</div>
+                                        break;
+                                    case 4:
+                                        <div class="day-circle">MON</div>
+                                        break;
+                                    case 8:
+                                        <div class="day-circle">TUE</div>
+                                        break;
+                                    case 16:
+                                        <div class="day-circle">WED</div>
+                                        break;
+                                    case 32:
+                                        <div class="day-circle">THU</div>
+                                        break;
+                                    case 64:
+                                        <div class="day-circle">FRI</div>
+                                        break;
+                                    default:
+                                        <div class="day-circle"> - </div>
+                                        break;
+                                }
+                            </div>
+                            <div>@def.StartTime - @def.EndTime</div>
+                        </div>
                     }
                 </div>
-                <div>@def.StartTime - @def.EndTime</div>
             </div>
-        }
-    </div>
-    <div class="secondary-card location-card">
-        <div class="location-info">
-            <div class="session-title">LOCATION</div>
-            @if (Model.CenterName != null)
-            {
-                <div class="session-time">
-                    <i class="fas fa-building"></i>
-                    <span>@Model.CenterName</span>
-                </div>
-            }
-            @if (Model.Governorate != null)
-            {
-                <div class="session-time">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>@Model.Street St. @Model.City City, @Model.Governorate</span>
-                </div>
-            }
         </div>
-        @if(Model.Location != null)
-        {
-            <div class="location-map">
-                <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.MapKey, OriginX=Model.Location.X, OriginY=Model.Location.Y }" style="width:100%; height:100%" />
+        <!-- card 03 -->
+        <!-- Info Section -->
+        <section class="center-info">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Center Details -->
+                    <div class="col-md-8 d-flex flex-column justify-content-center">
+                        @if (Model.CenterName != null)
+                        {
+                            <div class="center-info__name">
+                                <i class="fa-solid fa-building-columns me-2"></i>
+                                @Model.CenterName
+                            </div>
+                        }
+                        @if (Model.Governorate != null)
+                        {
+                            <div class="center-info__location">
+                                <i class="fa-solid fa-location-dot me-2"></i>
+                                @Model.Street St. @Model.City City, @Model.Governorate
+                            </div>
+                        }
+                    </div>
+                    <!-- Map Icon -->
+                    <div class="col-md-4 d-flex justify-content-center align-items-center">
+                        <div class="center-info__map">
+                            @if(Model.Location != null)
+                            {
+                                <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.MapKey, OriginX=Model.Location.X, OriginY=Model.Location.Y }" style="width:100%; height:100%" />
+                            } else
+                            {
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
-        }
+        </section>
     </div>
 </div>
 
+@{
+    var url = Model.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.CoverPicture) : Url.Content("~/images/default_cover.png");
+}
+
 @section Styles {
     <style>
+        .group__profile {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .group__profile__container {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            background: url('@url') center/cover no-repeat;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .group__profile__overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 1;
+        }
+
+        .group__profile__header {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .group__profile__image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 20px;
+            border: 3px solid var(--clr-primary);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .group__profile__details {
+            margin-left: 24px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .group__profile__name {
+            color: var(--clr-primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .group__profile__info {
+            display: flex;
+            font-size: 1.3rem;
+            align-items: center;
+            color: var(--clr-text-secondary);
+            font-size: normal;
+            margin-top: -10px;
+        }
+
+
+        /* ========= 2. GROUP CARD ========= */
+        .group-card {
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 1.5rem;
+            margin: 1rem auto;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .group-card__content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .group-card__meta-item {
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .group-card__meta-item i {
+            color: var(--clr-secondary);
+        }
+
+        /* Progress Bar */
+        .group-card__progress-bar {
+            height: 6px;
+            background-color: var(--clr-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .group-card__progress {
+            height: 100%;
+            background-color: var(--clr-secondary);
+        }
+
+        .group-card__students-text {
+            font-size: 0.8rem;
+            color: var(--clr-text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        /* ========= 3. SESSION TIMES ========= */
+        .group-card__sessions {
+            background-color: var(--clr-background);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+
+        .group-card__session-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .group-card__session-time {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .group-card__day-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+
+        /* ========= Center Info Section ========= */
+        .center-info {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
+        }
+
+        .center-info__map {
+            width: 250px;
+            height: 250px;
+            background-color: var(--clr-accent,);
+            border-radius: 50%;
+            overflow: hidden;
+            color: var(--clr-text-on-accent);
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .center-info__name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .center-info__location {
+            font-size: 1rem;
+            color: var(--clr-text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .center-info i {
+            color: var(--clr-accent);
+        }
+
+        @@media (max-width: 768px) {
+            .center-profile__header {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .center-profile__details {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            .center-info__map {
+                width: 250px;
+                height: 250px;
+                margin-top: 3rem !important;
+            }
+        }
+
         .btn {
             padding: 12px 20px;
             border: none;
@@ -163,123 +477,10 @@
             transition: none;
             opacity: 0.5;
         }
+
         .disabled:hover {
             opacity: 0.5;
             transform: none;
-        }
-
-        .group-card {
-            background-color: var(--clr-surface);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .group-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-        }
-
-        .group-image {
-            position: relative;
-            width: 100%;
-            height: 240px;
-            overflow: hidden;
-        }
-
-        .group-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .group-card:hover .group-image img {
-            transform: scale(1.05);
-        }
-
-        .group-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, var(--clr-overlay), transparent);
-            padding: 20px;
-        }
-
-        .subject-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .subject-name {
-            color: var(--clr-primary);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 8px;
-        }
-
-        .group-price {
-            background-color: var(--clr-primary);
-            color: var(--clr-text-on-primary);
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 0.9rem;
-        }
-
-        .group-content {
-            padding: 20px;
-        }
-
-        .group-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.875rem;
-            color: var(--clr-text-secondary);
-        }
-
-        .meta-item i {
-            color: var(--clr-secondary);
-        }
-
-        .secondary-card {
-            padding: 15px;
-            background-color: var(--clr-surface);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .secondary-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-        }
-
-        .location-card {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .location-map {
-            height: 150px;
-            width: 300px;
-            overflow: hidden;
         }
 
         .group-card__feature {
@@ -294,34 +495,6 @@
             font-weight: 700;
         }
 
-        .session-title {
-            font-size: 0.9rem;
-            color: var(--clr-text-secondary);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .session-time {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-        }
-
-        .day-circle {
-            background-color: var(--clr-accent);
-            color: var(--clr-text-on-accent);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
-
         .badge-container {
             display: flex;
             justify-content: start;
@@ -331,28 +504,6 @@
 
         .join-now-button {
             margin-left: auto;
-        }
-
-        .students-count {
-            margin-top: 15px;
-            height: 6px;
-            background-color: var(--clr-border);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .students-progress {
-            height: 100%;
-            background-color: var(--clr-secondary);
-            border-radius: 3px;
-        }
-
-        .students-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            color: var(--clr-text-secondary);
         }
     </style>
 }

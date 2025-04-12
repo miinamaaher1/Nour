@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using XCourse.Core.DTOs;
 using XCourse.Core.DTOs.StudentDTOs;
@@ -13,11 +14,13 @@ namespace XCourse.Services.Implementations.StudentServices
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public CenterReservationService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+        public CenterReservationService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         public async Task<CenterVM> GetCenterDetailsAsync(int id, ClaimsPrincipal user)
@@ -36,6 +39,8 @@ namespace XCourse.Services.Implementations.StudentServices
                 Street = center.Address.Street,
                 PreviewPicture = center.PreviewPicture,
                 IsGirlsOnly = center.IsGirlsOnly,
+                Location = center.Location,
+                MapKey = _configuration["GoogleMaps:ApiKey"],
                 AvailbleRooms = new List<RoomVM>()
             };
 
