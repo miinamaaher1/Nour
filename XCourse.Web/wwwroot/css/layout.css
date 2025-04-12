@@ -43,6 +43,7 @@
     --clr-text-on-accent: #210F37;
     --clr-border: #D1C5B8;
     --clr-overlay: rgba(33, 15, 55, 0.5);
+    --clr-primary-pm: #210F37;
 
     /* Updated Toast specific colors */
     --toast-success-bg: #E6F2E9;
@@ -59,7 +60,7 @@
     --clr-surface: #2E2E2E;
     --clr-primary: #B39DDB;
     --clr-secondary: #7986CB;
-    --clr-accent: #F070F0;
+    --clr-accent: #F07080;
     --clr-text-primary: #F5F5F5;
     --clr-text-secondary: #AFAFAF;
     --clr-text-on-primary: #2E2E2E;
@@ -67,6 +68,7 @@
     --clr-text-on-accent: #1E1E1E;
     --clr-border: #424242;
     --clr-overlay: rgba(0, 0, 0, 0.7);
+    --clr-primary-pm: #8777a5;
 
     /* Updated Toast specific colors - dark mode */
     --toast-success-bg: #324D3A;
