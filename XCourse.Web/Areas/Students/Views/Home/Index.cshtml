@@ -154,7 +154,7 @@
             <div class="container">
                 <div class="group-section__title">
                     <h2>Recommended Groups</h2>
-                    <a  asp-action="RecommendedGroups" asp-controller="Group" asp-area="Students" class="view-all-link"> View All</a>
+                    <a  asp-action="Recommended" asp-controller="Group" asp-area="Students" class="view-all-link"> View All</a>
                 </div>
 
                 <div class="group-carousel">
@@ -166,7 +166,7 @@
 
                                 <!-- Group 1 -->
                                 <div class="group-carousel__slide">
-                                    <a class="group-card" style="text-decoration:none;" asp-action="DetailsNotEnrolled" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupID">
+                                    <a class="group-card" style="text-decoration:none;" asp-action="Preview" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupID">
                                     <div class="group-card">
                                         <div class="group-card__image">
                                             <img 

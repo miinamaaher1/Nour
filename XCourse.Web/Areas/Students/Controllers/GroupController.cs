@@ -58,7 +58,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             return Json(requestStatus);
         }
 
-        public IActionResult getAll()
+        public IActionResult MyGroups()
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var groups = StudentGroup.GetStudentGroup(userID);
@@ -75,7 +75,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             return View(group);
         }
 
-        public async Task<IActionResult> RecommendedGroups()
+        public async Task<IActionResult> Recommended()
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var groups = await StudentGroup.RecommendedGroupService(userID!);
