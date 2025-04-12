@@ -17,7 +17,7 @@ namespace XCourse.Services.Interfaces.Student
 
         public Task<SessionDetailsViewModel> SessionDetailsService(int sessionId, string userId);
 
-        public Task SessionSaveFeedbackService(FeedBackDTO feedBackDTO , string userId);
+        public Task<bool> SessionSaveFeedbackService(FeedBackDTO feedBackDTO, string userId);
 
         public Task<ICollection<Session>> GetStudentSessions(int studentId);
 
