@@ -181,7 +181,24 @@
 
 .session__info-item {
     margin-bottom: 15px;
+    padding: 10px;
 }
+
+.session__info-link {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    border: none;
+    padding: 12px 12px;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    gap: 15px;
+}
+
+    .session__info-link:hover {
+        background-color: var(--clr-secondary);
+    }
+
 
 /* Time Display */
 .session__info-time {
@@ -202,23 +219,6 @@
 .session__info-counter-value {
     margin-right: 10px;
 }
-
-/* Session Link */
-.session__info-link {
-    font-size: 16px;
-    color: var(--clr-primary);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-}
-
-    .session__info-link:hover {
-        text-decoration: underline;
-    }
-
-    .session__info-link i {
-        margin-left: 8px;
-    }
 
 /* Session Location */
 .session__info-location {
@@ -636,4 +636,12 @@
         justify-content: center;
     }
 }
+
+
+
+.disabled-link {
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
   
