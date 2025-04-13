@@ -8,8 +8,11 @@ namespace XCourse.Core.DTOs.Teachers
 {
     public class PostAnnouncementRequestDTO
     {
+        public int? AnnouncementID { get; set; }
+        public int TeacherId { get; set; }
         public  string? AnnouncementBody { get; set; }
         public string? AnnouncementTitle { get; set; }
-        public int[]? GroupsIds { get; set; }
+        public bool? IsImportant { get; set; }
+        public int[]? GroupsIds { get; set; } 
     }
 }

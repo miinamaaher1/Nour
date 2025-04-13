@@ -14,17 +14,17 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         }
 
         [HttpPost]
-        async public Task<IActionResult> Index()
+        async public Task<IActionResult> Index(PostAnnouncementRequestDTO request)
         {
-            var announcements = await _announcementService.GetAnnouncements(1,0,0);
+            var announcements = await _announcementService.GetAnnouncements(request,0,0);
             return Json(announcements);
         }
 
 
         [HttpPost]
-        async public Task<IActionResult> GetAllAnnouncements([FromBody]RequestAllAnnouncementDTO request)
+        async public Task<IActionResult> GetAllAnnouncements([FromBody] PostAnnouncementRequestDTO request)
         {
-            var announcements = await _announcementService.GetAnnouncements(1,request.Take, request.Skip);
+            var announcements = await _announcementService.GetAnnouncements(request, null, null);
             return Ok(announcements);
         }
 
