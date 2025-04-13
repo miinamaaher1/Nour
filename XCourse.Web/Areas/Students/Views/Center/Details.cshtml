@@ -1,0 +1,707 @@
+﻿@model CenterVM
+
+@{
+    ViewData["Title"] = $"{Model.Name}";
+}
+
+
+<div class="card mb-3 mx-auto" style="max-width: 800px">
+    <div style="width: 100%; height: 300px; overflow:hidden">
+        @if (Model.PreviewPicture != null)
+        {
+            <img alt="cover" class="card-img-top"
+            src="data:image/*;base64,@(Convert.ToBase64String(Model.PreviewPicture))" />
+        }
+        else
+        {
+            <img alt="cover" class="card-img-top"
+            src="~/images/default_cover.png" />
+        }
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h1 class="card-title">@Model.Name</h1>
+                <h6 class="card-subtitle">@Model.Street street, @Model.City city, @Model.Governorate</h6>
+                @if (Model.IsGirlsOnly)
+                {
+
+                    <div class="px-2 mb-2 text-white" style="width: fit-content; border-radius: 20px; background-color: pink">
+                        <small>
+                            <i class="fa-solid fa-child-dress"></i> Girls Only
+                        </small>
+                    </div>
+                }
+                <div id="succ-msg" style="background-color:darkgreen; border-left: solid green 2px; border-radius: 5px"
+                     class="d-none"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                @if (Model.IncompatibleGender)
+                {
+                    <div>
+                        Sorry no rooms available!!
+                    </div>
+                } else
+                {
+                    @foreach (var room in Model.AvailbleRooms)
+                    {
+                        <div class="card m-3" style="width: 18rem;">
+                            @if (room.PreviewPicture != null)
+                            {
+                                <img alt="profile" class="card-img-top"
+                                     src="data:image/*;base64,@(Convert.ToBase64String(room.PreviewPicture))" />
+                            }
+                            else
+                            {
+                                <img alt="profile" class="card-img-top"
+                                     src="~/images/default_cover.png" />
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@room.Name</h5>
+                                @if (room.Equipment.HasFlag(Equipment.Study))
+                                {
+                                    <div class="px-2 mb-2 bg-success text-white" style="width: fit-content; border-radius: 20px;">
+                                        <small>
+                                            <i class="fa-solid fa-graduation-cap"></i> Study Room
+                                        </small>
+                                    </div>
+                                }
+                                @if (room.Equipment.HasFlag(Equipment.Meeting))
+                                {
+                                    <div class="px-2 mb-2 bg-danger text-white" style="width: fit-content; border-radius: 20px;">
+                                        <small>
+                                            <i class="fa-solid fa-handshake-simple"></i> Meeting Room
+                                        </small>
+                                    </div>
+                                }
+                                <p class="card-text">Capacity: @room.Capacity</p>
+                                <p class="card-text">Book this room now for the price of L.E. @room.PricePerHour / hr.</p>
+                                <button class="btn btn-primary" onclick="openModal(@room.ID)">Book</button>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="xmodal-container" class="d-none">
+    <div id="xmodal-overlay">
+        <div id="xmodal">
+            <div id="xmodal-header">
+                <h2>Book A Room</h2>
+                <div id="err-msg" style="background-color:darkred; border-left: solid red 2px; border-radius: 5px"
+                     class="d-none"></div>
+            </div>
+            <div id="xmodal-body">
+                <div class="day-picker">
+                    <div class="arrow" id="left-arrow"><i class="fa-solid fa-caret-left"></i></div>
+                    <div class="date-display" id="date-display"></div>
+                    <div class="arrow" id="right-arrow"><i class="fa-solid fa-caret-right"></i></div>
+                </div>
+                <svg id="clock" width="300" height="300" viewBox="0 0 300 300">
+                    <defs>
+                        <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feDropShadow dx="1" dy="1" stdDeviation="5" flood-color="rgba(0,0,0,0.3)" />
+                        </filter>
+                    </defs>
+                    <circle id="watch-face" cx="150" cy="150" r="150" fill="seagreen" />
+                    <g id="hourMarks"></g>
+                    <g id="reservedArcs" filter="url(#dropShadow)"></g>
+                    <!-- Start and End handles -->
+                    <circle id="startHandle" class="handle" r="10" fill="#ffff99" style="display:none"
+                            filter="url(#dropShadow)" />
+                    <circle id="endHandle" class="handle" r="10" fill="#000d33" style="display:none"
+                            filter="url(#dropShadow)" />
+                </svg>
+                <div id="loading" class="d-flex align-items-center justify-content-center d-none">
+                    <div class="rotating-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+                <p id="tell-time">
+                    From: <span id="startTimeText">--:--</span> To: <span id="endTimeText">--:--</span>
+                </p>
+
+            </div>
+            <div id="xmodal-footer">
+                <div class="form-group">
+                    <button onclick="resetSelection()" class="btn btn-success">Undo</button>
+                    <button id="am-pm" onclick="toggleAM()" class="btn btn-success">AM</button>
+                    <button id="close-modal" class="btn btn-danger">Cancel</button>
+                    <button id="submit-request" class="btn btn-success">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        #xmodal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        #xmodal-overlay {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #xmodal {
+            background: #fff;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        #xmodal-header {
+            background: seagreen;
+            color: #fff;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        #xmodal-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        #xmodal-footer {
+            background: #f1f1f1;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .day-picker {
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            height: 60px;
+            overflow: hidden;
+        }
+
+        .arrow {
+            cursor: pointer;
+            font-size: 24px;
+            width: 60px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: seagreen;
+            color: #ffffff;
+            user-select: none;
+            transition: background-color 0.3s;
+        }
+
+        .arrow:hover {
+            background-color: rgb(41, 123, 77);
+        }
+
+        .arrow:active {
+            background-color: rgb(35, 106, 66);
+        }
+
+        .date-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333333;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+        }
+
+        #clock {
+            margin-top: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #loading {
+            margin: 0 auto;
+            margin-top: 20px;
+            width: 300px;
+            height: 300px;
+        }
+
+        circle.handle {
+            cursor: pointer;
+        }
+
+        text.hour-mark {
+            font-size: 27px;
+            font-weight: 1000;
+            fill: #ffff99;
+            user-select: none;
+        }
+
+        .reserved-segment {
+            opacity: 0.4;
+        }
+
+        #tell-time {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 0;
+        }
+
+        .rotating-dots {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .rotating-dots .dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: seagreen;
+            animation: dots 1.5s infinite ease-in-out;
+        }
+
+        .rotating-dots .dot:nth-child(1) {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: 0s;
+        }
+
+        .rotating-dots .dot:nth-child(2) {
+            top: 25%;
+            right: 0;
+            animation-delay: 0.2s;
+        }
+
+        .rotating-dots .dot:nth-child(3) {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: 0.4s;
+        }
+
+        .rotating-dots .dot:nth-child(4) {
+            top: 25%;
+            left: 0;
+            animation-delay: 0.6s;
+        }
+
+        @@keyframes dots {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const close_modal = document.getElementById("close-modal")
+        const submit_btn = document.getElementById("submit-request")
+        const succ_msg = document.getElementById("succ-msg")
+        const err_msg = document.getElementById("err-msg")
+        const modal_container = document.getElementById("xmodal-container")
+        const dateDisplay = document.getElementById('date-display');
+        const leftArrow = document.getElementById('left-arrow');
+        const rightArrow = document.getElementById('right-arrow');
+        const svg = document.getElementById("clock");
+        const reservedGroup = document.getElementById("reservedArcs");
+        const hourMarks = document.getElementById("hourMarks");
+        const startHandle = document.getElementById("startHandle");
+        const endHandle = document.getElementById("endHandle");
+        const startTimeText = document.getElementById("startTimeText");
+        const endTimeText = document.getElementById("endTimeText");
+        const amBtn = document.getElementById("am-pm")
+        const watchFace = document.getElementById("watch-face")
+        const loading = document.getElementById("loading")
+
+        const CENTER = { x: 150, y: 150 };
+        const RADIUS = 150;
+
+        let currentDate;
+        let startAngle = null;
+        let endAngle = null;
+        let activeSegment = null;
+        let dragging = null;
+        let isAM;
+        let currentRoomId;
+        let reservedSegments = [];
+
+        async function submitRequest() {
+            if (startAngle == null || endAngle == null) {
+                err_msg.innerText = "Invalid Time"
+                err_msg.classList.remove("d-none")
+                succ_msg.classList.add("d-none")
+            }
+
+            let url = "/Students/Center/ReserveRoom"
+            let request = {
+                roomId: currentRoomId,
+                date: currentDate.toISOString().split('T')[0],
+                start: formatTime24(angleToTime(startAngle)),
+                end: formatEndTime24(angleToTime(endAngle))
+            }
+
+            let result = await getData(url, "POST", request)
+
+            if (result.isValid) {
+                succ_msg.innerText = "request sent successfully"
+                succ_msg.classList.remove("d-none")
+                err_msg.classList.add("d-none")
+                modal_container.classList.add("d-none")
+            } else {
+                err_msg.innerText = result.errors[0]
+                err_msg.classList.remove("d-none")
+                succ_msg.classList.add("d-none")
+            }
+        }
+
+        async function openModal(id) {
+            currentRoomId = id;
+            currentDate = new Date();
+            await renderComponent()
+            modal_container.classList.remove("d-none")
+        }
+
+        async function renderComponent() {
+            isAM = true
+            stylizeAM()
+            let url = "/students/center/GetReservations"
+            let req = {
+                id: currentRoomId,
+                date: currentDate.toISOString().split('T')[0]
+            }
+
+            let reservationsList = await getData(url, "POST", req)
+            buildList(reservationsList)
+
+            updateDateDisplay();
+            drawHourMarks();
+            drawReservedArcs();
+        }
+
+        function closeModal() {
+            resetSelection()
+            modal_container.classList.add("d-none")
+        }
+
+        function buildList(list) {
+            reservedSegments = []
+
+            list.forEach(item => {
+                let _am = true;
+
+                const [hoursStart, minutesStart] = item.start.split(':').map(Number);
+                if (hoursStart >= 12) {
+                    _am = false;
+                    hoursStart -= 12;
+                }
+
+                const [hoursEnd, minutesEnd] = item.end.split(':').map(Number);
+                if (hoursEnd >= 12) {
+                    _am = false;
+                    hoursEnd -= 12;
+                }
+
+                reservedSegments.push({
+                    start: { h: hoursStart, m: minutesStart }, end: { h: hoursEnd, m: minutesEnd }, am: _am
+                })
+            })
+        }
+
+        async function getData(_url, _method, _body = {}) {
+            try {
+                let response = await fetch(_url, {
+                    method: _method,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(_body)
+                })
+
+                if (!response.ok) throw new Error(response.statusText)
+
+                let data = await response.json()
+                return data
+            } catch {
+                return []
+            }
+        }
+
+        // Function to update the displayed date
+        const updateDateDisplay = () => {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            dateDisplay.textContent = currentDate.toLocaleDateString(undefined, options);
+        };
+
+        // Move backward in time
+        leftArrow.addEventListener('click', async () => {
+            if ((currentDate.getDate() - 1) < new Date().getDate()) return
+            currentDate.setDate(currentDate.getDate() - 1);
+            startLoading()
+            await renderComponent()
+            endLoading()
+        });
+
+        // Move forward in time
+        rightArrow.addEventListener('click', async () => {
+            currentDate.setDate(currentDate.getDate() + 1);
+            startLoading()
+            await renderComponent()
+            endLoading()
+        });
+
+        function startLoading() {
+            svg.classList.add("d-none")
+            loading.classList.remove("d-none")
+        }
+
+        function endLoading() {
+            loading.classList.add("d-none")
+            svg.classList.remove("d-none")
+        }
+
+        function snapTo30(angle) {
+            return Math.round(angle / 15) * 15;
+        }
+
+        function timeToAngle(h, m) {
+            const hour24 = isAM ? h % 12 : (h % 12 + 12) % 24;
+            return ((hour24 % 12) * 60 + m) * 0.5;
+        }
+
+        function angleToTime(angle) {
+            let totalMins = Math.round(angle / 0.5);
+            let h = Math.floor(totalMins / 60) % 12;
+            let m = totalMins % 60;
+            if (h === 0) h = 12;
+            return { h, m };
+        }
+
+        function formatTime({ h, m }) {
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${isAM ? 'AM' : 'PM'}`;
+        }
+
+        function formatEndTime({ h, m }) {
+            let result = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            if (h == 12) {
+                result += ` ${isAM ? 'PM' : 'AM'}`
+            } else {
+                result += ` ${isAM ? 'AM' : 'PM'}`
+            }
+            return result
+        }
+
+        function formatTime24({ h, m }) {
+            if (isAM && h == 12) h = 0
+            if (!isAM && h != 12) h += 12
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
+        }
+
+        function formatEndTime24({ h, m }) {
+            if (!isAM && h == 12) h = 0
+            if (!isAM && h != 12) h += 12
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:00`;
+        }
+
+        function polarToCartesian(cx, cy, r, angle) {
+            const rad = (angle - 90) * Math.PI / 180;
+            return {
+                x: cx + r * Math.cos(rad),
+                y: cy + r * Math.sin(rad)
+            };
+        }
+
+        function describeArc(x, y, r, startAngle, endAngle) {
+            const start = polarToCartesian(x, y, r, endAngle);
+            const end = polarToCartesian(x, y, r, startAngle);
+            const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+            return ["M", start.x, start.y, "A", r, r, 0, largeArc, 0, end.x, end.y].join(" ");
+        }
+
+        function drawHourMarks() {
+            for (let i = 1; i <= 12; i++) {
+                const angle = i * 30;
+                const pos = polarToCartesian(CENTER.x, CENTER.y, RADIUS - 30, angle);
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", pos.x);
+                text.setAttribute("y", pos.y);
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("alignment-baseline", "middle");
+                text.setAttribute("class", "hour-mark");
+                text.textContent = i;
+                hourMarks.appendChild(text);
+            }
+        }
+
+        function drawReservedArcs() {
+            reservedGroup.innerHTML = '';
+            reservedSegments.forEach(seg => {
+                if (seg.am !== isAM) return;
+                const start = timeToAngle(seg.start.h, seg.start.m);
+                const end = timeToAngle(seg.end.h, seg.end.m);
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", describeArc(CENTER.x, CENTER.y, RADIUS - 10, start, end));
+                path.setAttribute("stroke", "#333");
+                path.setAttribute("stroke-width", "20");
+                path.setAttribute("fill", "none");
+                path.setAttribute("class", "reserved-segment");
+                reservedGroup.appendChild(path);
+            });
+        }
+
+        function moveHandle(handle, angle) {
+            const pos = polarToCartesian(CENTER.x, CENTER.y, RADIUS - 10, angle);
+            handle.setAttribute("cx", pos.x);
+            handle.setAttribute("cy", pos.y);
+        }
+
+        function getAngleFromEvent(e) {
+            const pt = svg.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
+            const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+            const dx = loc.x - CENTER.x;
+            const dy = loc.y - CENTER.y;
+            let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+            return snapTo30((angle + 360) % 360);
+        }
+
+        function isWithinReserved(angle) {
+            return reservedSegments.some(seg => {
+                if (seg.am !== isAM) return false;
+                const start = timeToAngle(seg.start.h, seg.start.m);
+                const end = timeToAngle(seg.end.h, seg.end.m);
+                return angle >= start && angle < end;
+            });
+        }
+
+        function updateTimeTexts() {
+            startTimeText.textContent = startAngle !== null ? formatTime(angleToTime(startAngle)) : '--:--';
+            endTimeText.textContent = endAngle !== null ? formatEndTime(angleToTime(endAngle)) : '--:--';
+        }
+
+        function buildAvailableSegments() {
+            const reservedAngles = reservedSegments.filter(s => s.am === isAM).map(s => ({
+                start: timeToAngle(s.start.h, s.start.m),
+                end: timeToAngle(s.end.h, s.end.m)
+            })).sort((a, b) => a.start - b.start);
+
+            const segments = [];
+            let lastEnd = 0;
+            for (const seg of reservedAngles) {
+                if (lastEnd < seg.start) segments.push({ start: lastEnd, end: seg.start });
+                lastEnd = seg.end;
+            }
+            if (lastEnd < 360) segments.push({ start: lastEnd, end: 360 });
+            return segments;
+        }
+
+        svg.addEventListener("click", (e) => {
+            const angle = getAngleFromEvent(e);
+            if (isWithinReserved(angle)) return;
+
+            if (startAngle === null) {
+                startAngle = angle;
+                startHandle.style.display = 'block';
+                moveHandle(startHandle, angle);
+
+                activeSegment = buildAvailableSegments().find(s => angle >= s.start && angle <= s.end);
+
+            } else if (endAngle === null && activeSegment && angle > startAngle && angle <= activeSegment.end) {
+                endAngle = angle;
+                endHandle.style.display = 'block';
+                moveHandle(endHandle, angle);
+            }
+            updateTimeTexts();
+        });
+
+        function resetSelection() {
+            startAngle = null;
+            endAngle = null;
+            activeSegment = null;
+            startHandle.style.display = 'none';
+            endHandle.style.display = 'none';
+            updateTimeTexts();
+        }
+
+        svg.addEventListener("mousedown", (e) => {
+            if (e.target === startHandle) dragging = "start";
+            else if (e.target === endHandle) dragging = "end";
+        });
+
+        svg.addEventListener("mousemove", (e) => {
+            if (!dragging || !activeSegment) return;
+            let angle = getAngleFromEvent(e);
+            if (angle < activeSegment.start || angle > activeSegment.end) return;
+            if (dragging === "start" && (endAngle !== null && angle >= endAngle)) return;
+            if (dragging === "end" && (startAngle !== null && angle <= startAngle)) return;
+
+            if (dragging === "start") {
+                startAngle = angle;
+                moveHandle(startHandle, angle);
+            } else {
+                endAngle = angle;
+                moveHandle(endHandle, angle);
+            }
+            updateTimeTexts();
+        });
+
+        function toggleAM() {
+            resetSelection()
+            isAM = !isAM
+            stylizeAM()
+            drawReservedArcs()
+        }
+
+        function stylizeAM() {
+            if (isAM) {
+                amBtn.innerText = "AM"
+                watchFace.setAttribute("fill", "seagreen")
+            } else {
+                amBtn.innerText = "PM"
+                watchFace.setAttribute("fill", "#257146")
+            }
+        }
+
+        close_modal.addEventListener("click", closeModal)
+        submit_btn.addEventListener("click", submitRequest)
+
+        svg.addEventListener("mouseup", () => dragging = null);
+        svg.addEventListener("mouseleave", () => dragging = null);
+    </script>
+}

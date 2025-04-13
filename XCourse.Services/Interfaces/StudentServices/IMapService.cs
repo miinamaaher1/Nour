@@ -1,10 +1,11 @@
-﻿using XCourse.Core.DTOs.StudentDTOs;
-using XCourse.Core.Entities;
+﻿using System.Security.Claims;
+using XCourse.Core.DTOs.StudentDTOs;
 
 namespace XCourse.Services.Interfaces.StudentServices
 {
     public interface IMapService
     {
-        MapInfoDTO InitializeMap(AppUser user);
+        Task<MapInfoDTO> InitializeMapAsync(ClaimsPrincipal user);
+        List<CenterMapDTO> SearchCenters(string query);
     }
 }
