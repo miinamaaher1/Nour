@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Serialization;
+﻿using Azure.Core;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,23 +42,84 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             return groupDTOs;
         }
-
-
         async public Task<IEnumerable<Announcement>> GetAnnouncementById(int announcementId)
         {
             throw new NotImplementedException();
         }
-        async public Task<IEnumerable<Announcement>> GetAnnouncements(int teacherId, int? take, int? skip)
+        public async Task<ICollection<AnnouncementResponseDTO>> GetAnnouncements(int teacherId, int? take, int? skip)
         {
-            var teacherGroups = await _unitOfWork.Groups.FindAllAsync(g => g.TeacherID == teacherId);
-            var groupIds = teacherGroups.Select(g => g.ID).ToList();
-
-            var announcements = await _unitOfWork.Announcements.FindAllAsync(a =>
-                a.Groups!.Any(g => groupIds.Contains(g.ID))
+            // Retrieve teacher's groups with the necessary includes.
+            var teacherGroups = await _unitOfWork.Groups.FindAllAsync(
+                g => g.TeacherID == teacherId,
+                new[] { "Subject", "GroupDefaults" }
             );
 
-            return announcements;
+            // Map groups to DTOs.
+            var teacherGroupsDTOs = new List<AnnouncementGroupDTO>();
+            foreach (var group in teacherGroups)
+            {
+                var announcementGroupDTO = new AnnouncementGroupDTO
+                {
+                    GroupID = group.ID
+                };
+
+                var groupDefaultsName = new StringBuilder();
+                if (group.GroupDefaults != null)
+                {
+                    foreach (var def in group.GroupDefaults)
+                    {
+                        groupDefaultsName.Append($"[{def.WeekDay} - {def.StartTime}]");
+                    }
+                }
+
+                announcementGroupDTO.GroupName = $"{group.Subject?.Topic} - {groupDefaultsName}";
+                teacherGroupsDTOs.Add(announcementGroupDTO);
+            }
+            // Extract group IDs
+            var groupIds = teacherGroupsDTOs.Select(tg => tg.GroupID);
+
+            // Query announcements.
+            List<Announcement> announcements = new List<Announcement>(
+                await _unitOfWork.Announcements.FindAllAsync(
+                    a => a.Groups!.Any(g => groupIds.Contains(g.ID)),
+                    new[] { "Groups" },
+                    skip,
+                    take
+                    
+                )
+            );
+
+            var announcementResponseDTOs = new List<AnnouncementResponseDTO>();
+            foreach (var announcement in announcements)
+            {
+                var announcementDTO = new AnnouncementResponseDTO
+                {
+                    Id = announcement.ID,
+                    AnnouncementBody = announcement.Body,
+                    AnnouncementTitle = announcement.Title,
+                    DateTime = announcement.DateTime
+                };
+
+                var announcementGroupDTOs = new List<AnnouncementGroupDTO>();
+                if (announcement.Groups != null)
+                {
+                    foreach (var group in announcement.Groups)
+                    {
+                        // Find matching group based on group ID.
+                        var matchingGroupDTO = teacherGroupsDTOs.FirstOrDefault(ag => ag.GroupID == group.ID);
+                        if (matchingGroupDTO != null)
+                        {
+                            announcementGroupDTOs.Add(matchingGroupDTO);
+                        }
+                    }
+                }
+                announcementDTO.Groups = announcementGroupDTOs;
+                announcementResponseDTOs.Add(announcementDTO);
+            }
+
+            return announcementResponseDTOs;
         }
+
         async public Task<IEnumerable<Announcement>> GetAnnouncementsByGroubId(int teacherId, int? take, int groupId, int? skip)
         {
             throw new NotImplementedException();
@@ -74,7 +136,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 t => t.ID == teacherId,
                 ["Groups"]
             );
-            
+
             foreach (var groupId in groupIds)
             {
                 bool hasAccess = teacher.Groups!.Any(g => g.ID == groupId);
@@ -99,7 +161,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     Groups = new List<Group>()
                 };
                 announcement.Groups = TargetGroups.ToList();
-                
+
                 await _unitOfWork.SaveAsync();
 
 

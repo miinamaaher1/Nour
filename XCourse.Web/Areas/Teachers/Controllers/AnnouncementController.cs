@@ -20,6 +20,14 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return Json(announcements);
         }
 
+
+        [HttpPost]
+        async public Task<IActionResult> GetAllAnnouncements([FromBody]RequestAllAnnouncementDTO request)
+        {
+            var announcements = await _announcementService.GetAnnouncements(1,request.Take, request.Skip);
+            return Ok(announcements);
+        }
+
         [HttpPost]
         async public Task<IActionResult> PostAnnouncement([FromBody]PostAnnouncementRequestDTO requestDTO)
         {
