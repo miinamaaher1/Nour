@@ -167,6 +167,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 user.LastName = Input.LastName;
                 user.DateOfBirth = Input.DateOfBirth;
                 user.Gender = Input.Gender;
+                user.AccountType = Input.AccountType;
 
                 if (Request.Form.Files.Count > 0)
                 {
@@ -187,7 +188,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    if (Input.AccountType == AccountType.Student)
+                    if (user.AccountType == AccountType.Student)
                     {
                         Student student = new Student()
                         {
@@ -198,7 +199,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         _unitOfWork.Students.Add(student);
                         _unitOfWork.Save();
                     }
-                    else if (Input.AccountType == AccountType.Teacher)
+                    else if (user.AccountType == AccountType.Teacher)
                     {
                         Teacher teacher = new Teacher()
                         {
@@ -209,7 +210,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         _unitOfWork.Teachers.Add(teacher);
                         _unitOfWork.Save();
                     }
-                    else if (Input.AccountType == AccountType.Assistant)
+                    else if (user.AccountType == AccountType.Assistant)
                     {
                         Assistant assistant = new Assistant()
                         {
@@ -218,7 +219,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         _unitOfWork.Assistants.Add(assistant);
                         _unitOfWork.Save();
                     }
-                    else if (Input.AccountType == AccountType.CenterAdmin)
+                    else if (user.AccountType == AccountType.CenterAdmin)
                     {
                         CenterAdmin centerAdmin = new CenterAdmin()
                         {
@@ -254,27 +255,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-
-                        if (user.AccountType == AccountType.Student)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "Students" });
-                        }
-                        else if (user.AccountType == AccountType.Teacher)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "Teachers" });
-                        }
-                        else if (user.AccountType == AccountType.CenterAdmin)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
-                        }
-                        else if (user.AccountType == AccountType.Assistant)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "Assistants" });
-                        }
-                        else
-                        {
-                            return LocalRedirect(returnUrl);
-                        }
+                        return LocalRedirect(returnUrl);
                     }
                 }
                 foreach (var error in result.Errors)

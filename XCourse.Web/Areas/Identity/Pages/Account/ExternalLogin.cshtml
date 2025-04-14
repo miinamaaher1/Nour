@@ -1,120 +1,109 @@
 ﻿@page
 @model ExternalLoginModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Sign up";
 }
 
-<h1>@ViewData["Title"]</h1>
-<h2 id="external-login-title">Associate your @Model.ProviderDisplayName account.</h2>
-<hr />
+@section Styles {
+    <link rel="stylesheet" href="~/css/form.css" />
+}
 
-<p id="external-login-description" class="text-info">
-    You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
-    Please enter an email address for this site below and click the Register button to finish
-    logging in.
-</p>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input readonly asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
-                <label asp-for="Input.Email" class="form-label"></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" placeholder="first name" />
-                <label asp-for="Input.FirstName">First Name</label>
-                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" placeholder="last name" />
-                <label asp-for="Input.LastName">Last Name</label>
-                <span asp-validation-for="Input.LastName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Street" class="form-control" autocomplete="street" aria-required="false" placeholder="baker street" />
-                <label asp-for="Input.Street">Street</label>
-                <span asp-validation-for="Input.Street" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Neighborhood" class="form-control" autocomplete="neighborhood" aria-required="false" placeholder="neighborhood" />
-                <label asp-for="Input.Neighborhood">Neighborhood</label>
-                <span asp-validation-for="Input.Neighborhood" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.City" class="form-control" autocomplete="city" aria-required="false" placeholder="gotham city" />
-                <label asp-for="Input.City">City</label>
-                <span asp-validation-for="Input.City" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Governorate" class="form-control" autocomplete="governorate" aria-required="false" placeholder="cairo governorate" />
-                <label asp-for="Input.Governorate">Governorate</label>
-                <span asp-validation-for="Input.Governorate" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.DateOfBirth" class="form-control" aria-required="false" />
-                <label asp-for="Input.DateOfBirth">DateOfBirth</label>
-                <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <Select asp-for="Input.Gender" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Gender>()"> </Select>
-                <label asp-for="Input.Gender">Gender</label>
-                <span asp-validation-for="Input.Gender" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <Select id="accTypeSelect" asp-for="Input.AccountType" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<AccountType>()"> </Select>
-                <label asp-for="Input.AccountType">AccountType</label>
-                <span asp-validation-for="Input.AccountType" class="text-danger"></span>
-            </div>
-            <div id="studOptions">
-                <div class="form-floating mb-3">
-                    <Select asp-for="Input.Year" class="form-select" aria-required="false" asp-items="Html.GetEnumSelectList<Year>()"> </Select>
-                    <label asp-for="Input.Year">Year</label>
-                    <span asp-validation-for="Input.Year" class="text-danger"></span>
+<div class="col-12">
+    <section id="form-section" class="form-section col-12 ">
+        <div class="form-container">
+            <h1 class="form-header">@ViewData["Title"]</h1>
+            <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <input asp-for="Input.AccountType" hidden value="@Model.AccountType" />
+                <div class="form-group">
+                    <p id="external-login-description">
+                        You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
+                        Please enter an email address for this site below and click the Register button to finish
+                        logging in.
+                    </p>
                 </div>
-                <div class="form-floating mb-3">
-                    <Select asp-for="Input.Major" class="form-select" aria-required="false" asp-items="Html.GetEnumSelectList<Major>()"> </Select>
-                    <label asp-for="Input.Major">Major</label>
-                    <span asp-validation-for="Input.Major" class="text-danger"></span>
+                <div class="form-group">
+                    <label asp-for="Input.Email" class="form-label"></label>
+                    <input readonly asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email." />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
-            </div>
-            <div id="teachOptions">
-                <div class="form-check mb-3">
-                    <input asp-for="Input.IsAvailableForPrivateGroups" class="form-check-input" aria-required="false" />
-                    <label asp-for="Input.IsAvailableForPrivateGroups" class="form-check-label">Available For Private Groups</label>
+                <div class="form-group">
+                    <label asp-for="Input.FirstName">First Name</label>
+                    <input asp-for="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" placeholder="first name" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.PrivatePrice" class="form-control" aria-required="false" placeholder="00.00" />
-                    <label asp-for="Input.PrivatePrice" class="form-label">Private Group Price Per Session</label>
-                    <span asp-validation-for="Input.PrivatePrice" class="text-danger"></span>
+                <div class="form-group">
+                    <label asp-for="Input.LastName">Last Name</label>
+                    <input asp-for="Input.LastName" class="form-control" autocomplete="lastname" aria-required="true" placeholder="last name" />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
                 </div>
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
-    </div>
+                <div class="form-group">
+                    <label asp-for="Input.Street">Street</label>
+                    <input asp-for="Input.Street" class="form-control" autocomplete="street" aria-required="false" placeholder="baker street" />
+                    <span asp-validation-for="Input.Street" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Neighborhood">Neighborhood</label>
+                    <input asp-for="Input.Neighborhood" class="form-control" autocomplete="neighborhood" aria-required="false" placeholder="neighborhood" />
+                    <span asp-validation-for="Input.Neighborhood" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.City">City</label>
+                    <input asp-for="Input.City" class="form-control" autocomplete="city" aria-required="false" placeholder="gotham city" />
+                    <span asp-validation-for="Input.City" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Governorate">Governorate</label>
+                    <input asp-for="Input.Governorate" class="form-control" autocomplete="governorate" aria-required="false" placeholder="cairo governorate" />
+                    <span asp-validation-for="Input.Governorate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.DateOfBirth">DateOfBirth</label>
+                    <input asp-for="Input.DateOfBirth" class="form-control" aria-required="false" />
+                    <span asp-validation-for="Input.DateOfBirth" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Gender">Gender</label>
+                    <Select asp-for="Input.Gender" class="form-select" aria-required="true" asp-items="Html.GetEnumSelectList<Gender>()"> </Select>
+                </div>
+                @if (Model.AccountType == AccountType.Student)
+                {
+                    <div class="form-group">
+                        <label asp-for="Input.Year">Year</label>
+                        <Select asp-for="Input.Year" class="form-select" aria-required="false" asp-items="Html.GetEnumSelectList<Year>()"> </Select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.Major">Major</label>
+                        <Select asp-for="Input.Major" class="form-select" aria-required="false" asp-items="Html.GetEnumSelectList<Major>()"> </Select>
+                    </div>
+                }
+                @if (Model.AccountType == AccountType.Teacher)
+                {
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <label asp-for="Input.IsAvailableForPrivateGroups" class="form-check-label">
+                                <input asp-for="Input.IsAvailableForPrivateGroups" class="form-check-input" aria-required="false" />
+                                Available For Private Groups
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.PrivatePrice" class="form-label">Private Group Price Per Session</label>
+                        <input asp-for="Input.PrivatePrice" class="form-control" aria-required="false" placeholder="00.00" />
+                        <span asp-validation-for="Input.PrivatePrice" class="text-danger"></span>
+                    </div>
+                }
+                <div class="form-navigation">
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </section>
 </div>
 
 
-
 @section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.getElementById('accTypeSelect').addEventListener('change', (e) => {
-            var selectedValue = e.target.value;
-            var studentOptions = document.getElementById('studOptions');
-            var teachtOptions = document.getElementById('teachOptions');
-            if (selectedValue == 0) {
-                studentOptions.classList.remove("d-none");
-                teachtOptions.classList.add("d-none");
-            } else if (selectedValue == 1) {
-                teachtOptions.classList.remove("d-none");
-                studentOptions.classList.add("d-none");
-            } else {
-                teachtOptions.classList.add("d-none");
-                studentOptions.classList.add("d-none");
-            }
-        })
-    </script>
 }

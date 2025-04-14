@@ -693,6 +693,7 @@
 			let result = await getData(url, "POST", request)
 
 			if (result.isValid) {
+				resetSelection()
 				modal_container.classList.add("d-none")
 				showSuccessToast("Ok", 'Reserved Successfully',5);
 			} else {
@@ -735,13 +736,13 @@
 			list.forEach(item => {
 				let _am = true;
 
-				const [hoursStart, minutesStart] = item.start.split(':').map(Number);
+				let [hoursStart, minutesStart] = item.start.split(':').map(Number);
 				if (hoursStart >= 12) {
 					_am = false;
 					hoursStart -= 12;
 				}
 
-				const [hoursEnd, minutesEnd] = item.end.split(':').map(Number);
+				let [hoursEnd, minutesEnd] = item.end.split(':').map(Number);
 				if (hoursEnd >= 12) {
 					_am = false;
 					hoursEnd -= 12;
@@ -782,6 +783,7 @@
 		leftArrow.addEventListener('click', async () => {
 			if ((currentDate.getDate() - 1) < new Date().getDate()) return
 			currentDate.setDate(currentDate.getDate() - 1);
+			resetSelection()
 			startLoading()
 			await renderComponent()
 			endLoading()
@@ -790,6 +792,7 @@
 		// Move forward in time
 		rightArrow.addEventListener('click', async () => {
 			currentDate.setDate(currentDate.getDate() + 1);
+			resetSelection()
 			startLoading()
 			await renderComponent()
 			endLoading()

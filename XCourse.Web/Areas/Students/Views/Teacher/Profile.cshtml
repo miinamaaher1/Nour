@@ -21,21 +21,21 @@
                 <h3 class="profile-tagline">@Model.TagLine</h3>
                 @if (Model.TeacherEmail != null)
                 {
-                    <div class="profile-info">
+                    <div class="profile-mina">
                         <i class="fas fa-envelope"></i>
                         &nbsp;<span>@Model.TeacherEmail</span>
                     </div>
                 }
                 @if (Model.TeacherPhone != null)
                 {
-                    <div class="profile-info">
+                    <div class="profile-mina">
                         <i class="fas fa-phone"></i>
                         &nbsp;<span>@Model.TeacherPhone</span>
                     </div>
                 }
                 @if(Model.IsAvailableForPrivateGroups)
                 {
-                    <div class="profile-info">
+                    <div class="profile-mina">
                         <i class="fa-solid fa-circle-info"></i>
                         &nbsp;<span>Offers private groups for L.E. @Model.PrivateGroupPrice</span>
                     </div>
@@ -54,7 +54,7 @@
     </div>
 </div>
 
-<div class="container">
+<div class="col-12 container">
     <div class="container row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var group in Model.AvailbleGroups)
         {
@@ -348,7 +348,7 @@
             margin-bottom: 12px;
         }
 
-        .profile-info {
+        .profile-mina {
             display: flex;
             row-gap: 5px;
             align-items: center;
@@ -357,7 +357,7 @@
             color: var(--clr-text-secondary);
         }
 
-        .profile-info i {
+        .profile-mina i {
             margin-right: 12px;
             color: var(--clr-secondary);
             width: 20px;
