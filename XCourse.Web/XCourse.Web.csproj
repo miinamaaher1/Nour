@@ -49,8 +49,9 @@
     <ProjectReference Include="..\XCourse.Services\XCourse.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Areas\Teachers\Controllers\" />
-  </ItemGroup>
+
+
+
+
 
 </Project>

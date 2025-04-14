@@ -8,6 +8,7 @@ namespace XCourse.Web.ServicesCollections
     {
         public static IServiceCollection AddTeacherServices(this IServiceCollection services)
         {
+            services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IAnnouncementService, AnnouncementService>();
             services.AddScoped<IGroupService, GroupService>();
             return services;

@@ -1,0 +1,407 @@
+﻿@using XCourse.Core.ViewModels.TeachersViewModels
+@model TeacherHomeVM 
+@{
+    ViewData["Title"] = "Home";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/Content/tui-calendar/tui-calendar.min.css">
+    <link rel="stylesheet" href="~/css/Teachers/TeachersHomeGroups.css" />
+}
+
+<div class="col-12">
+    <!--Upcoming sessions-->
+    <div class="container col-11">
+        <div class="group-carousel container">
+            <div class="group-carousel__container">
+                <div class="session-section__title">
+                    <h2>Upcoming Sessions</h2>
+                    <a asp-action="Index" asp-controller="Session" asp-area="Teachers" class="view-all-link">View All</a>
+                </div>
+                <div class="group-carousel__track" id="sessionsCarouselTrack">
+
+
+                    @foreach (var session in Model.WeekSessions)
+                    {
+                        <div class="group-carousel__slide">
+                            <a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Teachers" asp-route-Id="@session.ID">
+                                <div class="session-card">
+                                    <div class="session-card__header">
+                                        @if (session.IsOnline)
+                                        {
+                                            <div class="session-card__status session-card__status--online">
+                                                <i class="fas fa-circle"></i>
+                                                Online
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="session-card__status session-card__status--offline">
+                                                <i class="fas fa-circle"></i>
+                                                Offline
+                                            </div>
+                                        }
+
+                                        <div class="session-card__duration">
+                                            <i class="fa-solid fa-hourglass-half"></i>
+                                            @session.Duration!.Value.ToString(@"hh\:mm")
+                                        </div>
+                                    </div>
+                                    <div class="session-card__date">@session.StartDateTime.ToString("MMMM dd, yyyy - HH:mm")</div>
+                                    <div class="session-card__subject">@session.Subject</div>
+                                    <div class="session-card__info">
+                                        @if (!session.IsOnline && !string.IsNullOrEmpty(session.CenterName))
+                                        {
+                                            <div class="session-card__location">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                @session.CenterName - @session.RoomName
+                                            </div>
+                                        }
+                                        <div class="session-card__academic-info">
+                                            <span class="session-card__badge">@session.Major</span>
+                                            <span class="session-card__badge">Year @session.Year</span>
+                                            <span class="session-card__badge">Semester @session.Semester</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+            <div class="group-carousel__controls">
+                <button class="group-carousel__button" id="sessionPrevButton">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="group-carousel__button" id="sessionNextButton">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="group-carousel__dots" id="sessionsCarouselDots">
+                <!-- Dots will be added here via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Groups -->
+    <div class="container col-11">
+        <div class="group-carousel container">
+            <div class="container">
+                <div class="group-section__title">
+                    <h2>My Groups</h2>
+                    <a asp-action="Index" asp-controller="Group" asp-area="Teachers" class="view-all-link">View All</a>
+                </div>
+
+                <div class="group-carousel">
+                    <div class="group-carousel__container">
+                        <div class="group-carousel__track" id="carouselTrack">
+                            @foreach (var group in Model.TeacherGroups)
+                            {
+                                <div class="group-carousel__slide">
+                                    <a class="group-card" style="text-decoration:none;" asp-action="Details" asp-controller="Group" asp-area="Teachers" asp-route-Id="@group.ID">
+                                        <div class="group-card">
+                                            <div class="group-card__image">
+                                                <img src="@(group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))"
+                                                alt="@group.Subject Group">
+                                            </div>
+                                            <div class="group-card__content">
+                                                <div class="group-card__title">@group.Subject</div>
+                                                <div class="group-card__academic">
+                                                    <span>@group.Major</span> |
+                                                    <span>Year @group.Year</span> |
+                                                    <span>Semester @group.Semester</span>
+                                                </div>
+                                                <div class="group-card__features">
+                                                    @if (group.IsOnline)
+                                                    {
+                                                        <span class="group-card__feature">
+                                                            <i class="fas fa-laptop"></i> Online
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="group-card__feature">
+                                                            <i class="fas fa-building"></i> Offline
+                                                        </span>
+                                                    }
+                                                    @if (group.IsGirlsOnly)
+                                                    {
+                                                        <span class="group-card__feature">
+                                                            <i class="fas fa-female"></i> Girls Only
+                                                        </span>
+                                                    }
+                                                    @if (group.IsPrivate)
+                                                    {
+                                                        <span class="group-card__feature">
+                                                            <i class="fas fa-lock"></i> Private
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <div class="group-card__location">
+                                                    @if (!group.IsOnline && !string.IsNullOrEmpty(group.CenterName))
+                                                    {
+                                                    <i class="fas fa-map-marker-alt"></i>
+														@group.CenterName @group.RoomName;
+                                                    }
+                                                </div>
+                                                <div class="group-card__footer">
+                                                    <div class="group-card__capacity">
+                                                        <i class="fas fa-users"></i>
+                                                        @group.CurrentStudents/@group.MaxStudents
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="group-carousel__controls">
+                        <button class="group-carousel__button" id="prevButton">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="group-carousel__button" id="nextButton">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="group-carousel__dots" id="carouselDots">
+                        <!-- Dots will be added here via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="@Url.Content("~/Scripts/tui-code-snippet.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/tui-calendar.min.js")"></script>
+    <script>
+        // Function to initialize the carousel
+        function initCarousel() {
+            const carouselTrack = document.getElementById('carouselTrack');
+            const carouselDots = document.getElementById('carouselDots');
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+
+            // Get all slides
+            const slides = carouselTrack.querySelectorAll('.group-carousel__slide');
+
+            // If there are no slides, don't initialize the carousel
+            if (slides.length === 0) return;
+
+            // Variables for carousel functionality
+            let currentSlide = 0;
+            let slidesPerView = getSlidesPerView();
+            let totalSlides = Math.ceil(slides.length / slidesPerView);
+
+            // Create dot indicators
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = i === 0 ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                dot.dataset.slide = i;
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                carouselDots.appendChild(dot);
+            }
+
+            // Add event listeners to buttons
+            prevButton.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
+            });
+
+            nextButton.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+
+            // Function to go to a specific slide
+            function goToSlide(slideIndex) {
+                // Handle wrapping
+                if (slideIndex < 0) {
+                    slideIndex = totalSlides - 1;
+                } else if (slideIndex >= totalSlides) {
+                    slideIndex = 0;
+                }
+
+                currentSlide = slideIndex;
+                updateCarousel();
+            }
+
+            // Function to update carousel display
+            function updateCarousel() {
+                // Update track position
+                const offset = -1 * currentSlide * (100 / slidesPerView) * slidesPerView;
+                carouselTrack.style.transform = `translateX(${offset}%)`;
+
+                // Update active dot
+                const dots = carouselDots.querySelectorAll('.group-carousel__dot');
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('group-carousel__dot--active');
+                    } else {
+                        dot.classList.remove('group-carousel__dot--active');
+                    }
+                });
+            }
+
+            // Function to determine slides per view based on viewport width
+            function getSlidesPerView() {
+                if (window.innerWidth >= 1200) return 4;
+                if (window.innerWidth >= 992) return 3;
+                if (window.innerWidth >= 768) return 2;
+                return 1;
+            }
+
+            // Update slides per view on window resize
+            window.addEventListener('resize', () => {
+                const newSlidesPerView = getSlidesPerView();
+                if (newSlidesPerView !== slidesPerView) {
+                    slidesPerView = newSlidesPerView;
+                    totalSlides = Math.ceil(slides.length / slidesPerView);
+
+                    // Reset dots
+                    carouselDots.innerHTML = '';
+                    for (let i = 0; i < totalSlides; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = i === currentSlide ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                        dot.dataset.slide = i;
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                        carouselDots.appendChild(dot);
+                    }
+
+                    // Reset current slide if needed
+                    if (currentSlide >= totalSlides) {
+                        currentSlide = totalSlides - 1;
+                    }
+
+                    updateCarousel();
+                }
+            });
+
+            // Initialize carousel display
+            updateCarousel();
+        }
+        // Initialize the carousel when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initCarousel);
+
+        // Function to initialize the sessions carousel
+        function initSessionsCarousel() {
+            const sessionsCarouselTrack = document.getElementById('sessionsCarouselTrack');
+            const sessionsCarouselDots = document.getElementById('sessionsCarouselDots');
+            const sessionPrevButton = document.getElementById('sessionPrevButton');
+            const sessionNextButton = document.getElementById('sessionNextButton');
+
+            // Get all slides
+            const slides = sessionsCarouselTrack.querySelectorAll('.group-carousel__slide');
+
+            // If there are no slides, don't initialize the carousel
+            if (slides.length === 0) return;
+
+            // Variables for carousel functionality
+            let currentSlide = 0;
+            let slidesPerView = getSlidesPerView();
+            let totalSlides = Math.ceil(slides.length / slidesPerView);
+
+            // Create dot indicators
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = i === 0 ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                dot.dataset.slide = i;
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                sessionsCarouselDots.appendChild(dot);
+            }
+
+            // Add event listeners to buttons
+            sessionPrevButton.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
+            });
+
+            sessionNextButton.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+
+            // Function to go to a specific slide
+            function goToSlide(slideIndex) {
+                // Handle wrapping
+                if (slideIndex < 0) {
+                    slideIndex = totalSlides - 1;
+                } else if (slideIndex >= totalSlides) {
+                    slideIndex = 0;
+                }
+
+                currentSlide = slideIndex;
+                updateCarousel();
+            }
+
+            // Function to update carousel display
+            function updateCarousel() {
+                // Update track position
+                const offset = -1 * currentSlide * (100 / slidesPerView) * slidesPerView;
+                sessionsCarouselTrack.style.transform = `translateX(${offset}%)`;
+
+                // Update active dot
+                const dots = sessionsCarouselDots.querySelectorAll('.group-carousel__dot');
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('group-carousel__dot--active');
+                    } else {
+                        dot.classList.remove('group-carousel__dot--active');
+                    }
+                });
+            }
+
+            // Function to determine slides per view based on viewport width
+            function getSlidesPerView() {
+                if (window.innerWidth >= 1200) return 4;
+                if (window.innerWidth >= 992) return 3;
+                if (window.innerWidth >= 768) return 2;
+                return 1;
+            }
+
+            // Update slides per view on window resize
+            window.addEventListener('resize', () => {
+                const newSlidesPerView = getSlidesPerView();
+                if (newSlidesPerView !== slidesPerView) {
+                    slidesPerView = newSlidesPerView;
+                    totalSlides = Math.ceil(slides.length / slidesPerView);
+
+                    // Reset dots
+                    sessionsCarouselDots.innerHTML = '';
+                    for (let i = 0; i < totalSlides; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = i === currentSlide ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                        dot.dataset.slide = i;
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                        sessionsCarouselDots.appendChild(dot);
+                    }
+
+                    // Reset current slide if needed
+                    if (currentSlide >= totalSlides) {
+                        currentSlide = totalSlides - 1;
+                    }
+
+                    updateCarousel();
+                }
+            });
+
+            // Initialize carousel display
+            updateCarousel();
+        }
+
+        // Initialize the sessions carousel when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initSessionsCarousel);
+    </script>
+}
