@@ -6,6 +6,10 @@ const themeToggle = document.getElementById('theme-toggle');
 const body = document.body;
 const submenuToggles = document.querySelectorAll('.submenu-toggle');
 const logo = document.getElementById("logo");
+const themeLight = document.getElementById('theme-light');
+const themeDark = document.getElementById('theme-dark');
+const themeSystem = document.getElementById('theme-system');
+const modeBar = document.getElementById('modebar');
 
 // Toggle sidebar collapse
 toggleBtn.addEventListener('click', () => {
@@ -34,15 +38,69 @@ submenuToggles.forEach(toggle => {
 
 // Toggle theme
 themeToggle.addEventListener('click', (e) => {
-    e.preventDefault();
-    const currentTheme = body.getAttribute('data-theme') || 'light';
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    body.setAttribute('data-theme', newTheme);
-
-    // Update theme icon
-    const themeIcon = themeToggle.querySelector('.nav-icon');
-    themeIcon.className = newTheme === 'light' ? 'fa-solid fa-moon nav-icon' : 'fa-solid fa-sun nav-icon';
+    modeBar.classList.toggle('d-none');
 });
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    modeBar.classList.add('d-none');
+}
+
+function applyLightTheme() {
+    applyTheme('light');
+    localStorage.setItem('mode', 'user');
+    themeToggle.innerHTML = `<i class="fa-solid fa-sun nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`
+}
+
+function applyDarkTheme() {
+    applyTheme('dark');
+    localStorage.setItem('mode', 'user');
+    themeToggle.innerHTML = `<i class="fa-solid fa-moon nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`
+}
+
+function applySystemTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme('dark');
+    } else {
+        applyTheme('light');
+    }
+    localStorage.setItem('mode', 'system');
+    themeToggle.innerHTML = `<i class="fa-solid fa-laptop nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`
+}
+
+themeLight.addEventListener('click', applyLightTheme);
+
+themeDark.addEventListener('click', applyDarkTheme);
+
+themeSystem.addEventListener('click', applySystemTheme);
+
+onload = () => {
+    const mode = localStorage.getItem('mode');
+    if (mode) {
+        if (mode == 'system') {
+            themeToggle.innerHTML = `<i class="fa-solid fa-laptop nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
+        } else {
+            const theme = localStorage.getItem('theme');
+            if (theme) {
+                if (theme == 'dark') {
+                    themeToggle.innerHTML = `<i class="fa-solid fa-moon nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
+                }
+            } else {
+                themeToggle.innerHTML = `<i class="fa-solid fa-sun nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
+            }
+        }
+    } else {
+        themeToggle.innerHTML = `<i class="fa-solid fa-sun nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
+    }
+}
 
 
 // Toast counter to generate unique IDs

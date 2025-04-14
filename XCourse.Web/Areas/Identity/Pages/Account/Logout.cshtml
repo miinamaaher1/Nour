@@ -1,21 +1,51 @@
 ﻿@page
 @model LogoutModel
 @{
-    ViewData["Title"] = "Log out";
+    ViewData["Title"] = "Sign out";
 }
 
-<header>
-    <h1>@ViewData["Title"]</h1>
-    @{
-        if (User.Identity?.IsAuthenticated ?? false)
-        {
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                <button type="submit" class="nav-link btn btn-link text-dark">Click here to Logout</button>
-            </form>
+
+@section Styles {
+    <style>
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        else
-        {
-            <p>You have successfully logged out of the application.</p>
+
+        .btn:hover {
+            transform: translateY(-2px);
         }
-    }
-</header>
+
+        .btn-secondary {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--clr-secondary);
+            opacity: 0.9;
+        }
+    </style>
+}
+
+<div class="col-12">
+    <header>
+        <h1>@ViewData["Title"]</h1>
+        @{
+            if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                    <button type="submit" class="btn btn-secondary">Click here to Logout</button>
+                </form>
+            }
+            else
+            {
+                <p>You have successfully logged out of the application.</p>
+            }
+        }
+    </header>
+</div>
