@@ -13,6 +13,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using System.Text.Encodings.Web;
 using XCourse.Core.Entities;
+
+
 using XCourse.Infrastructure.Repositories.Interfaces;
 
 namespace XCourse.Web.Areas.Identity.Pages.Account

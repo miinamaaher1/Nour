@@ -6,9 +6,10 @@ namespace XCourse.Core.Entities
     [Flags]
     public enum Equipment
     {
-        Study,
-        Lecture,
-        Meeting
+        None = 0,
+        Study = 1,    // 0001
+        Lecture = 2,    // 0010
+        Meeting = 4
     }
     public class Room
     {

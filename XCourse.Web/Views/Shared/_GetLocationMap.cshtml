@@ -1,0 +1,49 @@
+﻿@model XCourse.Core.DTOs.StudentDTOs.MapInfoDTO
+
+<div id="googleMap" style="height:300px;width:100%;"></div>
+<input type="hidden" id="lat" asp-for="OriginX" />
+<input type="hidden" id="lng" asp-for="OriginY" />
+<input type="hidden" asp-for="Key" />
+
+<script>
+    function initMap() {
+        var lat = @Model.OriginX;
+        var lng = @Model.OriginY;
+
+        if (lat == 0 || lng == 0) {
+            lat = 30.0444;
+            lng = 31.2357;
+        }
+
+        var myCenter = new google.maps.LatLng(lat, lng);
+        var mapProp = {
+            center: myCenter,
+            zoom: 12,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+        var marker = new google.maps.Marker({
+            position: myCenter,
+            map: map,
+            draggable: true
+        });
+
+        google.maps.event.addListener(map, "click", function (event) {
+            marker.setPosition(event.latLng);
+            updateLatLngInputs(event.latLng);
+        });
+
+        marker.addListener("dragend", function () {
+            updateLatLngInputs(marker.getPosition());
+        });
+
+        function updateLatLngInputs(location) {
+            document.getElementById("lat").value = location.lat();
+            document.getElementById("lng").value = location.lng();
+        }
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=initMap" defer></script>

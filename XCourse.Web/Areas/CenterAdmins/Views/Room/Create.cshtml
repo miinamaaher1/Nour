@@ -1,0 +1,85 @@
+﻿@model XCourse.Core.DTOs.CenterAdmins.RoomDto;
+
+@{
+    ViewData["Title"] = "Create";
+
+    var selectListItem = Enum.GetValues(typeof(Equipment))
+        .Cast<Equipment>()
+         .Where(e => e != Equipment.None)
+        .Select(e => new SelectListItem
+                {
+                    Value = ((int)e).ToString(),
+                    Text = e.ToString()
+                }).ToList();
+
+}
+
+<h1>Create</h1>
+
+<h4>RoomsViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form enctype="multipart/form-data"  asp-action="Create" class="form-control container p-4 bg-light rounded shadow">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class=" form-group m-4 row justify-content-around">
+                <input asp-for="CenterId" class="form-control" hidden />
+                <span asp-validation-for="CenterId" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group m-4 row justify-content-aroun">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4 row justify-content-aroun">
+                <label asp-for="Capacity" class="control-label"></label>
+                <input asp-for="Capacity" class="form-control" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4 row justify-content-aroun">
+                <label asp-for="Equipment" class="control-label"></label>
+                <select asp-for="SelectedEquipments"
+                        class="form-select form-select-sm"
+                        asp-items="selectListItem"
+                        multiple>
+                </select>               
+                <span asp-validation-for="Equipment" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4 row justify-content-aroun">
+                <label asp-for="PricePerHour" class="control-label"></label>
+                <input asp-for="PricePerHour" class="form-control" />
+                <span asp-validation-for="PricePerHour" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4 row justify-content-around" style="text-align: center">
+                @if (Model.PreviewPicture2 != null)
+                {
+                    <img id="PreviewPicture" alt="profile" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;"
+                         src="data:image/*;base64,@(Convert.ToBase64String(Model.PreviewPicture2))" />
+                }
+                else
+                {
+                    <img id="PreviewPicture" alt="profile" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;"
+                         src="~/images/default_profile.png" />
+                }
+                <div class="custom-file mt-2">
+                    <input type="file"
+                           accept="image/*"
+                      name="img"
+                           class="form-control"
+                           onchange="document.getElementById('PreviewPicture').src = window.URL.createObjectURL(this.files[0])" />
+                </div>
+            </div>
+            <div class="form-group  m-4 row justify-content-around">
+                <input type="submit" value="Create" class="btn btn-outline-success" />
+                <a asp-action="Index" asp-route-id="@Model.CenterId" class="btn btn-outline-success">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,168 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using XCourse.Core.DTOs.CenterAdmins;
+using XCourse.Core.Entities;
+using XCourse.Core.ViewModels.CenterAdminViewModels;
+using XCourse.Services.Interfaces.CenterAdminServices;
+
+namespace XCourse.Web.Areas.CenterAdmins.Controllers
+{
+    [Area("CenterAdmins")]
+    public class RoomController : Controller
+    {
+
+        ICenterAdminService _centerAdminService;
+       
+        public RoomController(ICenterAdminService centerAdminService )
+        {
+            _centerAdminService = centerAdminService;
+           
+        }
+        // GET: RoomController
+        public ActionResult Index(int id)
+        {
+            var rooms = _centerAdminService.getAllRooms(id);
+            if (rooms == null)
+            {
+                return NotFound();
+            }
+            ViewBag.CenterID = id;
+            return View(rooms);
+        }
+
+        // GET: RoomController/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
+        }
+
+        // GET: RoomController/Create
+        public ActionResult Create(int id)
+        {
+            var room = new RoomDto()
+            {
+                CenterId= id
+            };
+
+
+                
+                return View(room);
+        }
+
+        // POST: RoomController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(RoomDto room)
+        {
+           
+            try
+            {
+                if (Request.Form.Files.Count > 0)
+                {
+                    var file = Request.Form.Files.FirstOrDefault();
+
+                    using (var dataStream = new MemoryStream())
+                    {
+                        await file.CopyToAsync(dataStream);
+                        room.PreviewPicture2 = dataStream.ToArray();
+                    }
+                }
+
+                if (ModelState.IsValid)
+                {
+                   
+                    int t= _centerAdminService.AddNewRoom(room);
+                    if(t==1)
+                    {
+                        return RedirectToAction("Index", new { id = room.CenterId });
+                    }
+                    else
+                    {
+                        return View(room);
+                    }
+                }
+                return View(room);
+                
+            }
+            catch
+            {
+                return View(room);
+            }
+        }
+
+        // GET: RoomController/Edit/5
+        public ActionResult Edit(int id)
+        {
+            var model = _centerAdminService.GetRoom(id);
+
+         
+            model.SelectedEquipments = Enum.GetValues(typeof(Equipment))
+              .Cast<Equipment>()
+            .Where(e => (model.Equipment & e) == e)
+           .ToList();
+            
+
+
+            return View(model);
+        }
+
+        // POST: RoomController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(RoomDto room)
+        {
+
+            try
+            {
+                if (Request.Form.Files.Count > 0)
+                {
+                    var file = Request.Form.Files.FirstOrDefault();
+
+                    using (var dataStream = new MemoryStream())
+                    {
+                        await file.CopyToAsync(dataStream);
+                        room.PreviewPicture2 = dataStream.ToArray();
+                    }
+                }
+                if (ModelState.IsValid)
+                {
+                    
+
+                    int t= _centerAdminService.EditRoom(room);
+                    if (t == 1)
+                    {
+                        return RedirectToAction("Index", new { id = room.CenterId });
+                    }
+                    else
+                        { return View(room); }
+                }
+                return View(room);
+            }
+            catch
+            {
+                return View(room);
+            }
+        }
+
+        // GET: RoomController/Delete/5
+        public ActionResult Delete(int id)
+        {
+            return View();
+        }
+
+        // POST: RoomController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+    }
+}
