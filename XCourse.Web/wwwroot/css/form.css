@@ -1,0 +1,234 @@
+/* General Form Section Styling */
+.form-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.form-container {
+    background-color: var(--clr-surface);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 80%;
+    max-width: 600px;
+    margin: auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-header {
+    text-align: center;
+    padding: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+/* Input Fields Styling */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--clr-border);
+    border-radius: 6px;
+    background-color: var(--clr-background);
+    color: var(--clr-text-primary);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 8px rgba(93, 42, 102, 0.5);
+}
+
+/* Date & Time Inputs */
+input[type="date"],
+input[type="time"] {
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+}
+
+/* Select Dropdown Styling */
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 35px;
+}
+
+select::-ms-expand {
+    display: none;
+}
+
+select option {
+    background-color: var(--clr-background);
+    color: var(--clr-text-primary);
+}
+
+/* Textarea Resizing */
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Radio & Checkbox Styling - FIXED */
+.radio-group,
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.radio-group label,
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    margin-right: 0;
+    cursor: pointer;
+}
+
+/* Fixed checkbox and radio styling */
+input[type="radio"],
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--clr-border);
+    background-color: var(--clr-background);
+    margin-right: 8px;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+input[type="checkbox"] {
+    border-radius: 4px;
+}
+
+input[type="radio"] {
+    border-radius: 50%;
+}
+
+/* Fix for radio button checked state */
+input[type="radio"]:checked {
+    border-color: var(--clr-primary);
+    border-width: 2px;
+}
+
+input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--clr-primary);
+}
+
+/* Fix for checkbox checked state */
+input[type="checkbox"]:checked {
+    background-color: var(--clr-primary);
+    border-color: var(--clr-primary);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 9px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--clr-text-on-primary);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Hover state */
+input[type="radio"]:hover,
+input[type="checkbox"]:hover {
+    border-color: var(--clr-primary);
+}
+
+/* Focus state */
+input[type="radio"]:focus,
+input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(93, 42, 102, 0.25);
+}
+
+/* Form Navigation Buttons */
+.form-navigation {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--clr-primary);
+    opacity: 0.9;
+}
+
+.btn-secondary {
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--clr-secondary);
+    opacity: 0.9;
+}
+
+.btn-close {
+    background-color: #FF4D4D;
+    color: var(--clr-text-on-secondary);
+}
+
+.btn-close:hover {
+    background-color: #FF6666;
+}

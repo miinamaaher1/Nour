@@ -1,5 +1,9 @@
 ﻿@model List<XCourse.Core.ViewModels.StudentsViewModels.SessionViewModel>
 
+@{
+    ViewData["Title"] = "Sessions";
+}
+
 @section Styles {
     <link rel="stylesheet" href="~/Content/tui-calendar/tui-calendar.min.css">
 
@@ -17,14 +21,14 @@
             transition: border-color 0.3s ease; /* Smooth transition for focus state */
         }
 
-            .search::placeholder {
-                color: var(--clr-text-secondary);
-            }
+        .search::placeholder {
+            color: var(--clr-text-secondary);
+        }
 
-            .search:focus {
-                outline: none; /* Remove default focus outline */
-                border-color: var(--clr-primary); /* Change border color on focus */
-            }
+        .search:focus {
+            outline: none; /* Remove default focus outline */
+            border-color: var(--clr-primary); /* Change border color on focus */
+        }
 
         /* Styling for the container to hold the input and the icon */
         .search-container {
@@ -32,29 +36,21 @@
             margin : 15px auto;
         }
 
-            .search-container i, .search-container svg { /* Style the Font Awesome icon */
-                position: absolute;
-                top: 50%;
-                right: 15px; /* Adjust as needed */
-                transform: translateY(-50%);
-                color: var(--clr-text-secondary);
-                font-size: 1.2rem; /* Adjust icon size */
-                cursor: pointer;
-            }
+        .search-container i, .search-container svg { /* Style the Font Awesome icon */
+            position: absolute;
+            top: 50%;
+            right: 15px; /* Adjust as needed */
+            transform: translateY(-50%);
+            color: var(--clr-text-secondary);
+            font-size: 1.2rem; /* Adjust icon size */
+            cursor: pointer;
+        }
     </style>
 
     <style>
 
-
-        body {
-            background-color: #f9fafb;
-        }
-
-
-
         .calendar-container {
             position: relative;
-            border-radius: 8px;
             overflow: hidden;
         }
 
@@ -64,10 +60,10 @@
             padding: 15px;
         }
 
-            .calendar-header h4 {
-                font-weight: 600;
-                letter-spacing: 0.5px;
-            }
+        .calendar-header h4 {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
 
         .empty-message {
             position: absolute;
@@ -93,16 +89,13 @@
             transition: all 0.3s ease;
         }
 
-            .btn-calendar-view:hover, .btn-calendar-view.active {
-                background-color: #e9edfe;
-            }
+        .btn-calendar-view:hover, .btn-calendar-view.active {
+            background-color: #e9edfe;
+        }
 
-            .btn-calendar-view i {
-                margin-right: 5px;
-            }
-
-
-
+        .btn-calendar-view i {
+            margin-right: 5px;
+        }
 
         /* Calendar customization */
         #calendar .tui-full-calendar-month-week-item {
@@ -114,9 +107,9 @@
             border-color: #edf2f7;
         }
 
-            #calendar .tui-full-calendar-weekday-grid-line:hover {
-                background-color: #f8fafc;
-            }
+        #calendar .tui-full-calendar-weekday-grid-line:hover {
+            background-color: #f8fafc;
+        }
 
         #calendar .tui-full-calendar-month-week-item {
             cursor: pointer;
@@ -139,41 +132,41 @@
             overflow: hidden;
         }
 
-            .session-template .session-icon {
-                margin-right: 4px;
-                width: 16px;
-                height: 16px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-            }
+        .session-template .session-icon {
+            margin-right: 4px;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
 
-            .session-template .session-title {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
+        .session-template .session-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
         .online-session {
             background-color: rgba(19, 194, 150, 0.15);
             border-left: 3px solid var(--online-color);
         }
 
-            .online-session .session-icon {
-                background-color: var(--online-color);
-                color: white;
-            }
+        .online-session .session-icon {
+            background-color: var(--online-color);
+            color: white;
+        }
 
         .offline-session {
             background-color: rgba(74, 108, 247, 0.15);
             border-left: 3px solid var(--offline-color);
         }
 
-            .offline-session .session-icon {
-                background-color: var(--offline-color);
-                color: white;
-            }
+        .offline-session .session-icon {
+            background-color: var(--offline-color);
+            color: white;
+        }
 
         /* Popup styles */
         .tui-full-calendar-popup-container {
@@ -518,7 +511,7 @@
     <!-- Calendar view -->
     <div class="card shadow-sm border-0 overflow-hidden">
         <div class="container">
-            <div class="calendar-controls">
+            <div class="calendar-controls" style="border-top-left-radius: 10px; border-top-right-radius: 10px;">
                 <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
                 <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
                 <button id="todayBtn">Today</button>
@@ -534,7 +527,7 @@
             <div class="container">
                 <div class="card-body p-0">
                     <div class="calendar-container">
-                        <div id="calendar" style="height: 650px;"></div>    @*Calendar*@
+                        <div id="calendar" style="height: 650px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden;"></div>    @*Calendar*@
                         <div id="emptyMessage" class="empty-message" style="display: none;">
                             <h4><i class="fas fa-search text-primary mb-3" style="font-size: 2rem;"></i></h4>
                             <h4 class="mb-3">No sessions match your search</h4>
@@ -543,12 +536,7 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
-
-
-
     </div>
 </div>
 
@@ -558,6 +546,7 @@
     <script src="@Url.Content("~/Scripts/tui-code-snippet.min.js")"></script>
     <script src="@Url.Content("~/Scripts/tui-calendar.min.js")"></script>
     <script>
+       
         document.addEventListener("DOMContentLoaded", function () {
             // Template functions
             function getMonthEventTemplate(event) {
