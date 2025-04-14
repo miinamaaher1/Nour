@@ -31,6 +31,8 @@ namespace XCourse.Web
             builder.Services.AddScoped<IEmailSender, GmailSender>();
             builder.Services.AddStudentServices();
             builder.Services.AddTeacherServices();
+            builder.Services.AddCenterAdminServices();
+           
 
             builder.Services.AddCors(options =>
             {
