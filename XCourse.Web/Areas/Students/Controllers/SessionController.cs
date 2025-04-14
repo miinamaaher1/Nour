@@ -32,15 +32,13 @@ namespace XCourse.Web.Areas.Students.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> SaveFeedback(FeedBackDTO feedBackDTO)
+        public async Task<IActionResult> SaveFeedback([FromBody] FeedBackDTO feedBackDTO)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
 
-            
+            bool isSaved = await _studentHomeService.SessionSaveFeedbackService(feedBackDTO, userId);
 
-            await _studentHomeService.SessionSaveFeedbackService(feedBackDTO,userId);
-            
-            return RedirectToAction("Index");
+            return Json(new { isValid = isSaved });
         }
     }
 }

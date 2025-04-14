@@ -1,6 +1,6 @@
 ﻿namespace XCourse.Core.ViewModels.StudentsViewModels
 {
-    public class GroupViewModel
+    public class RecommendedGroupViewModel
     {
         public int GroupID { get; set; }
         public string GroupTeacherName { get; set; }

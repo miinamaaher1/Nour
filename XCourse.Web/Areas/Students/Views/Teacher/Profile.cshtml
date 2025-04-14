@@ -50,7 +50,6 @@
                     &nbsp;Request Now
                 </button>
             </div>
-            <div id="succ-msg" style="margin-top: 5px; background-color:darkgreen; border-left: solid green 2px; border-radius: 5px" class="d-none"></div>
         }
     </div>
 </div>
@@ -108,7 +107,6 @@
     <div id="xmodal-overlay">
         <div class="form-container">
             <h1 class="form-header">Request A Private Group</h1>
-            <div id="err-msg" style="background-color:darkred; border-left: solid red 2px; border-radius: 5px" class="d-none"></div>
             <form>
                 <div class="form-group">
                     <label for="subject-select">Subject</label>
@@ -594,8 +592,6 @@
         let open_modal = document.getElementById("open-modal")
         let close_modal = document.getElementById("close-modal")
         let submit_btn = document.getElementById("submit-request")
-        let succ_msg = document.getElementById("succ-msg")
-        let err_msg = document.getElementById("err-msg")
         let modal_container = document.getElementById("xmodal-container")
         let subject_select = document.getElementById("subject-select")
         let governorate_select = document.getElementById("governorate-select")
@@ -654,14 +650,12 @@
             let url = "/students/group/SendRequest"
             let result = await getData(url, "POST", request_body)
             if (result.isValid) {
-                succ_msg.innerText = "request sent successfully"
-                succ_msg.classList.remove("d-none")
-                err_msg.classList.add("d-none")
                 modal_container.classList.add("d-none")
+                showSuccessToast("OK", "Request Sent Successfully", 3)
+
             } else {
-                err_msg.innerText = result.errors[0]
-                err_msg.classList.remove("d-none")
-                succ_msg.classList.add("d-none")
+               
+				showErrorToast("Error", result.errors[0], 3)
             }
         }
 

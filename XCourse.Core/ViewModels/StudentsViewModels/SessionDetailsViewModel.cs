@@ -12,5 +12,7 @@ namespace XCourse.Core.ViewModels.StudentsViewModels
         public Session Session { get; set; }= new Session();
         public Attendance Attendances { get; set; } = new Attendance();
 
+        public string MapKey { get; set; }
+
     }
 }
