@@ -115,6 +115,18 @@ body {
     min-height: 100vh;
 }
 
+.modebar {
+    width: 70px;
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    transition: all 0.3s ease;
+    position: fixed;
+    z-index: 1001;
+    top: 69vh;
+    left: 65px;
+    border-radius: 15px;
+}
+
 /* Sidebar Styles */
 .sidebar {
     width: 300px;
@@ -129,11 +141,17 @@ body {
     border-radius: 15px;
     scrollbar-width: none; /* For Firefox */
     -ms-overflow-style: none; /* For Internet Explorer 10+ */
+    display: flex;
+    flex-direction: column;
 }
 
-    .sidebar::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari, and Opera */
-    }
+.theme-section {
+    margin-top: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
 
 .sidebar-header {
     padding: 20px;

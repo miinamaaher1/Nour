@@ -4,8 +4,10 @@
 {
     var statusMessageClass = Model.StartsWith("Error") ? "danger" : "success";
     <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         @Model
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="alert" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
 }
 
@@ -32,29 +34,18 @@
         }
 
         .alert-dismissible {
-            padding-right: 3rem;
-        }
-
-        .alert-dismissible .btn-close {
-            position: absolute;
-            top: 0.75rem;
-            right: 1rem;
-            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .btn-close {
-            box-sizing: content-box;
-            width: 1em;
-            height: 1em;
-            padding: 0.25em 0.25em;
-            color: #000;
-            background: transparent url("data:image/svg+xml,...") center/1em auto no-repeat;
-            border: 0;
-            appearance: none;
+            background-color: #FF4D4D;
+            color: var(--clr-text-on-secondary);
         }
 
         .btn-close:hover {
-            opacity: 0.75;
+            background-color: #FF6666;
         }
     </style>
 }

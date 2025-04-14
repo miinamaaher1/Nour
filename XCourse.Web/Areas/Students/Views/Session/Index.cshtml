@@ -21,14 +21,14 @@
             transition: border-color 0.3s ease; /* Smooth transition for focus state */
         }
 
-            .search::placeholder {
-                color: var(--clr-text-secondary);
-            }
+        .search::placeholder {
+            color: var(--clr-text-secondary);
+        }
 
-            .search:focus {
-                outline: none; /* Remove default focus outline */
-                border-color: var(--clr-primary); /* Change border color on focus */
-            }
+        .search:focus {
+            outline: none; /* Remove default focus outline */
+            border-color: var(--clr-primary); /* Change border color on focus */
+        }
 
         /* Styling for the container to hold the input and the icon */
         .search-container {
@@ -36,22 +36,21 @@
             margin : 15px auto;
         }
 
-            .search-container i, .search-container svg { /* Style the Font Awesome icon */
-                position: absolute;
-                top: 50%;
-                right: 15px; /* Adjust as needed */
-                transform: translateY(-50%);
-                color: var(--clr-text-secondary);
-                font-size: 1.2rem; /* Adjust icon size */
-                cursor: pointer;
-            }
+        .search-container i, .search-container svg { /* Style the Font Awesome icon */
+            position: absolute;
+            top: 50%;
+            right: 15px; /* Adjust as needed */
+            transform: translateY(-50%);
+            color: var(--clr-text-secondary);
+            font-size: 1.2rem; /* Adjust icon size */
+            cursor: pointer;
+        }
     </style>
 
     <style>
 
         .calendar-container {
             position: relative;
-            border-radius: 8px;
             overflow: hidden;
         }
 

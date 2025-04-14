@@ -223,3 +223,12 @@ input[type="checkbox"]:focus {
     background-color: var(--clr-secondary);
     opacity: 0.9;
 }
+
+.btn-close {
+    background-color: #FF4D4D;
+    color: var(--clr-text-on-secondary);
+}
+
+.btn-close:hover {
+    background-color: #FF6666;
+}
