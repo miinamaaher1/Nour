@@ -32,12 +32,12 @@ namespace XCourse.Web.Controllers
             }
             else if (user?.AccountType == AccountType.CenterAdmin)
             {
-                return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
+                return RedirectToAction("Index", "Center", new { area = "CenterAdmins" });
             }
-            else if (user?.AccountType == AccountType.Assistant)
-            {
-                return RedirectToAction("Index", "Home", new { area = "Assistants" });
-            }
+            //else if (user?.AccountType == AccountType.Assistant)
+            //{
+            //    return RedirectToAction("Index", "Home", new { area = "Assistants" });
+            //}
             else
             {
                 return View();
