@@ -1,25 +1,56 @@
 ﻿@model List<XCourse.Core.ViewModels.StudentsViewModels.SessionViewModel>
+
 @section Styles {
     <link rel="stylesheet" href="~/Content/tui-calendar/tui-calendar.min.css">
 
+    <!--Search styling-->
     <style>
-        :root {
-            --primary-color: #4a6cf7;
-            --secondary-color: #f5f8ff;
-            --success-color: #13c296;
-            --online-color: #248a6b;
-            --offline-color: #15479e;
-            --text-dark: #212b36;
-            --text-light: #637381;
+        .search {
+            padding: 10px 35px 10px 15px; /* Add padding for text and icon space */
+            border: 1px solid var(--clr-border);
+            border-radius: 25px;
+            font-size: 1rem;
+            color: var(--clr-text-primary);
+            background-color: var(--clr-surface);
+            width: 100%; /* Make it take full width of its container */
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+            transition: border-color 0.3s ease; /* Smooth transition for focus state */
         }
+
+            .search::placeholder {
+                color: var(--clr-text-secondary);
+            }
+
+            .search:focus {
+                outline: none; /* Remove default focus outline */
+                border-color: var(--clr-primary); /* Change border color on focus */
+            }
+
+        /* Styling for the container to hold the input and the icon */
+        .search-container {
+            position: relative; 
+            margin : 15px auto;
+        }
+
+            .search-container i, .search-container svg { /* Style the Font Awesome icon */
+                position: absolute;
+                top: 50%;
+                right: 15px; /* Adjust as needed */
+                transform: translateY(-50%);
+                color: var(--clr-text-secondary);
+                font-size: 1.2rem; /* Adjust icon size */
+                cursor: pointer;
+            }
+    </style>
+
+    <style>
+
 
         body {
             background-color: #f9fafb;
         }
 
-        .search-container {
-            margin-bottom: 20px;
-        }
+
 
         .calendar-container {
             position: relative;
@@ -70,17 +101,8 @@
                 margin-right: 5px;
             }
 
-        .search-input {
-            border-radius: 25px;
-            padding: 12px 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
-        }
 
-            .search-input:focus {
-                border-color: var(--primary-color);
-                box-shadow: 0 4px 15px rgba(74, 108, 247, 0.15);
-            }
+
 
         /* Calendar customization */
         #calendar .tui-full-calendar-month-week-item {
@@ -175,49 +197,358 @@
             border-radius: 4px !important;
         }
     </style>
+
+    <style>
+        /* Calendar Loading Overlay */
+        .calendar-loading-overlay {
+            position: absolute;
+            top: 60px; /* Matches your calendar-controls height */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--clr-surface);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: var(--clr-primary);
+            text-align: center;
+        }
+
+        /* Calendar Grid Animation */
+        .calendar-grid-loader {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-cell {
+            background-color: var(--clr-border);
+            border-radius: 4px;
+            opacity: 0.2;
+            animation: pulse-fade 2s infinite;
+        }
+
+            /* Create highlight effects on cells */
+            .calendar-cell:nth-child(7n+1) {
+                animation-delay: 0.1s;
+            }
+
+            .calendar-cell:nth-child(7n+2) {
+                animation-delay: 0.2s;
+            }
+
+            .calendar-cell:nth-child(7n+3) {
+                animation-delay: 0.3s;
+            }
+
+            .calendar-cell:nth-child(7n+4) {
+                animation-delay: 0.4s;
+            }
+
+            .calendar-cell:nth-child(7n+5) {
+                animation-delay: 0.5s;
+            }
+
+            .calendar-cell:nth-child(7n+6) {
+                animation-delay: 0.6s;
+            }
+
+            .calendar-cell:nth-child(7n) {
+                animation-delay: 0.7s;
+            }
+
+            /* Special highlighted "today" cell */
+            .calendar-cell:nth-child(17) {
+                background-color: var(--clr-accent);
+                opacity: 0.6;
+                animation: pulse-today 2s infinite;
+            }
+
+        /* Calendar event animations */
+        .calendar-event {
+            position: absolute;
+            height: 16px;
+            border-radius: 3px;
+            background-color: var(--clr-primary);
+            opacity: 0.7;
+            animation: slide-in 3s infinite;
+        }
+
+            .calendar-event:nth-child(43) {
+                top: 40%;
+                left: 20%;
+                width: 30%;
+                animation-delay: 0.5s;
+            }
+
+            .calendar-event:nth-child(44) {
+                top: 60%;
+                left: 50%;
+                width: 25%;
+                background-color: var(--clr-secondary);
+                animation-delay: 1s;
+            }
+
+            .calendar-event:nth-child(45) {
+                top: 20%;
+                left: 60%;
+                width: 20%;
+                background-color: var(--clr-accent);
+                animation-delay: 1.5s;
+            }
+
+        /* Clock spinner animation */
+        .calendar-clock {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--clr-border);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .clock-hand {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background-color: var(--clr-primary);
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            animation: rotate 2s linear infinite;
+        }
+
+            .clock-hand:nth-child(2) {
+                height: 15px;
+                width: 3px;
+                background-color: var(--clr-secondary);
+                animation: rotate 12s linear infinite;
+            }
+
+        @@keyframes pulse-fade {
+            0%, 100% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @@keyframes pulse-today {
+            0%, 100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slide-in {
+            0% {
+                transform: translateX(-10px);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: translateX(0);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateX(-10px);
+                opacity: 0.3;
+            }
+        }
+
+        @@keyframes rotate {
+            0% {
+                transform: translate(-50%, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, 0) rotate(360deg);
+            }
+        }
+
+        /* Loading dots */
+        .loading-dots {
+            display: flex;
+            margin-top: 10px;
+        }
+
+            .loading-dots .dot {
+                width: 10px;
+                height: 10px;
+                margin: 0 5px;
+                border-radius: 50%;
+                background-color: var(--clr-primary);
+                animation: dots-fade 1.5s infinite ease-in-out;
+            }
+
+                .loading-dots .dot:nth-child(1) {
+                    animation-delay: 0s;
+                }
+
+                .loading-dots .dot:nth-child(2) {
+                    animation-delay: 0.3s;
+                }
+
+                .loading-dots .dot:nth-child(3) {
+                    animation-delay: 0.6s;
+                }
+
+        @@keyframes dots-fade {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Calendar Controls Styling - copied from your CSS */
+        .calendar-controls {
+            padding: 10px 20px;
+            background-color: var(--clr-surface);
+            border-bottom: 1px solid var(--clr-border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            height: 60px; /* Fixed height for controls */
+            box-sizing: border-box;
+        }
+
+            .calendar-controls button {
+                background-color: var(--clr-primary);
+                color: var(--clr-text-on-primary);
+                border: none;
+                padding: 8px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+                .calendar-controls button:hover {
+                    background-color: var(--clr-secondary);
+                }
+
+        #current-range {
+            font-weight: bold;
+            color: var(--clr-primary);
+        }
+
+        /* Calendar Container */
+        #calendar {
+            height: calc(100vh - 120px); /* Adjust height based on controls */
+            border: 1px solid var(--clr-border);
+            position: relative;
+        }
+
+        /* Error message styling */
+        .calendar-error {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            border-radius: 4px;
+            color: #dc3545;
+            margin: 20px;
+        }
+
+            .calendar-error code {
+                display: block;
+                margin-top: 10px;
+                background-color: rgba(0,0,0,0.05);
+                padding: 10px;
+                border-radius: 4px;
+                white-space: pre-wrap;
+                text-align: left;
+                font-size: 14px;
+            }
+
+            .calendar-error button {
+                margin-top: 15px;
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+    </style>
+
+
 }
 
-<div class="container mt-5">
+<div class="container">
 
-    <!-- Search bar -->
-    <div class="row mb-4 justify-content-center search-container">
-        <div class="col-12 col-md-8">
-            <div class="input-group search-input">
-                <span class="input-group-text border-0 bg-transparent text-muted"><i class="fas fa-search"></i></span>
-                <input type="text" id="sessionSearch" class="form-control border-0 shadow-none" placeholder="Find sessions by subject, teacher or keyword...">
+
+
+    <div class="col-12 row">
+        <div class="col-3"></div>
+        <div class="col-lg-6 col-12">
+            <div class="search-container">
+                <input class="search" id="sessionSearch" placeholder="Search..." />
+                <i class="fas fa-search"></i>
             </div>
         </div>
+        <div class="col-3"></div>
     </div>
 
     <!-- Calendar view -->
     <div class="card shadow-sm border-0 overflow-hidden">
-        <div class="card-header calendar-header d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <h4 class="mb-0 text-white">Session Calendar</h4>
-                <button id="todayBtn" class="btn btn-sm btn-light ms-3">Today</button>
-            </div>
-            <div class="d-flex">
-                <div class="btn-group me-3">
-                    <button type="button" id="prevBtn" class="btn btn-light" title="Previous"><i class="fas fa-chevron-left"></i></button>
-                    <button type="button" id="nextBtn" class="btn btn-light" title="Next"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div>
-                    <button type="button" id="monthView" class="btn-calendar-view active"><i class="fas fa-calendar-alt"></i>Month</button>
-                    <button type="button" id="weekView" class="btn-calendar-view"><i class="fas fa-calendar-week"></i>Week</button>
-                    <button type="button" id="dayView" class="btn-calendar-view"><i class="fas fa-calendar-day"></i>Day</button>
+        <div class="container">
+            <div class="calendar-controls">
+                <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                <button id="todayBtn">Today</button>
+                <span id="current-range"></span>
+                <div style="margin-left: auto;">
+                    <button id="dayView">Day</button>
+                    <button id="weekView">Week</button>
+                    <button id="monthView">Month</button>
                 </div>
             </div>
         </div>
-        <div class="card-body p-0">
-            <div class="calendar-container">
-                <div id="calendar" style="height: 650px;"></div>
-                <div id="emptyMessage" class="empty-message" style="display: none;">
-                    <h4><i class="fas fa-search text-primary mb-3" style="font-size: 2rem;"></i></h4>
-                    <h4 class="mb-3">No sessions match your search</h4>
-                    <p class="text-muted">Try adjusting your search criteria</p>
+        <div class="col-12">
+            <div class="container">
+                <div class="card-body p-0">
+                    <div class="calendar-container">
+                        <div id="calendar" style="height: 650px;"></div>    @*Calendar*@
+                        <div id="emptyMessage" class="empty-message" style="display: none;">
+                            <h4><i class="fas fa-search text-primary mb-3" style="font-size: 2rem;"></i></h4>
+                            <h4 class="mb-3">No sessions match your search</h4>
+                            <p class="text-muted">Try adjusting your search criteria</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
+
+
+
+
     </div>
 </div>
 
@@ -434,48 +765,48 @@
         @foreach (var session in Model)
         {
             <text>
-                        const startDateTime_@(session.SessionID) = new Date('@session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss")');
-                        let endDateTime_@(session.SessionID);
+                                        const startDateTime_@(session.SessionID) = new Date('@session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss")');
+                                        let endDateTime_@(session.SessionID);
 
                 @if (session.Duration != null)
                 {
                     <text>
-                                // Parse duration and add to start time
-                                const durationParts_@(session.SessionID) = '@session.Duration?.ToString(@"hh\:mm")'.split(':');
-                                const hours_@(session.SessionID) = parseInt(durationParts_@(session.SessionID)[0]);
-                                const minutes_@(session.SessionID) = parseInt(durationParts_@(session.SessionID)[1]);
+                                                                // Parse duration and add to start time
+                                                                const durationParts_@(session.SessionID) = '@session.Duration?.ToString(@"hh\:mm")'.split(':');
+                                                                const hours_@(session.SessionID) = parseInt(durationParts_@(session.SessionID)[0]);
+                                                                const minutes_@(session.SessionID) = parseInt(durationParts_@(session.SessionID)[1]);
 
-                                endDateTime_@(session.SessionID) = new Date(startDateTime_@(session.SessionID));
-                                endDateTime_@(session.SessionID).setHours(endDateTime_@(session.SessionID).getHours() + hours_@(session.SessionID));
-                                endDateTime_@(session.SessionID).setMinutes(endDateTime_@(session.SessionID).getMinutes() + minutes_@(session.SessionID));
+                                                                endDateTime_@(session.SessionID) = new Date(startDateTime_@(session.SessionID));
+                                                                endDateTime_@(session.SessionID).setHours(endDateTime_@(session.SessionID).getHours() + hours_@(session.SessionID));
+                                                                endDateTime_@(session.SessionID).setMinutes(endDateTime_@(session.SessionID).getMinutes() + minutes_@(session.SessionID));
                     </text>
                 }
                 else
                 {
                     <text>
-                                // Default to 1 hour if duration is not provided
-                                endDateTime_@(session.SessionID) = new Date(startDateTime_@(session.SessionID));
-                                endDateTime_@(session.SessionID).setHours(endDateTime_@(session.SessionID).getHours() + 1);
+                                                                // Default to 1 hour if duration is not provided
+                                                                endDateTime_@(session.SessionID) = new Date(startDateTime_@(session.SessionID));
+                                                                endDateTime_@(session.SessionID).setHours(endDateTime_@(session.SessionID).getHours() + 1);
                     </text>
                 }
 
-                        // Store session data for searching
-                        allSessions.push({
-                            id: '@session.SessionID',
-                            calendarId: '@(session.IsOnline ? "online" : "offline")',
-                            title: '@session.SubjectName',
-                            body: 'Teacher: @session.GroupTeacherName',
-                            category: 'time',
-                            start: startDateTime_@(session.SessionID),
-                            end: endDateTime_@(session.SessionID),
-                            isReadOnly: true,
-                            raw: {
-                                teacher: '@session.GroupTeacherName',
-                                isOnline: @(session.IsOnline ? "true" : "false").toString(),
-                                location: '@(session.IsOnline ? "Online" : "Offline")',
-                                duration: '@(session.Duration?.ToString(@"hh\:mm") ?? "01:00")'
-                            }
-                        });
+                                        // Store session data for searching
+                                        allSessions.push({
+                                            id: '@session.SessionID',
+                                            calendarId: '@(session.IsOnline ? "online" : "offline")',
+                                            title: '@session.SubjectName',
+                                            body: 'Teacher: @session.GroupTeacherName',
+                                            category: 'time',
+                                            start: startDateTime_@(session.SessionID),
+                                            end: endDateTime_@(session.SessionID),
+                                            isReadOnly: true,
+                                            raw: {
+                                                teacher: '@session.GroupTeacherName',
+                                                isOnline: @(session.IsOnline ? "true" : "false").toString(),
+                                                location: '@(session.IsOnline ? "Online" : "Offline")',
+                                                duration: '@(session.Duration?.ToString(@"hh\:mm") ?? "01:00")'
+                                            }
+                                        });
             </text>
         }
 

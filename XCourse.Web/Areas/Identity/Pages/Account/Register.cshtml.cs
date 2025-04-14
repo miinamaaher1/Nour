@@ -256,7 +256,27 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+
+                        if (user.AccountType == AccountType.Student)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "Students" });
+                        }
+                        else if (user.AccountType == AccountType.Teacher)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "Teachers" });
+                        }
+                        else if (user.AccountType == AccountType.CenterAdmin)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
+                        }
+                        else if (user.AccountType == AccountType.Assistant)
+                        {
+                            return RedirectToAction("Index", "Home", new { area = "Assistants" });
+                        }
+                        else
+                        {
+                            return LocalRedirect(returnUrl);
+                        }
                     }
                 }
                 foreach (var error in result.Errors)

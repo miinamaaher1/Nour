@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using Xcourse.Infrastructure.Repositories;
 using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
@@ -32,6 +33,17 @@ namespace XCourse.Web
             builder.Services.AddTeacherServices();
             builder.Services.AddCenterAdminServices();
            
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -71,6 +83,8 @@ namespace XCourse.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 

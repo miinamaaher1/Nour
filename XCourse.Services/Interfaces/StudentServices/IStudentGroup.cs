@@ -1,4 +1,5 @@
-﻿using System;
+using XCourse.Core.ViewModels.StudentsViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,9 @@ namespace XCourse.Services.Interfaces.StudentServices
 
         public List<StudentGroup> GetStudentGroup(string id);
         public GroupDetails Details(int id);
+
+        public  Task<ICollection<RecommendedGroupViewModel>> RecommendedGroupService(string guid);
+
 
 
 

@@ -1,0 +1,512 @@
+﻿@font-face {
+    font-family: 'Graphik LC Web';
+    /* Give your font a name */
+    src: url('/fonts/graphiklcweb_medium.ttf') format('truetype');
+    font-weight: normal;
+    /* You can define font-weight if needed (e.g., bold, normal, etc.) */
+    font-style: normal;
+    /* You can define font-style if needed (e.g., italic) */
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--clr-surface);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--clr-primary);
+    border-radius: 10px;
+    border: 2px solid var(--clr-surface);
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--clr-secondary);
+    }
+
+
+:root, [data-theme="light"] {
+    /* Default Light Mode */
+    --clr-background: #FAF6F0;
+    --clr-surface: #F5EDE1;
+    --clr-primary: #5D2A66;
+    --clr-secondary: #B57256;
+    --clr-accent: #E0A96D;
+    --clr-text-primary: #210F37;
+    --clr-text-secondary: #8A5640;
+    --clr-text-on-primary: #FFFFFF;
+    --clr-text-on-secondary: #FFFFFF;
+    --clr-text-on-accent: #210F37;
+    --clr-border: #D1C5B8;
+    --clr-overlay: rgba(33, 15, 55, 0.5);
+    --clr-primary-pm: #210F37;
+
+    /* Updated Toast specific colors */
+    --toast-success-bg: #E6F2E9;
+    --toast-success-border: #5D8A66;
+    --toast-success-text: #355D40;
+    --toast-error-bg: #FCEBE9;
+    --toast-error-border: #B57256;
+    --toast-error-text: #5D2A26;
+}
+
+/* Explicit Dark Mode Handling */
+[data-theme="dark"] {
+    --clr-background: #1E1E1E;
+    --clr-surface: #2E2E2E;
+    --clr-primary: #B39DDB;
+    --clr-secondary: #7986CB;
+    --clr-accent: #F07080;
+    --clr-text-primary: #F5F5F5;
+    --clr-text-secondary: #AFAFAF;
+    --clr-text-on-primary: #2E2E2E;
+    --clr-text-on-secondary: #F5F5F5;
+    --clr-text-on-accent: #1E1E1E;
+    --clr-border: #424242;
+    --clr-overlay: rgba(0, 0, 0, 0.7);
+    --clr-primary-pm: #8777a5;
+
+    /* Updated Toast specific colors - dark mode */
+    --toast-success-bg: #324D3A;
+    --toast-success-border: #7EBE84;
+    --toast-success-text: #CDEAC0;
+    --toast-error-bg: #3B1F1F;
+    --toast-error-border: #C96A5B;
+    --toast-error-text: #FFB5A7;
+}
+
+
+
+
+body {
+    background-color: var(--clr-background);
+    color: var(--clr-text-primary);
+    font-family: 'Graphik LC Web';
+    /*    margin: 0;*/
+    padding: 10px;
+    height: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.layout-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 300px;
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    transition: all 0.3s ease;
+    height: 96vh;
+    position: fixed;
+    overflow-y: scroll;
+    z-index: 1000;
+    top: 2vh;
+    border-radius: 15px;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer 10+ */
+}
+
+    .sidebar::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--clr-border);
+    position: sticky;
+    top: 0;
+    background-color: var(--clr-surface);
+    z-index: 1010;
+}
+
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+    /* For Chrome, Safari, and Opera */
+}
+
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold !important;
+    color: var(--clr-primary);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.logo-text {
+    margin-left: 10px;
+    transition: opacity 0.3s ease;
+    font-weight: bold !important;
+}
+
+.sidebar.collapsed .logo-text {
+    opacity: 0;
+    width: 0;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--clr-text-secondary);
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+    .toggle-btn:hover {
+        color: var(--clr-primary);
+    }
+
+.nav-menu {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--clr-text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+}
+button.nav-link {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--clr-text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+}
+    .nav-link:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--clr-primary);
+    }
+
+    .nav-link.active {
+        background-color: var(--clr-accent);
+        color: var(--clr-text-on-accent);
+    }
+
+.nav-icon {
+    font-size: 1.2rem;
+    min-width: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-text {
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .nav-text {
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
+}
+
+.arrow {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed .arrow {
+    opacity: 0;
+    width: 0;
+}
+
+.submenu {
+    list-style: none;
+    background-color: rgba(0, 0, 0, 0.03);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+    .submenu.open {
+        max-height: 500px;
+    }
+
+.submenu-item {
+    padding-left: 20px;
+}
+
+.submenu-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: var(--clr-text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+    .submenu-link:hover {
+        color: var(--clr-primary);
+    }
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 300px;
+    transition: all 0.3s ease;
+}
+
+    .main-content.expanded {
+        margin-left: 70px;
+    }
+
+/* Profile Section */
+.sidebar .profile {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--clr-border);
+}
+
+.sidebar .profile-photo {
+    width: 50px;
+    height: 50px;
+    margin-left: -10px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Container for name and subname */
+.sidebar .profile-info {
+    margin-left: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .profile-name {
+    font-size: 1rem;
+    /* slightly smaller */
+    color: var(--clr-primary);
+    transition: opacity 0.3s ease;
+    margin-bottom: 3px;
+}
+
+.sidebar .profile-subname {
+    font-size: 0.85rem;
+    opacity: 70%;
+    color: var(--clr-text-secondary);
+}
+
+
+/* Hide username when sidebar is collapsed */
+.sidebar.collapsed .profile-name, .sidebar.collapsed .profile-subname {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.sidebar.collapsed .profile {
+    padding-right: 0;
+    /*    padding-left: 10px;*/
+}
+
+
+/*Toaster styling*/
+.toast-container {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+/* Toast Message */
+.toast {
+    display: flex;
+    align-items: center;
+    padding: 20px 24px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+    .toast.success {
+        background-color: var(--toast-success-bg);
+        border-left: 6px solid var(--toast-success-border);
+        color: var(--toast-success-text);
+    }
+
+    .toast.error {
+        background-color: var(--toast-error-bg);
+        border-left: 6px solid var(--toast-error-border);
+        color: var(--toast-error-text);
+    }
+
+.toast-icon {
+    margin-right: 16px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.toast.success .toast-icon {
+    background-color: rgba(79, 138, 16, 0.1);
+    color: var(--toast-success-text);
+}
+
+.toast.error .toast-icon {
+    background-color: rgba(216, 0, 12, 0.1);
+    color: var(--toast-error-text);
+}
+
+.checkmark {
+    stroke-dasharray: 70;
+    stroke-dashoffset: 70;
+    animation: draw-checkmark 0.6s ease-in-out forwards;
+}
+
+.xmark {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: draw-xmark 0.6s ease-in-out forwards;
+}
+
+@keyframes draw-checkmark {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes draw-xmark {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.toast-content {
+    flex-grow: 1;
+}
+
+.toast-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-size: 18px;
+}
+
+.toast-message {
+    font-size: 16px;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+}
+
+.toast.success .toast-progress {
+    background-color: var(--toast-success-border);
+}
+
+.toast.error .toast-progress {
+    background-color: var(--toast-error-border);
+}
+
+.toast.zoom-in {
+    animation: zoom-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.toast.zoom-out {
+    animation: zoom-out 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes zoom-in {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes zoom-out {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+    }
+
+
+        .sidebar.mobile-open {
+            width: 250px;
+        }
+
+        .sidebar:not(.mobile-open) .logo-text,
+        .sidebar:not(.mobile-open) .nav-text,
+        .sidebar:not(.mobile-open) .arrow {
+            opacity: 0;
+            width: 0;
+        }
+
+    .main-content {
+        margin-left: 70px;
+    }
+
+        .main-content.mobile-expanded {
+            margin-left: 250px;
+        }
+}

@@ -21,6 +21,7 @@ namespace XCourse.Core.Entities
         public int? Rating { get; set; } 
 
         public bool? HasAttended { get; set; }
+        public bool HasPaid { get; set; }
 
         [Display(Name = "Class Work Grade")]
         public double? ClassWorkGrade { get; set; }

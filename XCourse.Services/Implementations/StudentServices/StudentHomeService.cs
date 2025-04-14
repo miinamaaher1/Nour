@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.StudentsViewModels;
@@ -13,9 +14,11 @@ namespace XCourse.Services.Implementations.Student
     public class StudentHomeService : IStudentHomeService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public StudentHomeService(IUnitOfWork unitOfWork)
+        private readonly IConfiguration _configuration;
+        public StudentHomeService(IUnitOfWork unitOfWork, IConfiguration configuration )
         {
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
 
         public async Task<HomeViewModel> IndexService(string guid)
@@ -49,7 +52,7 @@ namespace XCourse.Services.Implementations.Student
             var upcomingSessions = await MapSessionsToVMSessions(sessions,10);
 
             var groupViewModels = recommendedGroups
-            .Select(g => new GroupViewModel
+            .Select(g => new RecommendedGroupViewModel
             {
                 GroupID = g.ID,
                 GroupTeacherName = g.Teacher != null && g.Teacher.AppUser != null
@@ -117,54 +120,50 @@ namespace XCourse.Services.Implementations.Student
             return new SessionDetailsViewModel()
             {
                 Session = session,
-                Attendances=sessionAttendance
+                Attendances=sessionAttendance,
+                MapKey = _configuration["GoogleMaps:ApiKey"],
+
             };
         }
 
-        public Task SessionSaveFeedbackService(FeedBackDTO feedBackDTO , string userId)
+        public async Task<bool> SessionSaveFeedbackService(FeedBackDTO feedBackDTO, string userId)
         {
             if (feedBackDTO == null)
-            {
-                return Task.FromResult(0);
-            }
+                return false;
 
-            var student = _unitOfWork.Students.Find(
-                s => s.AppUserID == userId
-            );
+            var student = _unitOfWork.Students.Find(s => s.AppUserID == userId);
+            if (student == null)
+                return false;
 
             feedBackDTO.StudentId = student.ID;
 
-
-            var feedbackExists = _unitOfWork.Attendances.Find(
+            var feedback = _unitOfWork.Attendances.Find(
                 a => a.SessionID == feedBackDTO.SessionID && a.StudentID == feedBackDTO.StudentId
             );
-            if (feedbackExists == null)
-            { 
-            var feedback = new Attendance()
-            {
-                StudentID = feedBackDTO.StudentId,
-                SessionID = feedBackDTO.SessionID,
-                Rating = feedBackDTO.Rating,
-                Feedback = feedBackDTO.Feedback
-            };
 
-            _unitOfWork.Attendances.Add(feedback);
-                _unitOfWork.Save();
-                return Task.FromResult(0);
+            if (feedback == null)
+            {
+                feedback = new Attendance
+                {
+                    StudentID = feedBackDTO.StudentId,
+                    SessionID = feedBackDTO.SessionID,
+                    Rating = feedBackDTO.Rating,
+                    Feedback = feedBackDTO.Feedback
+                };
+
+                _unitOfWork.Attendances.Add(feedback);
             }
             else
             {
-                feedbackExists.Rating = feedBackDTO.Rating;
-                feedbackExists.Feedback = feedBackDTO.Feedback;
-                _unitOfWork.Attendances.Update(feedbackExists);
-                _unitOfWork.Save();
-                return Task.FromResult(0);
+                feedback.Rating = feedBackDTO.Rating;
+                feedback.Feedback = feedBackDTO.Feedback;
+                _unitOfWork.Attendances.Update(feedback);
             }
 
-
-            
-
+            await _unitOfWork.SaveAsync(); // Prefer async version if available
+            return true;
         }
+
 
         /**----------------------------------------------------------------------------------**/
         public async Task<ICollection<Session>> GetStudentUpcomingSessions(int studentId)
@@ -233,15 +232,41 @@ namespace XCourse.Services.Implementations.Student
 
         }
 
-        public async Task<List<Announcement>> GetStudentAnnouncements(int studentId)
+        public async Task<List<AnnouncementVM>> GetStudentAnnouncements(int studentId)
         {
-            var announcements = await _unitOfWork.Announcements.FindAllAsync(
-                a => a.Group.Students.Any(st => st.ID == studentId)&&
-                a.Group.IsActive == true,
-                [ "Group", "Group.Teacher.AppUser" ]
+
+            var studentGroups = await _unitOfWork.Groups.FindAllAsync(g => g.Students!.Any(std => std.ID == studentId));
+            var groupIds = studentGroups.Select(g => g.ID).ToList();
+
+            var announcements = await _unitOfWork.Announcements.FindAllAsync(announcement =>
+                announcement.Groups!.Any(g => groupIds.Contains(g.ID)), ["Groups", "Groups.Subject"]
             );
 
-            return await Task.FromResult(announcements.ToList());
+            var announcementVMs = new List<AnnouncementVM>();
+            foreach (var announcement in announcements)
+            {
+                
+                var relevantGroups = announcement.Groups!
+                    .Where(g => groupIds.Contains(g.ID))
+                    .Select(g => new AnnouncementGroup
+                    {
+                        GroupID = g.ID,
+                        GroupSubject = g.Subject?.Topic ?? string.Empty
+                    })
+                    .ToList();
+
+                announcementVMs.Add(new AnnouncementVM
+                {
+                    ID = announcement.ID,
+                    IsImportant = announcement.IsImportant,
+                    Title = announcement.Title,
+                    Body = announcement.Body,
+                    DateTime = announcement.DateTime,
+                    GroupSubjectNames = relevantGroups
+                });
+            }
+
+            return announcementVMs;
         }
 
         private async Task<ICollection<SessionViewModel>> MapSessionsToVMSessions(ICollection<Session> sessions , int numOfRows=0)
