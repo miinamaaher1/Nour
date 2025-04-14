@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NuGet.DependencyResolver;
 using XCourse.Core.DTOs.Teachers;
+using XCourse.Core.Entities;
 using XCourse.Services.Interfaces.TeacherServices;
 
 namespace XCourse.Web.Areas.Teachers.Controllers
@@ -13,69 +15,59 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             this._announcementService = announcementService;
         }
 
-        [HttpPost]
         async public Task<IActionResult> Index(PostAnnouncementRequestDTO request)
         {
-            var announcements = await _announcementService.GetAnnouncements(request,0,0);
-            return Json(announcements);
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userID != null)
+            {
+                Teacher teacher = await _announcementService.GetTeacherByUserId(userID);
+                ViewBag.TeacherId = teacher.ID;
+            } else
+            {
+                ViewBag.TeacherId = 0;
+            }
+                return View("Index");
         }
-
 
         [HttpPost]
         async public Task<IActionResult> GetAllAnnouncements([FromBody] PostAnnouncementRequestDTO request)
         {
-            var announcements = await _announcementService.GetAnnouncements(request, null, null);
+            var announcements = await _announcementService.GetAnnouncements(request);
             return Ok(announcements);
         }
 
         [HttpPost]
-        async public Task<IActionResult> PostAnnouncement([FromBody]PostAnnouncementRequestDTO requestDTO)
+        async public Task<IActionResult> PostAnnouncement([FromBody] PostAnnouncementRequestDTO requestDTO)
         {
-            PostAnnouncementResponseDTO responseDTO = new PostAnnouncementResponseDTO
-            {
-                IsValid = true,
-                Errors = new List<string>()
-            };
+            var response = await _announcementService.AddAnnouncementService(requestDTO);
+            return Ok(response);
+        }
 
-            bool inValidRequest = false;
+        [HttpPost]
+        async public Task<IActionResult> EditAnnouncement([FromBody] PostAnnouncementRequestDTO requestDTO)
+        {
+            var response = await _announcementService.EditAnnouncementService(requestDTO);
+            return Ok(response);
+        }
 
-            if (requestDTO.AnnouncementTitle == "")
-            {
-                responseDTO.IsValid = false;
-                responseDTO.Errors.Add("No title provided!");
-                inValidRequest = true;
-            }
-            if (requestDTO.AnnouncementBody == "")
-            {
-                responseDTO.IsValid = false;
-                responseDTO.Errors.Add("No content provided!");
-                inValidRequest = true;
-            }
-            if (requestDTO.GroupsIds == null || requestDTO.GroupsIds.Length == 0)
-            {
-                responseDTO.IsValid = false;
-                responseDTO.Errors.Add("No target groups provided!");
-                inValidRequest = true;
-            }
-            if (inValidRequest)
-            {
-                return BadRequest(responseDTO);
-            }
-
-            responseDTO = await  _announcementService.PostAnnouncement(1, requestDTO.GroupsIds!, requestDTO.AnnouncementBody, requestDTO.AnnouncementTitle);
-            if (responseDTO.IsValid)
-            {
-                return Ok(responseDTO);
-            } else
-            {
-                return BadRequest(responseDTO);
-            }
+        [HttpPost]
+        async public Task<IActionResult> DeleteAnnouncement([FromBody] PostAnnouncementRequestDTO requestDTO)
+        {
+            var response = await _announcementService.DeleteAnnouncementService((int)requestDTO.AnnouncementId!);
+            return Ok(response);
         }
 
         [HttpPost]
         async public Task<IActionResult> GetAllGroups()
         {
-            var groups = await _announcementService.GetAllGroups(1); // 01 temporarily to be 
+            int teacherId = 0;
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userID != null)
+            {
+                Teacher teacher = await _announcementService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+            var groups = await _announcementService.GetAllGroups(teacherId);  
             return Json(groups);
         }
     }

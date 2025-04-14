@@ -21,6 +21,12 @@ namespace XCourse.Services.Implementations.TeacherServices
             this._unitOfWork = unitOfWork;
         }
 
+
+        async public Task<Teacher> GetTeacherByUserId(string userId)
+        {
+            var teacher = await _unitOfWork.Teachers.FindAsync(t => t.AppUser!.Id == userId);
+            return teacher;
+        }
         async public Task<IEnumerable<AnnouncementGroupDTO>> GetAllGroups(int teacherId)
         {
             List<AnnouncementGroupDTO> groupDTOs = new List<AnnouncementGroupDTO>();
@@ -43,74 +49,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             return groupDTOs;
         }
-        async public Task<IEnumerable<Announcement>> GetAnnouncementById(int announcementId)
-        {
-            throw new NotImplementedException();
-        }
-
-        async public Task<PostAnnouncementResponseDTO> PostAnnouncement(int teacherId, int[] groupIds, string? announcementBody, string? announcementTitle)
-        {
-            PostAnnouncementResponseDTO responseDTO = new PostAnnouncementResponseDTO
-            {
-                Errors = new List<string>(),
-                IsValid = true
-            };
-
-            Teacher teacher = await _unitOfWork.Teachers.FindAsync(
-                t => t.ID == teacherId,
-                ["Groups"]
-            );
-
-            foreach (var groupId in groupIds)
-            {
-                bool hasAccess = teacher.Groups!.Any(g => g.ID == groupId);
-                if (!hasAccess)
-                {
-                    responseDTO.IsValid = false;
-                    responseDTO.Errors.Add("You don't have access to one of the groups you are trying to announce to.");
-                    return responseDTO;
-                }
-            }
-
-            var TargetGroups = await _unitOfWork.Groups.FindAllAsync(targetGroup => groupIds.Any(id => id == targetGroup.ID));
-
-            try
-            {
-                Announcement announcement = new Announcement()
-                {
-                    IsImportant = false,
-                    Body = announcementBody,
-                    Title = announcementTitle,
-                    DateTime = DateTime.Now,
-                    Groups = new List<Group>()
-                };
-                announcement.Groups = TargetGroups.ToList();
-
-                await _unitOfWork.SaveAsync();
-
-
-                foreach (var group in teacher.Groups!)
-                {
-                    if (groupIds.Contains(group.ID))
-                    {
-                        group.Announcements = new List<Announcement>();
-                        group.Announcements!.Add(announcement);
-                    }
-                    await _unitOfWork.SaveAsync();
-                }
-
-            }
-            catch
-            {
-                responseDTO.IsValid = false;
-                responseDTO.Errors.Add("Something went wrong");
-            }
-
-            return responseDTO;
-        }
-
-        /*----------------------------------AR12 Area---------------------------------------------------*/
-        public async Task<PostAnnouncementResponseDTO> GetAnnouncements (PostAnnouncementRequestDTO announcementRequest, int? take, int? skip)
+        public async Task<PostAnnouncementResponseDTO> GetAnnouncements(PostAnnouncementRequestDTO announcementRequest)
         {
             var response = new PostAnnouncementResponseDTO
             {
@@ -118,34 +57,53 @@ namespace XCourse.Services.Implementations.TeacherServices
                 Errors = new List<string>()
             };
 
-            var teacher =  await _unitOfWork.Teachers.FindAsync(t => t.ID == announcementRequest.TeacherId);
+            // Validate teacher
+            var teacher = await _unitOfWork.Teachers.FindAsync(t => t.ID == announcementRequest.TeacherId);
             if (teacher == null)
             {
                 response.IsValid = false;
-                response.Errors= new List<string> { "Teacher Not Found !" };
+                response.Errors = new List<string> { "Teacher not found." };
                 return response;
             }
 
-            var groups = await _unitOfWork.Groups.FindAllAsync(g => g.TeacherID == announcementRequest.TeacherId, includes: ["Announcements"]);
+            // Fetch groups for the teacher
+            var groups = await _unitOfWork.Groups.FindAllAsync(
+                g => g.TeacherID == announcementRequest.TeacherId,
+                includes: new[] { "Announcements" }
+            );
             if (groups == null || !groups.Any())
             {
                 response.IsValid = false;
-                response.Errors = new List<string> { "Groups not found" };
+                response.Errors = new List<string> { "Groups not found." };
                 return response;
             }
 
-            var announcements = await _unitOfWork.Announcements.FindAllAsync(
-                   a => a.Groups.Any(g => announcementRequest.GroupsIds.Contains(g.ID)),
-                   includes: ["Groups"]
-             );
+            // Fetch announcements based on whether group IDs were provided:
+            IEnumerable<Announcement> announcements;
+            if (announcementRequest.GroupIds == null || !announcementRequest.GroupIds.Any())
+            {
+                // No GroupIDs provided: return all announcements for teacher's groups
+                announcements = await _unitOfWork.Announcements.FindAllAsync(
+                    a => a.Groups.Any(g => g.TeacherID == announcementRequest.TeacherId),
+                    includes: new[] { "Groups" }
+                );
+            }
+            else
+            {
+                // Filter announcements by the provided group IDs.
+                announcements = await _unitOfWork.Announcements.FindAllAsync(
+                    a => a.Groups.Any(g => announcementRequest.GroupIds.Contains(g.ID)),
+                    includes: new[] { "Groups" }
+                );
+            }
 
-            if (skip.HasValue)
-                announcements = announcements.Skip(skip.Value);
-            if (take.HasValue)
-                announcements = announcements.Take(take.Value);
+            // Apply pagination
+            if (announcementRequest.Skip > 0)
+                announcements = announcements.Skip(announcementRequest.Skip);
+            if (announcementRequest.Take > 0)
+                announcements = announcements.Take(announcementRequest.Take);
 
-
-            response.Announcements = announcements.Select(a => new AnnouncementDataVM
+            response.Data = announcements.Select(a => new AnnouncementDataVM
             {
                 Id = a.ID,
                 AnnouncementTitle = a.Title,
@@ -160,10 +118,9 @@ namespace XCourse.Services.Implementations.TeacherServices
             }).ToList();
 
             return response;
-
         }
 
-        async public Task<PostAnnouncementResponseDTO> GetAnnouncementsByGroupId(int groupId, int? take,  int? skip)
+        async public Task<PostAnnouncementResponseDTO> GetAnnouncementsByGroupId(int groupId, int? take, int? skip)
         {
             var response = new PostAnnouncementResponseDTO
             {
@@ -192,7 +149,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 announcements = announcements.Skip(skip.Value);
             if (take.HasValue)
                 announcements = announcements.Take(take.Value);
-            response.Announcements = announcements.Select(a => new AnnouncementDataVM
+            response.Data = announcements.Select(a => new AnnouncementDataVM
             {
                 Id = a.ID,
                 AnnouncementTitle = a.Title,
@@ -214,51 +171,48 @@ namespace XCourse.Services.Implementations.TeacherServices
             var response = new PostAnnouncementResponseDTO
             {
                 IsValid = true,
-                Errors = new List<string>()
+                Errors = new List<string>(),
+                Data = new List<AnnouncementDataVM>()
             };
 
-
+            // Validate the request object
             if (announcementRequest == null)
             {
-
                 response.IsValid = false;
-                response.Errors = new List<string> { "Invalid request" };
-
-
+                response.Errors.Add("Invalid request.");
                 return response;
             }
 
-            if (string.IsNullOrEmpty(announcementRequest.AnnouncementBody))
+            if (string.IsNullOrWhiteSpace(announcementRequest.AnnouncementBody))
             {
                 response.IsValid = false;
-                response.Errors = new List<string> { "No content provided!" };
+                response.Errors.Add("No content provided!");
                 return response;
-
             }
 
-            if (string.IsNullOrEmpty(announcementRequest.AnnouncementTitle))
+            if (string.IsNullOrWhiteSpace(announcementRequest.AnnouncementTitle))
             {
                 response.IsValid = false;
-                response.Errors = new List<string> { "No title provided!" };
+                response.Errors.Add("No title provided!");
                 return response;
             }
 
             var teacher = await _unitOfWork.Teachers.FindAsync(t => t.ID == announcementRequest.TeacherId);
             if (teacher == null)
             {
-
                 response.IsValid = false;
-                response.Errors = new List<string> { "Teacher not found" };
+                response.Errors.Add("Teacher not found.");
                 return response;
             }
 
-            var groups = await _unitOfWork.Groups.FindAllAsync(g => announcementRequest.GroupsIds.Contains(g.ID));
+            var groups = await _unitOfWork.Groups.FindAllAsync(g =>
+            g.TeacherID == announcementRequest.TeacherId &&
+            announcementRequest.GroupIds!.Contains(g.ID));
             if (groups == null || !groups.Any())
             {
-
                 response.IsValid = false;
-                response.Errors = new List<string> { "Groups not found" };
-                
+                response.Errors.Add("No valid groups were found.");
+                return response;
             }
 
             var announcement = new Announcement
@@ -266,7 +220,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 Title = announcementRequest.AnnouncementTitle,
                 Body = announcementRequest.AnnouncementBody,
                 DateTime = DateTime.Now,
-                IsImportant = Convert.ToBoolean( announcementRequest.IsImportant),
+                IsImportant = Convert.ToBoolean(announcementRequest.IsImportant),
                 Groups = groups.ToList()
             };
 
@@ -275,7 +229,6 @@ namespace XCourse.Services.Implementations.TeacherServices
                 await _unitOfWork.Announcements.AddAsync(announcement);
                 await _unitOfWork.SaveAsync();
 
-                // Map to VM and add to response ======> Talabatak ya zeft Keshk
                 var announcementVM = new AnnouncementDataVM
                 {
                     Id = announcement.ID,
@@ -286,21 +239,20 @@ namespace XCourse.Services.Implementations.TeacherServices
                     Groups = announcement.Groups.Select(g => new AnnouncementGroupDTO
                     {
                         GroupID = g.ID,
-                        GroupName = $"{g.Subject?.Topic}"
+                        GroupName = g.Subject?.Topic ?? "Unknown"
                     }).ToList()
                 };
 
-                response.Announcements.Add(announcementVM);
+                response.Data.Add(announcementVM);
             }
             catch (Exception ex)
             {
                 response.IsValid = false;
-                response.Errors.Add("Error while adding announcement: " + ex.Message);
+                response.Errors.Add($"Error while adding announcement: {ex.Message}");
             }
 
             return response;
         }
-
 
         public async Task<PostAnnouncementResponseDTO> EditAnnouncementService(PostAnnouncementRequestDTO announcementRequest)
         {
@@ -332,22 +284,23 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 response.IsValid = false;
                 response.Errors = new List<string> { "No title provided!" };
-                return response;               
+                return response;
             }
 
 
-            var announcement = await _unitOfWork.Announcements.FindAsync(a => a.ID == announcementRequest.AnnouncementID);
+            var announcement = await _unitOfWork.Announcements.FindAsync(a => a.ID == announcementRequest.AnnouncementId);
 
-            if ( announcement ==null)
+            if (announcement == null)
             {
 
                 response.IsValid = false;
                 response.Errors = new List<string> { "Announcement Not Found !" };
-                
+
                 return response;
             }
-          
-            var groups= await _unitOfWork.Groups.FindAsync(g=> announcementRequest.GroupsIds.Contains(g.ID));
+
+            var groups = await _unitOfWork.Groups.FindAllAsync(g => announcementRequest.GroupIds!.Contains(g.ID));
+
             if (groups == null)
             {
 
@@ -357,16 +310,16 @@ namespace XCourse.Services.Implementations.TeacherServices
                 return response;
             }
 
-            announcement.ID =  Convert.ToInt32(announcementRequest.AnnouncementID);
+            announcement.ID = Convert.ToInt32(announcementRequest.AnnouncementId);
             announcement.Title = announcementRequest.AnnouncementTitle;
             announcement.Body = announcementRequest.AnnouncementBody;
             announcement.DateTime = DateTime.Now;
-            announcement.IsImportant =Convert.ToBoolean(announcementRequest.IsImportant);
+            announcement.IsImportant = Convert.ToBoolean(announcementRequest.IsImportant);
             announcement.Groups = (ICollection<Group>?)groups;
             try
             {
-                 _unitOfWork.Announcements.Update(announcement);
-                 _unitOfWork.SaveAsync();
+                _unitOfWork.Announcements.Update(announcement);
+                _unitOfWork.SaveAsync();
 
                 var announcementVM = new AnnouncementDataVM
                 {
@@ -382,7 +335,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     }).ToList()
                 };
 
-                response.Announcements.Add(announcementVM);
+                response.Data.Add(announcementVM);
             }
             catch (Exception ex)
             {
@@ -398,25 +351,23 @@ namespace XCourse.Services.Implementations.TeacherServices
         {
 
 
-                var response = new PostAnnouncementResponseDTO
-                {
-                    IsValid = true,
-                    Errors = new List<string>()
-                };
-                var announcement = _unitOfWork.Announcements.Find(a => a.ID == announcementId);
-                if (announcement == null)
-                {
-                    response.IsValid = false;
-                    response.Errors.Add("Announcement not found");
-                    return Task.FromResult(response);
-                }
-                _unitOfWork.Announcements.Delete(announcement);
-                _unitOfWork.Save();
+            var response = new PostAnnouncementResponseDTO
+            {
+                IsValid = true,
+                Errors = new List<string>()
+            };
+            var announcement = _unitOfWork.Announcements.Find(a => a.ID == announcementId);
+            if (announcement == null)
+            {
+                response.IsValid = false;
+                response.Errors.Add("Announcement not found");
                 return Task.FromResult(response);
+            }
+            _unitOfWork.Announcements.Delete(announcement);
+            _unitOfWork.Save();
+            return Task.FromResult(response);
 
 
         }
-    
-
     }
 }

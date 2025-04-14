@@ -11,6 +11,6 @@ namespace XCourse.Core.DTOs.Teachers
     {
         public bool IsValid { get; set; }
         public List<string> Errors { get; set; } = new List<string>();
-        public List<AnnouncementDataVM> Announcements { get; set; } = new List<AnnouncementDataVM>();
+        public List<AnnouncementDataVM> Data { get; set; } = new List<AnnouncementDataVM>();
     }
 }
