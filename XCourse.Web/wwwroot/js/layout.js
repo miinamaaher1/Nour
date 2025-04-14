@@ -42,7 +42,7 @@ themeToggle.addEventListener('click', (e) => {
 });
 
 function applyTheme(theme) {
-    body.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     modeBar.classList.add('d-none');
 }
@@ -82,19 +82,23 @@ onload = () => {
     const mode = localStorage.getItem('mode');
     if (mode) {
         if (mode == 'system') {
-            applySystemTheme();
+            themeToggle.innerHTML = `<i class="fa-solid fa-laptop nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
         } else {
             const theme = localStorage.getItem('theme');
             if (theme) {
                 if (theme == 'dark') {
-                    applyDarkTheme();
+                    themeToggle.innerHTML = `<i class="fa-solid fa-moon nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
                 }
             } else {
-                applyLightTheme();
+                themeToggle.innerHTML = `<i class="fa-solid fa-sun nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
             }
         }
     } else {
-        applyLightTheme();
+        themeToggle.innerHTML = `<i class="fa-solid fa-sun nav-icon"></i>
+                                <span class="nav-text">Toggle Theme</span>`;
     }
 }
 
