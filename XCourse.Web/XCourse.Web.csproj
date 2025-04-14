@@ -31,6 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\CenterAdmins\Data\" />
+    <Folder Include="Areas\CenterAdmins\Models\" />
     <Folder Include="Areas\Students\Data\" />
     <Folder Include="Areas\Students\Models\" />
     <Folder Include="Areas\Teachers\Controllers\" />
