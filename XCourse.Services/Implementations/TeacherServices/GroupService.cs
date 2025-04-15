@@ -160,6 +160,11 @@ namespace XCourse.Services.Implementations.TeacherServices
             groupDetailsVM.Subject = group.Subject;
             groupDetailsVM.DefaultSessionDays = group.DefaultSessionDays;
             groupDetailsVM.Sessions = new List<SessionDeatils>();
+            groupDetailsVM.Students = group.Students;
+
+            var announcements =await _unitOfWork.Attendances.FindAllAsync(a => a.Session.GroupID == id);
+
+            
 
             List<GroupDefaults> groupDefaults = group.GroupDefaults!.ToList();
 
@@ -179,6 +184,33 @@ namespace XCourse.Services.Implementations.TeacherServices
                 groupDetailsVM.Sessions?.Add(sessionDeatils);
             }
             groupDetailsVM.Students = group.Students;
+
+            // Group Attendance Mapping
+            groupDetailsVM.GroupAttendanceVM =new List<GroupAttendanceVM>();
+
+            foreach (var student in group.Students)
+            {
+                var studentAttendances = await _unitOfWork.Attendances
+                    .FindAllAsync(a => a.StudentID == student.ID && a.Session.GroupID == id, ["Session"]);
+
+                var lastFive = studentAttendances
+                    .OrderByDescending(a => a.Session!.StartDateTime)
+                    .Take(5)
+                    .ToList();
+
+                var groupAttendanceVM = new GroupAttendanceVM
+                {
+                    StudentName = student.AppUser?.FirstName+" "+student.AppUser?.LastName ?? "Unknown",
+                    Email = student.AppUser?.Email!,
+                    LastFiveAttendencies = lastFive,
+                    LastClassWorkGrade = lastFive.FirstOrDefault()?.ClassWorkGrade,
+                    LastHomeWorkGrade = lastFive.FirstOrDefault()?.HomeWorkGrade
+                };
+
+                groupDetailsVM.GroupAttendanceVM.Add(groupAttendanceVM);
+            }
+
+
             return groupDetailsVM;
         }
         public async Task<bool> PostAnnouncement(int groupId, int teacherId, string body, bool isImportant, string? title)
