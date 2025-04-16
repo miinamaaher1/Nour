@@ -70,7 +70,7 @@ namespace XCourse.Core.Entities
         public virtual ICollection<GroupDefaults>? GroupDefaults { get; set; }
 
 
-        // IsDeleted 
+        // IsDeleted
         public bool IsDeleted { get; set; }
 
     }

@@ -1,0 +1,739 @@
+﻿@section Styles {
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 6px;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='7'%20viewBox='0%200%2010%207'%3E%3Cpath%20fill='none'%20stroke='%23333'%20stroke-width='2'%20d='M1%201l4%204%204-4'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 0.65rem auto;
+        cursor: pointer;
+    }
+
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, .25);
+        }
+
+    .form-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .form-container {
+        background-color: var(--clr-surface);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 80%;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-header {
+        text-align: center;
+        padding: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 1rem;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .sessions-container {
+        border: dashed 1.5px var(--clr-secondary);
+        padding: 1rem;
+    }
+
+    input,
+    select,
+    textarea,
+    option {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--clr-border);
+        border-radius: 6px;
+        background-color: var(--clr-background);
+        color: var(--clr-text-primary);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-size: 1rem;
+    }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--clr-primary);
+            box-shadow: 0 0 8px rgba(93, 42, 102, 0.5);
+        }
+
+        input[type="date"],
+        input[type="time"] {
+            padding-right: 10px;
+            cursor: pointer;
+        }
+
+            input[type="date"]::-webkit-calendar-picker-indicator,
+            input[type="time"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+            }
+
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 16px;
+        padding-right: 35px;
+    }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        select option {
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+        }
+
+    textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .radio-group,
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+        .radio-group label,
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            margin-right: 0;
+            cursor: pointer;
+        }
+
+    input[type="radio"],
+    input[type="checkbox"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--clr-border);
+        background-color: var(--clr-background);
+        margin-right: 8px;
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    input[type="checkbox"] {
+        border-radius: 4px;
+    }
+
+    input[type="radio"] {
+        border-radius: 50%;
+    }
+
+        input[type="radio"]:checked {
+            border-color: var(--clr-primary);
+            border-width: 2px;
+        }
+
+            input[type="radio"]:checked::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: var(--clr-primary);
+            }
+
+    input[type="checkbox"]:checked {
+        background-color: var(--clr-primary);
+        border-color: var(--clr-primary);
+    }
+
+        input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 9px;
+            width: 5px;
+            height: 10px;
+            border: solid var(--clr-text-on-primary);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+    input[type="radio"]:hover,
+    input[type="checkbox"]:hover {
+        border-color: var(--clr-primary);
+    }
+
+    input[type="radio"]:focus,
+    input[type="checkbox"]:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(93, 42, 102, 0.25);
+    }
+
+    .form-navigation {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .btn-primary {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--clr-primary);
+            opacity: 0.9;
+        }
+
+    .btn-secondary {
+        background-color: var(--clr-secondary);
+        color: var(--clr-text-on-secondary);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--clr-secondary);
+            opacity: 0.9;
+        }
+
+    .btn:disabled,
+    .btn[disabled] {
+        background-color: #ccc !important;
+        color: #666 !important;
+        cursor: not-allowed;
+        opacity: 0.6;
+        transform: none !important;
+        box-shadow: none !important;
+        border: 1px solid #999;
+    }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 100%;
+        padding: 12px 40px 12px 12px;
+        border: 1px solid var(--clr-border);
+        border-radius: 6px;
+        background-color: var(--clr-background);
+        color: var(--clr-text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='var(--clr-primary)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+    }
+
+        select:hover {
+            border-color: var(--clr-primary);
+            box-shadow: 0 2px 8px rgba(var(--clr-primary-rgb, 93, 42, 102), 0.15);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--clr-primary);
+            box-shadow: 0 0 0 3px rgba(var(--clr-primary-rgb, 93, 42, 102), 0.25);
+        }
+
+        select option {
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+            padding: 12px;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        select:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-color: var(--clr-surface);
+        }
+
+    .select-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+    .error {
+        background-color: #fef3f2;
+        color: #7c2d12;
+        padding: 16px 20px;
+        border: 1px solid #f9cfcf;
+        border-left: 5px solid #f08080;
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 20px;
+        position: relative;
+        animation: fadeIn 0.4s ease-in-out;
+        margin-bottom: 1rem;
+    }
+
+        .error i {
+            font-size: 1.5rem;
+            margin-top: 2px;
+        }
+
+    .error-message {
+        margin-left: 8px;
+    }
+
+        .error-message ul {
+            margin: 8px 0 0;
+            padding-left: 20px;
+            list-style-type: disc;
+        }
+
+        .error-message li {
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+    @keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+</style>
+}
+
+
+<section id="form-section" class="form-section col-12">
+    <!-- Form -->
+    <div class="form-container">
+        <h1 class="form-header">Create online group</h1>
+        <div class="error d-none" id="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <div class="error-message">
+                <ul>
+                    <li>test-Error</li>
+                </ul>
+            </div>
+        </div>
+
+        <form id="hubForm">
+            <div class="row g-2">
+                <div class="col-12">
+                    <!-- Subject -->
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <select id="subject" name="subject">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-2">
+                <div class="col-lg-6 col-md-12">
+                    <div class="form-group">
+                        <label for="maxStudents">Max number of students</label>
+                        <input type="number" id="maxStudents" name="maxStudents"
+                               placeholder="Max number of students">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="form-group">
+                        <label for="pricePerSession">Price per session</label>
+                        <input type="number" id="pricePerSession" name="pricePerSession"
+                               placeholder="Price per session">
+                    </div>
+                </div>
+
+            </div>
+            <div class="row g-2">
+                <div class="col-lg-6 col-md-12">
+                    <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate" name="startDate">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="form-group">
+                        <label for="endDate">End Date</label>
+                        <input type="date" id="endDate" name="endDate">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+
+                <div class="col-lg-4 col-md-6 col-12" style="display: flex; align-items: center;">
+                    <div class="form-group">
+                        <div class="radio-group">
+                            <label><input type="radio" name="classType" value="private"> Private</label>
+                            <label><input type="radio" name="classType" value="public"> Public</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-12" style="display: flex; align-items: center;">
+                    <div class="form-group">
+                        <div class="radio-group">
+                            <label><input type="radio" name="genderGroup" value="mixed"> Mixed</label>
+                            <label><input type="radio" name="genderGroup" value="girls"> Girls Only</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <!-- Number of sessions -->
+                    <div class="form-group">
+                        <label for="sessionsPerWeek">Number of sessions per week</label>
+                        <input type="number" id="sessionsPerWeek" name="sessionsPerWeek" min="1" max="7"
+                               placeholder="Max number of sessions allowed is 7">
+                    </div>
+                </div>
+            </div>
+
+            <div id="sessions-container">
+            </div>
+
+
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                    <i class="fas fa-arrow-left icon"></i> Reset Form
+                </button>
+                <button disabled type="submit" class="btn btn-primary" id="submitButton" onclick="getFormValues()">
+                    <i class="fas fa-check icon"></i> Submit
+                </button>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+                // Utility Functions
+        const parseYear = (year) => {
+            switch (year) {
+                case 0: return "Primary One";
+                case 1: return "Primary Two";
+                case 2: return "Primary Three";
+                case 3: return "Primary Four";
+                case 4: return "Primary Five";
+                case 5: return "Primary Six";
+                case 6: return "Preparatory One";
+                case 7: return "Preparatory Two";
+                case 8: return "Preparatory Three";
+                case 9: return "Secondary One";
+                case 10: return "Secondary Two";
+                case 11: return "Secondary Three";
+                default: return "Unknown Year";
+            }
+        };
+
+        const parseSemester = (semester) => {
+            switch (semester) {
+                case 1: return "First Semester";
+                case 2: return "Second Semester";
+                case 3: return "Full Year";
+                default: return "Unknown Semester";
+            }
+        };
+
+        const freezePage = () => {
+            const submitButton = document.getElementById("submitButton");
+            if (submitButton) submitButton.setAttribute("disabled", "true");
+        };
+
+        const freePage = () => {
+            const submitButton = document.getElementById("submitButton");
+            if (submitButton) submitButton.removeAttribute("disabled");
+        };
+
+        function RenderError(errors) {
+            const container = document.getElementById("error-message");
+            if (!container) return;
+
+            container.innerHTML = "";
+            const ul = document.createElement("ul");
+            errors.forEach(error => {
+                const li = document.createElement("li");
+                li.textContent = error;
+                ul.appendChild(li);
+            });
+            container.appendChild(ul);
+            container.classList.remove("d-none");
+            setTimeout(() => container.classList.add("d-none"), 5000);
+        }
+
+        function validateReserveOnlineGroup(data) {
+            const errors = [];
+            if (!data) {
+                errors.push("No data provided");
+                return { isValid: false, errors };
+            }
+
+            if (!data.teacherId || data.teacherId <= 0) errors.push("Invalid or missing teacher ID.");
+            if (!data.subjectId || data.subjectId <= 0) errors.push("Invalid or missing subject ID.");
+            if (data.maxNumberOfStudents == null || data.maxNumberOfStudents <= 0) errors.push("Group must have at least one student.");
+            if (data.pricePerSession == null || data.pricePerSession < 0) errors.push("Invalid price per session.");
+            if (data.numberOfSessionsPerWeek == null || data.numberOfSessionsPerWeek <= 0) errors.push("Number of sessions per week must be at least 1.");
+            if (!data.startDate) errors.push("Start date is required.");
+            if (!data.endDate) errors.push("End date is required.");
+            if (data.startDate && data.endDate && new Date(data.startDate) >= new Date(data.endDate)) errors.push("End date must be after start date.");
+            if (!Array.isArray(data.defaultSessionResrvations) || data.defaultSessionResrvations.length !== data.numberOfSessionsPerWeek) {
+                errors.push("Sessions data must match the number of sessions per week.");
+            }
+
+            return {
+                isValid: errors.length === 0,
+                errors
+            };
+        }
+
+        // Async Functions
+        async function sendAsyncRequest(url, method, requestBody) {
+            try {
+                freezePage();
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.json();
+                freePage();
+                return data;
+            } catch (error) {
+                freePage();
+                return new Error(error);
+            }
+        }
+
+        async function GetTeacherSubjects() {
+            const requestBody = { TeacherId: 1, Year: 11, Semester: 1 };
+            const url = "/Teachers/Group/AllSubjects";
+            try {
+                return await sendAsyncRequest(url, "POST", requestBody);
+            } catch (error) {
+                console.log(error);
+                return [];
+            }
+        }
+
+        // UI Logic
+        function getFormValues() {
+            const form = document.getElementById("hubForm");
+            const data = {
+                teacherId: 1,
+                subjectId: parseInt(form.subject.value),
+                maxNumberOfStudents: parseInt(form.maxStudents.value),
+                pricePerSession: parseFloat(form.pricePerSession.value),
+                isGirlsOnly: form.genderGroup.value === "female",
+                isPrivate: form.classType.value === "private",
+                numberOfSessionsPerWeek: parseInt(form.sessionsPerWeek.value),
+                startDate: form.startDate?.value || null,
+                endDate: form.endDate?.value || null,
+                defaultSessionResrvations: []
+            };
+
+            const sessionDivs = document.querySelectorAll(".sessions-container");
+            sessionDivs.forEach(div => {
+                const sessionId = div.dataset.sessionId;
+                const get = (type) => div.querySelector(`[data-type="${type}"][data-session-id="${sessionId}"]`)?.value;
+                const to24Hour = (hour, period) => period === "PM" && hour < 12 ? hour + 12 : period === "AM" && hour === 12 ? 0 : hour;
+
+                const startTime = `${String(to24Hour(parseInt(get("start-hour")), get("start-period"))).padStart(2, "0")}:${String(get("start-minute")).padStart(2, "0")}`;
+                const endTime = `${String(to24Hour(parseInt(get("end-hour")), get("end-period"))).padStart(2, "0")}:${String(get("end-minute")).padStart(2, "0")}`;
+
+                data.defaultSessionResrvations.push({
+                    weekDay: parseInt(get("day")),
+                    startTime,
+                    endTime
+                });
+            });
+
+            return data;
+        }
+
+        async function SubmitCreateGroup() {
+            const url = "/Teachers/Group/ReserveOnlineGroup";
+            const requestBody = getFormValues();
+            const validationResponse = validateReserveOnlineGroup(requestBody);
+
+            if (validationResponse.isValid) {
+                try {
+                    const res = await sendAsyncRequest(url, "POST", requestBody);
+                    if (res.isValid === true) {
+                        console.log("success");
+                        setTimeout(() => {
+                            window.location.replace("/Teachers/Group/Index");
+                        }, 3000);
+                    } else {
+                        RenderError(res.errors);
+                    }
+                } catch (error) {
+                    console.log(error);
+                    RenderError(["Something went wrong!"]);
+                }
+            } else {
+                RenderError(validationResponse.errors);
+            }
+        }
+
+        async function renderSubjectSelectList() {
+            const subjects = await GetTeacherSubjects();
+            const subjectSelect = document.getElementById("subject");
+            subjectSelect.innerHTML = subjects.map(sub =>
+                `<option value="${sub.id}">${sub.topic} - ${parseYear(sub.year)} (${parseSemester(sub.semester)})</option>`
+            ).join("");
+        }
+
+        function bindSessionNumberFunctionality() {
+            const sessionsContainer = document.getElementById("sessions-container");
+            const sessionsPerWeek = document.getElementById("sessionsPerWeek");
+
+            sessionsPerWeek.addEventListener("input", () => {
+                const numberOfSessions = Number(sessionsPerWeek.value);
+                let innerHTML = "";
+
+                for (let i = 0; i < Math.min(numberOfSessions, 7); i++) {
+                    innerHTML += `
+                        <div class="form-group sessions-container" data-session-id="${i + 1}">
+                            <div class="row g-2">
+                                <div class="col-lg-4 col-md-12">
+                                    <label>Day</label>
+                                    <select data-session-id="${i + 1}" data-type="day">
+                                        <option value="">Select Day</option>
+                                        <option value="0">Sunday</option>
+                                        <option value="1">Monday</option>
+                                        <option value="2">Tuesday</option>
+                                        <option value="3">Wednesday</option>
+                                        <option value="4">Thursday</option>
+                                        <option value="5">Friday</option>
+                                        <option value="6">Saturday</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 col-md-12">
+                                    <label>Start Time</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="number" min="1" max="12" placeholder="HH" data-session-id="${i + 1}" data-type="start-hour">
+                                        <input type="number" min="0" max="59" placeholder="MM" data-session-id="${i + 1}" data-type="start-minute">
+                                        <select data-session-id="${i + 1}" data-type="start-period">
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12">
+                                    <label>End Time</label>
+                                    <div class="d-flex gap-2">
+                                        <input type="number" min="1" max="12" placeholder="HH" data-session-id="${i + 1}" data-type="end-hour">
+                                        <input type="number" min="0" max="59" placeholder="MM" data-session-id="${i + 1}" data-type="end-minute">
+                                        <select data-session-id="${i + 1}" data-type="end-period">
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                sessionsContainer.innerHTML = innerHTML;
+            });
+        }
+
+        function resetForm() {
+            document.getElementById("hubForm").reset();
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await renderSubjectSelectList();
+            bindSessionNumberFunctionality();
+
+            document.getElementById("hubForm").addEventListener("submit", e => e.preventDefault());
+            const submitButton = document.getElementById("submitButton");
+            if (submitButton) submitButton.addEventListener("click", SubmitCreateGroup);
+        });
+    </script>
+}
