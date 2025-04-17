@@ -8,6 +8,10 @@
     /* You can define font-style if needed (e.g., italic) */
 }
 
+* {
+    box-sizing: border-box !important;
+}
+
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -24,9 +28,9 @@
     border: 2px solid var(--clr-surface);
 }
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--clr-secondary);
-    }
+::-webkit-scrollbar-thumb:hover {
+    background: var(--clr-secondary);
+}
 
 
 :root, [data-theme="light"] {
@@ -44,6 +48,7 @@
     --clr-border: #D1C5B8;
     --clr-overlay: rgba(33, 15, 55, 0.5);
     --clr-primary-pm: #210F37;
+    --clr-border: darkgray;
 
     /* Updated Toast specific colors */
     --toast-success-bg: #E6F2E9;
@@ -69,6 +74,7 @@
     --clr-border: #424242;
     --clr-overlay: rgba(0, 0, 0, 0.7);
     --clr-primary-pm: #8777a5;
+    --clr-border: lightgray;
 
     /* Updated Toast specific colors - dark mode */
     --toast-success-bg: #324D3A;
@@ -79,7 +85,19 @@
     --toast-error-text: #FFB5A7;
 }
 
+.field-validation-valid {
+    display: none !important;
+}
 
+.field-validation-error {
+    display: block !important;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.text-danger {
+    color: var(--toast-error-text)
+}
 
 
 body {
@@ -97,6 +115,18 @@ body {
     min-height: 100vh;
 }
 
+.modebar {
+    width: 70px;
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    transition: all 0.3s ease;
+    position: fixed;
+    z-index: 1001;
+    top: 69vh;
+    left: 65px;
+    border-radius: 15px;
+}
+
 /* Sidebar Styles */
 .sidebar {
     width: 300px;
@@ -111,11 +141,17 @@ body {
     border-radius: 15px;
     scrollbar-width: none; /* For Firefox */
     -ms-overflow-style: none; /* For Internet Explorer 10+ */
+    display: flex;
+    flex-direction: column;
 }
 
-    .sidebar::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari, and Opera */
-    }
+.theme-section {
+    margin-top: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
 
 .sidebar-header {
     padding: 20px;

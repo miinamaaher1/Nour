@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -28,6 +27,8 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        public AccountType AccountType;
+        public string ExternalEmail;
 
         public ExternalLoginModel(
             SignInManager<AppUser> signInManager,
@@ -151,26 +152,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 var user = await _userManager.GetUserAsync(User);
 
-                if (user.AccountType == AccountType.Student)
-                {
-                    return RedirectToAction("Index", "Home", new { area = "Students" });
-                }
-                else if (user.AccountType == AccountType.Teacher)
-                {
-                    return RedirectToAction("Index", "Home", new { area = "Teachers" });
-                }
-                else if (user.AccountType == AccountType.CenterAdmin)
-                {
-                    return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
-                }
-                else if (user.AccountType == AccountType.Assistant)
-                {
-                    return RedirectToAction("Index", "Home", new { area = "Assistants" });
-                }
-                else
-                {
-                    return LocalRedirect(returnUrl);
-                }
+                return LocalRedirect(returnUrl);
             }
             if (result.IsLockedOut)
             {
@@ -183,18 +165,39 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    Input = new InputModel
-                    {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
+                    TempData["ExternalEmail"] = info.Principal.FindFirstValue(ClaimTypes.Email);
                 }
-                return Page();
+
+                // Save necessary info in TempData
+                
+                TempData["ExternalLoginProvider"] = info.LoginProvider;
+                TempData["ReturnUrl"] = returnUrl;
+
+                // Redirect to Choose Account Type step
+                return RedirectToPage("./SelectAccountTypeExternal");
             }
+        }
+
+        public IActionResult OnGetContinueRegistration(AccountType accountType)
+        {
+            // Load data from TempData and show the confirmation form
+
+            ViewData["ReturnUrl"] = TempData["ReturnUrl"]?.ToString();
+            ProviderDisplayName = TempData["ExternalLoginProvider"]?.ToString();
+            AccountType = accountType;
+
+            Input = new InputModel
+            {
+                Email = TempData["ExternalEmail"]?.ToString(),
+                AccountType = accountType,
+            };
+
+            return Page(); // This shows the confirmation form
         }
 
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl = ViewData["ReturnUrl"]?.ToString() ?? Url.Content("~/");
             // Get the information about the user from the external login provider
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
@@ -207,7 +210,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, Input.Email.Split('@')[0], CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
                 Address address = new()
@@ -223,7 +226,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 user.LastName = Input.LastName;
                 user.DateOfBirth = Input.DateOfBirth;
                 user.Gender = Input.Gender;
-
+                user.AccountType = Input.AccountType;
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -233,7 +236,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
-                        if (Input.AccountType == AccountType.Student)
+                        if (user.AccountType == AccountType.Student)
                         {
                             Student student = new Student()
                             {
@@ -244,7 +247,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                             _unitOfWork.Students.Add(student);
                             _unitOfWork.Save();
                         }
-                        else if (Input.AccountType == AccountType.Teacher)
+                        else if (user.AccountType == AccountType.Teacher)
                         {
                             Teacher teacher = new Teacher()
                             {
@@ -255,7 +258,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                             _unitOfWork.Teachers.Add(teacher);
                             _unitOfWork.Save();
                         }
-                        else if (Input.AccountType == AccountType.Assistant)
+                        else if (user.AccountType == AccountType.Assistant)
                         {
                             Assistant assistant = new Assistant()
                             {
@@ -264,7 +267,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                             _unitOfWork.Assistants.Add(assistant);
                             _unitOfWork.Save();
                         }
-                        else if (Input.AccountType == AccountType.CenterAdmin)
+                        else if (user.AccountType == AccountType.CenterAdmin)
                         {
                             CenterAdmin centerAdmin = new CenterAdmin()
                             {
@@ -301,26 +304,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
 
-                        if (user.AccountType == AccountType.Student)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "Students" });
-                        }
-                        else if (user.AccountType == AccountType.Teacher)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "Teachers" });
-                        }
-                        else if (user.AccountType == AccountType.CenterAdmin)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "CenterAdmins" });
-                        }
-                        else if (user.AccountType == AccountType.Assistant)
-                        {
-                            return RedirectToAction("Index", "Home", new { area = "Assistants" });
-                        }
-                        else
-                        {
-                            return LocalRedirect(returnUrl);
-                        }
+                        return LocalRedirect(returnUrl);
                     }
                 }
                 foreach (var error in result.Errors)

@@ -1,16 +1,38 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - XCourse.Web</title>
     <script type="importmap"></script>
+    <script>
+        (function () {
+          try {
+            const mode = localStorage.getItem('mode');
+            let theme = localStorage.getItem('theme');
+
+            if (mode === 'system') {
+              theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            if (theme === 'dark') {
+              document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+              document.documentElement.setAttribute('data-theme', 'light');
+            }
+          } catch (e) {
+            // fallback
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+        })();
+    </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-grid.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> *@
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body data-theme="light">
+<body>
 
     <nav class="sidebar collapsed" id="sidebar">
 
@@ -33,13 +55,36 @@
 
             <!-- Authentication Menu -->
             <partial name="_AuthPartial.cshtml" />
-
+        </ul>
+        <ul class="nav-menu theme-section">
             <!-- Theme Toggle -->
             <li class="nav-item">
-                <a href="#" class="nav-link" id="theme-toggle">
-                    <i class="fa-solid fa-moon nav-icon"></i>
+                <button class="nav-link" id="theme-toggle">
+                    <i class="fa-solid fa-sun nav-icon"></i>
                     <span class="nav-text">Toggle Theme</span>
-                </a>
+                </button>
+            </li>
+        </ul>
+    </nav>
+    <nav class="modebar d-none" id="modebar">
+        <!-- Navigation Menu -->
+        <ul class="nav-menu">
+            </li>
+            <!-- Theme Toggle -->
+            <li class="nav-item">
+                <button class="nav-link" id="theme-light">
+                    <i class="fa-solid fa-sun nav-icon"></i>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="theme-dark">
+                    <i class="fa-solid fa-moon nav-icon"></i>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="theme-system">
+                    <i class="fa-solid fa-laptop nav-icon"></i>
+                </button>
             </li>
         </ul>
     </nav>
