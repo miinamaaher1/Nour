@@ -14,7 +14,7 @@ namespace XCourse.Web.ServicesCollections
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IAttendanceService, AttendanceService>();
             services.AddScoped<ISessionService, SessionService>();
-             builder.Services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<ISubjectService, SubjectService>();
             return services;
         }
     }

@@ -13,6 +13,7 @@ using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
 using XCourse.Web.ServicesCollections;
 using XCourse.Services.Implementations.SubjectServices;
+using XCourse.Services.Interfaces.SubjectServices;
 namespace XCourse.Web
 {
     public class Program
