@@ -42,6 +42,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.SqlServer.Types" Version="160.1000.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="Stripe.net" Version="48.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,8 +51,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Teachers\Controllers\" />
-    <Folder Include="Areas\Teachers\Views\" />
     <Folder Include="wwwroot\js\Students\" />
   </ItemGroup>
 
