@@ -21,6 +21,16 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         {
             return View();
         }
+        public IActionResult CreateOfflineLocal()
+        {
+            return View();
+        }
+
+        public IActionResult CreateOnline()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> Index()
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -83,6 +93,20 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ReserveOfflineLocalGroup([FromBody] ReserveOfflineLocalGroupRequestDTO request)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            request.TeacherId = teacher.ID;
+            var result = await _groupService.ReserveOfflineLocalGroup(request);
+            return Ok(result);
+        }
+
+
+
+
+        // Utils
         [HttpPost]
         public async Task<bool> InsertAnnouncement([FromBody]RequestAnnouncement request)
         {

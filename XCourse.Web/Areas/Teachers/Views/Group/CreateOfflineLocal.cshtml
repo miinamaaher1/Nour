@@ -364,7 +364,7 @@
             font-size: 0.95rem;
         }
 
-    @keyframes fadeIn {
+    @@keyframes fadeIn {
         from
 
     {
@@ -378,14 +378,45 @@
     }
 
     }
+
+
+    /* Map styling  */
+    .map-container {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 6px;
+        margin-top: 10px;
+    }
+
+    #location {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+
+    label {
+        font-weight: bold;
+    }
 </style>
 }
-
 
 <section id="form-section" class="form-section col-12">
     <!-- Form -->
     <div class="form-container">
-        <h1 class="form-header">Create online group</h1>
+        <h1 class="form-header">Create Local Offline group</h1>
         <div class="error d-none" id="error-message">
             <i class="fa-solid fa-circle-exclamation"></i>
             <div class="error-message">
@@ -421,6 +452,88 @@
                                placeholder="Price per session">
                     </div>
                 </div>
+
+            </div>
+
+
+
+            <div class="form-group row">
+
+                <div class="row g-4">
+                    <!-- Address Form -->
+                    <div class="col-lg-6 col-12">
+                        <div class="row g-3">
+                            <!-- Governorate -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="governorate">Governorate</label>
+                                    <select id="governorate" name="governorate" class="form-control">
+                                        <option selected disabled>Select a governorate</option>
+                                        <option value="Cairo">Cairo</option>
+                                        <option value="Giza">Giza</option>
+                                        <option value="Alexandria">Alexandria</option>
+                                        <option value="Qalyubia">Qalyubia</option>
+                                        <option value="Port Said">Port Said</option>
+                                        <option value="Suez">Suez</option>
+                                        <option value="Dakahlia">Dakahlia</option>
+                                        <option value="Sharqia">Sharqia</option>
+                                        <option value="Gharbia">Gharbia</option>
+                                        <option value="Monufia">Monufia</option>
+                                        <option value="Beheira">Beheira</option>
+                                        <option value="Kafr El Sheikh">Kafr El Sheikh</option>
+                                        <option value="Fayoum">Fayoum</option>
+                                        <option value="Beni Suef">Beni Suef</option>
+                                        <option value="Minya">Minya</option>
+                                        <option value="Asyut">Asyut</option>
+                                        <option value="Sohag">Sohag</option>
+                                        <option value="Qena">Qena</option>
+                                        <option value="Luxor">Luxor</option>
+                                        <option value="Aswan">Aswan</option>
+                                        <option value="Red Sea">Red Sea</option>
+                                        <option value="New Valley">New Valley</option>
+                                        <option value="Matrouh">Matrouh</option>
+                                        <option value="North Sinai">North Sinai</option>
+                                        <option value="South Sinai">South Sinai</option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <!-- City -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="City">City</label>
+                                    <input type="text" id="City" name="City" placeholder="Enter your city name" class="form-control">
+                                </div>
+                            </div>
+
+                            <!-- Street -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="neighborhood">neighborhood</label>
+                                    <input type="text" id="neighborhood" name="neighborhood" placeholder="Enter your neighborhood name" class="form-control">
+                                </div>
+                            </div>
+                            <!-- Street -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="street">Street</label>
+                                    <input type="text" id="street" name="street" placeholder="Enter your street name" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Picker -->
+                    <div class="col-lg-6 col-12">
+                        <div class="map-container">
+                            <label for="location">📌 Choose your location</label>
+                            <input type="text" id="location" readonly placeholder="Click on the map below" class="form-control d-none" />
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
             <div class="row g-2">
@@ -488,7 +601,32 @@
 
 @section Scripts {
     <script>
-                // Utility Functions
+                document.addEventListener("DOMContentLoaded", function () {
+
+            const map = L.map("map").setView([30.0444, 31.2357], 6);
+
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 18,
+            }).addTo(map);
+
+            let marker;
+
+            map.on("click", function (e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lng = e.latlng.lng.toFixed(6);
+
+                document.getElementById("location").value = `${lat}, ${lng}`;
+
+                if (marker) {
+                    marker.setLatLng(e.latlng);
+                } else {
+                    marker = L.marker(e.latlng).addTo(map);
+                }
+            });
+        });
+
+        // Utility Functions
         const parseYear = (year) => {
             switch (year) {
                 case 0: return "Primary One";
@@ -542,23 +680,63 @@
             setTimeout(() => container.classList.add("d-none"), 5000);
         }
 
-        function validateReserveOnlineGroup(data) {
+        function validateReserveLocalOfflineGroup(data) {
             const errors = [];
-            if (!data) {
-                errors.push("No data provided");
+
+            if (!data || typeof data !== 'object') {
+                errors.push("No data provided or data is not an object.");
                 return { isValid: false, errors };
             }
 
-            if (!data.teacherId || data.teacherId <= 0) errors.push("Invalid or missing teacher ID.");
-            if (!data.subjectId || data.subjectId <= 0) errors.push("Invalid or missing subject ID.");
-            if (data.maxNumberOfStudents == null || data.maxNumberOfStudents <= 0) errors.push("Group must have at least one student.");
-            if (data.pricePerSession == null || data.pricePerSession < 0) errors.push("Invalid price per session.");
-            if (data.numberOfSessionsPerWeek == null || data.numberOfSessionsPerWeek <= 0) errors.push("Number of sessions per week must be at least 1.");
-            if (!data.startDate) errors.push("Start date is required.");
-            if (!data.endDate) errors.push("End date is required.");
-            if (data.startDate && data.endDate && new Date(data.startDate) >= new Date(data.endDate)) errors.push("End date must be after start date.");
+            // Basic validations
+            if (!Number.isInteger(data.teacherId) || data.teacherId <= 0)
+                errors.push("Invalid or missing teacher ID.");
+
+            if (!Number.isInteger(data.subjectId) || data.subjectId <= 0)
+                errors.push("Invalid or missing subject ID.");
+
+            if (!Number.isInteger(data.maxNumberOfStudents) || data.maxNumberOfStudents <= 0)
+                errors.push("Group must have at least one student.");
+
+            if (typeof data.pricePerSession !== "number" || data.pricePerSession < 0)
+                errors.push("Invalid price per session.");
+
+            if (!Number.isInteger(data.numberOfSessionsPerWeek) || data.numberOfSessionsPerWeek <= 0)
+                errors.push("Number of sessions per week must be at least 1.");
+
+            // Date validations
+            if (!data.startDate) {
+                errors.push("Start date is required.");
+            }
+
+            if (!data.endDate) {
+                errors.push("End date is required.");
+            }
+
+            if (data.startDate && data.endDate) {
+                const start = new Date(data.startDate);
+                const end = new Date(data.endDate);
+                if (isNaN(start) || isNaN(end)) {
+                    errors.push("Invalid start or end date format.");
+                } else if (start >= end) {
+                    errors.push("End date must be after start date.");
+                }
+            }
+
+            // Session validation
             if (!Array.isArray(data.defaultSessionResrvations) || data.defaultSessionResrvations.length !== data.numberOfSessionsPerWeek) {
                 errors.push("Sessions data must match the number of sessions per week.");
+            } else {
+                data.defaultSessionResrvations.forEach((session, index) => {
+                    if (
+                        typeof session !== 'object' ||
+                        !Number.isInteger(session.weekDay) ||
+                        typeof session.startTime !== "string" ||
+                        typeof session.endTime !== "string"
+                    ) {
+                        errors.push(`Invalid session data at index ${index}.`);
+                    }
+                });
             }
 
             return {
@@ -591,7 +769,7 @@
 
         async function GetTeacherSubjects() {
             const requestBody = { TeacherId: 1, Year: 11, Semester: 1 };
-            const url = "/Teachers/Group/AllSubjects";
+            const url = "http://localhost:5041/Teachers/Group/AllSubjects";
             try {
                 return await sendAsyncRequest(url, "POST", requestBody);
             } catch (error) {
@@ -608,11 +786,16 @@
                 subjectId: parseInt(form.subject.value),
                 maxNumberOfStudents: parseInt(form.maxStudents.value),
                 pricePerSession: parseFloat(form.pricePerSession.value),
-                isGirlsOnly: form.genderGroup.value === "female",
+                isGirlsOnly: form.genderGroup.value === "girls",
                 isPrivate: form.classType.value === "private",
                 numberOfSessionsPerWeek: parseInt(form.sessionsPerWeek.value),
                 startDate: form.startDate?.value || null,
                 endDate: form.endDate?.value || null,
+                governorate: form.governorate.value,
+                city: form.City.value,
+                street: form.street.value,
+                neighborhood: form.neighborhood.value,
+                location: form.location.value, // Assuming you set this from the map click
                 defaultSessionResrvations: []
             };
 
@@ -620,7 +803,9 @@
             sessionDivs.forEach(div => {
                 const sessionId = div.dataset.sessionId;
                 const get = (type) => div.querySelector(`[data-type="${type}"][data-session-id="${sessionId}"]`)?.value;
-                const to24Hour = (hour, period) => period === "PM" && hour < 12 ? hour + 12 : period === "AM" && hour === 12 ? 0 : hour;
+                const to24Hour = (hour, period) =>
+                    period === "PM" && hour < 12 ? hour + 12 :
+                    period === "AM" && hour === 12 ? 0 : hour;
 
                 const startTime = `${String(to24Hour(parseInt(get("start-hour")), get("start-period"))).padStart(2, "0")}:${String(get("start-minute")).padStart(2, "0")}`;
                 const endTime = `${String(to24Hour(parseInt(get("end-hour")), get("end-period"))).padStart(2, "0")}:${String(get("end-minute")).padStart(2, "0")}`;
@@ -636,18 +821,16 @@
         }
 
         async function SubmitCreateGroup() {
-            const url = "/Teachers/Group/ReserveOnlineGroup";
+            const url = "http://localhost:5041/Teachers/Group/ReserveOfflineLocalGroup";
             const requestBody = getFormValues();
-            const validationResponse = validateReserveOnlineGroup(requestBody);
+            const validationResponse = validateReserveLocalOfflineGroup(requestBody);
 
             if (validationResponse.isValid) {
                 try {
                     const res = await sendAsyncRequest(url, "POST", requestBody);
                     if (res.isValid === true) {
                         console.log("success");
-                        setTimeout(() => {
-                            window.location.replace("/Teachers/Group/Index");
-                        }, 3000);
+                        // handle success
                     } else {
                         RenderError(res.errors);
                     }
@@ -736,4 +919,6 @@
             if (submitButton) submitButton.addEventListener("click", SubmitCreateGroup);
         });
     </script>
+    <!-- Leaflet JS -->
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 }

@@ -22,5 +22,6 @@ namespace XCourse.Services.Interfaces.Teachers
         Task<GroupDetailsVM> GetGroupDetailsById(int id);
         Task<bool> PostAnnouncement(int groupId, int teacherId, string body, bool isImportnat, string? title);
         Task<ReserveGroupResponseDTO> ReserveOnlineGroup(ReserveOnlineGroupRequestDTO request);
+        Task<ReserveGroupResponseDTO> ReserveOfflineLocalGroup(ReserveOfflineLocalGroupRequestDTO request);
     }
 }
