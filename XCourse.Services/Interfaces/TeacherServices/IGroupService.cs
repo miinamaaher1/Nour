@@ -15,8 +15,7 @@ namespace XCourse.Services.Interfaces.Teachers
         Task<IEnumerable<Subject>> GetAllSubjects(RequestSubjectDto request);
         Task<IEnumerable<ResponseCenterDto>> GetAllCentersPerGovernorate(string governorate);
         Task<IEnumerable<Room>> GetAllAvailableRooms(RequestRoomDto request);
-        Task<IEnumerable<string>> GetAllGovernorates();
-        Task<bool> ReserveAnOfflineGroupInCenter(RequestOfflineGroupReservation request);
+        Task<ReserveGroupResponseDTO> ReserveAnOfflineGroupInCenter(RequestOfflineGroupReservation request);
         Task<IEnumerable<GroupVM>> GetAllGroups(int userId);
         Task<Teacher> GetTeacherByUserId(string userId);
         Task<GroupDetailsVM> GetGroupDetailsById(int id);
