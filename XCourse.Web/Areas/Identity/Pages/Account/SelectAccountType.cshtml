@@ -4,7 +4,135 @@
 @{
     ViewData["Title"] = "Select Account Type";
 }
-<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Student">Student</a>
-<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Teacher">Teacher</a>
-<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Assistant">Assistant</a>
-<a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.CenterAdmin">Center Admin</a>
+
+<div class="col-12">
+    <header>
+        <h1>Choose Your Account Type</h1>
+    </header>
+
+    <div class="container">
+        <a class="box" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Student">
+            <div class="box-content">
+                <div class="text">
+                    <h2>Student</h2>
+                    <p>Find teachers, courses and study rooms.</p>
+                </div>
+                <div class="icon">
+                    <img src="~/images/accountTypes/studentAccount.svg" alt="Personal icon" width="150" height="150" />
+                </div>
+            </div>
+        </a>
+        <a class="box" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Teacher">
+            <div class="box-content">
+                <div class="text">
+                    <h2>Teacher</h2>
+                    <p>Reach more students and easy center reservations.</p>
+                </div>
+                <div class="icon">
+                    <img src="~/images/accountTypes/teacherAccount.svg" alt="Personal icon" width="150" height="150" />
+                </div>
+            </div>
+        </a>
+        <a class="box" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.Assistant">
+            <div class="box-content">
+                <div class="text">
+                    <h2>Assistant</h2>
+                    <p>Easily manage groups.</p>
+                </div>
+                <div class="icon">
+                    <img src="~/images/accountTypes/assistantAccount.svg" alt="Personal icon" width="150" height="150" />
+                </div>
+            </div>
+        </a>
+        <a class="box" asp-area="Identity" asp-controller="Account" asp-action="Register" asp-route-accountType="@AccountType.CenterAdmin">
+            <div class="box-content">
+                <div class="text">
+                    <h2>Center Admin</h2>
+                    <p>Manage your centers and reach teachers and students.</p>
+                </div>
+                <div class="icon">
+                    <img src="~/images/accountTypes/adminAccount.svg" alt="Personal icon" width="150" height="150" />
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1rem;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--clr-primary);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            padding: 3rem 2rem;
+            flex: 1;
+        }
+
+        @@media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .box {
+            display: block;
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 6px 15px var(--clr-overlay);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px var(--clr-overlay);
+        }
+
+        .box h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: var(--clr-text-primary);
+        }
+
+        .box p {
+            color: var(--clr-text-primary);
+            opacity: 0.7;
+            font-size: 1rem;
+        }
+
+        .box-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .icon {
+            flex-shrink: 0;
+        }
+
+        .icon svg {
+            display: block;
+            width: 60px;
+            height: 60px;
+        }
+
+        .text {
+            text-align: left;
+        }
+    </style>
+}

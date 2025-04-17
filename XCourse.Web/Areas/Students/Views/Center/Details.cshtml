@@ -158,9 +158,9 @@
 			</div>
 			<div id="xmodal-footer">
 				<div class="form-group">
-					<button onclick="resetSelection()" class="btn btn-primary">Undo</button>
-					<button id="am-pm" onclick="toggleAM()" class="btn btn-primary">AM</button>
-					<button id="close-modal" class="btn btn-secondary">Cancel</button>
+					<button id="close-modal" class="btn btn-close">Cancel</button>
+					<button onclick="resetSelection()" class="btn btn-secondary">Reset</button>
+					<button id="am-pm" onclick="toggleAM()" class="btn btn-secondary">AM</button>
 					<button id="submit-request" class="btn btn-primary">Submit</button>
 				</div>
 			</div>
@@ -239,10 +239,10 @@
 			margin-bottom: 1rem;
 		}
 
-			.center__location i {
-				margin-right: 0.5rem;
-				color: var(--clr-accent);
-			}
+		.center__location i {
+			margin-right: 0.5rem;
+			color: var(--clr-accent);
+		}
 
 		.center__map {
 			height: 300px;
@@ -265,15 +265,15 @@
 			color: var(--clr-primary);
 		}
 
-			.rooms__heading::after {
-				content: '';
-				position: absolute;
-				bottom: -8px;
-				left: 0;
-				width: 80px;
-				height: 3px;
-				background-color: var(--clr-accent);
-			}
+		.rooms__heading::after {
+			content: '';
+			position: absolute;
+			bottom: -8px;
+			left: 0;
+			width: 80px;
+			height: 3px;
+			background-color: var(--clr-accent);
+		}
 
 		.rooms__card {
 			background-color: var(--clr-surface);
@@ -287,10 +287,10 @@
 			flex-direction: column;
 		}
 
-			.rooms__card:hover {
-				transform: translateY(-5px);
-				box-shadow: var(--shadow-lg);
-			}
+		.rooms__card:hover {
+			transform: translateY(-5px);
+			box-shadow: var(--shadow-lg);
+		}
 
 		.rooms__image {
 			width: 100%;
@@ -324,15 +324,13 @@
 			color: var(--clr-text-secondary);
 		}
 
-			.rooms__capacity i,
-			.rooms__price i {
-				margin-right: 0.5rem;
-				color: var(--clr-accent);
-				width: 20px;
-				text-align: center;
-			}
-
-
+		.rooms__capacity i,
+		.rooms__price i {
+			margin-right: 0.5rem;
+			color: var(--clr-accent);
+			width: 20px;
+			text-align: center;
+		}
 
 		.rooms__reserve-btn {
 			background-color: var(--clr-primary);
@@ -348,14 +346,14 @@
 			width: 100%;
 		}
 
-			.rooms__reserve-btn i {
-				margin-right: 0.5rem;
-			}
+		.rooms__reserve-btn i {
+			margin-right: 0.5rem;
+		}
 
-			.rooms__reserve-btn:hover {
-				background-color: var(--clr-secondary);
-				transform: scale(1.03);
-			}
+		.rooms__reserve-btn:hover {
+			background-color: var(--clr-secondary);
+			transform: scale(1.03);
+		}
 
 		@@media (max-width: 768px) {
 			.center__name {
@@ -418,11 +416,9 @@
 			border-radius: 20px;
 		}
 
-			.group-card__feature i {
-				margin-right: 5px;
-			}
-
-
+		.group-card__feature i {
+			margin-right: 5px;
+		}
 
 		#xmodal-container {
 			position: fixed;
@@ -499,13 +495,13 @@
 			transition: background-color 0.3s;
 		}
 
-			.arrow:hover {
-				opacity: 0.9;
-			}
+		.arrow:hover {
+			opacity: 0.9;
+		}
 
-			.arrow:active {
-				opacity: 0.7;
-			}
+		.arrow:active {
+			opacity: 0.7;
+		}
 
 		.date-display {
 			font-size: 18px;
@@ -560,40 +556,40 @@
 			height: 60px;
 		}
 
-			.rotating-dots .dot {
-				position: absolute;
-				width: 12px;
-				height: 12px;
-				border-radius: 50%;
-				background: var(--clr-accent);
-				animation: dots 1.5s infinite ease-in-out;
-			}
+		.rotating-dots .dot {
+			position: absolute;
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: var(--clr-accent);
+			animation: dots 1.5s infinite ease-in-out;
+		}
 
-				.rotating-dots .dot:nth-child(1) {
-					top: 0;
-					left: 50%;
-					transform: translateX(-50%);
-					animation-delay: 0s;
-				}
+		.rotating-dots .dot:nth-child(1) {
+			top: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			animation-delay: 0s;
+		}
 
-				.rotating-dots .dot:nth-child(2) {
-					top: 25%;
-					right: 0;
-					animation-delay: 0.2s;
-				}
+		.rotating-dots .dot:nth-child(2) {
+			top: 25%;
+			right: 0;
+			animation-delay: 0.2s;
+		}
 
-				.rotating-dots .dot:nth-child(3) {
-					bottom: 0;
-					left: 50%;
-					transform: translateX(-50%);
-					animation-delay: 0.4s;
-				}
+		.rotating-dots .dot:nth-child(3) {
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			animation-delay: 0.4s;
+		}
 
-				.rotating-dots .dot:nth-child(4) {
-					top: 25%;
-					left: 0;
-					animation-delay: 0.6s;
-				}
+		.rotating-dots .dot:nth-child(4) {
+			top: 25%;
+			left: 0;
+			animation-delay: 0.6s;
+		}
 
 		@@keyframes dots {
 			0%, 100% {
@@ -617,29 +613,38 @@
 			transition: background-color 0.3s ease, transform 0.2s ease;
 		}
 
-			.btn:hover {
-				transform: translateY(-2px);
-			}
+		.btn:hover {
+			transform: translateY(-2px);
+		}
 
 		.btn-primary {
 			background-color: var(--clr-primary);
 			color: var(--clr-text-on-primary);
 		}
 
-			.btn-primary:hover {
-				background-color: var(--clr-primary);
-				opacity: 0.9;
-			}
+		.btn-primary:hover {
+			background-color: var(--clr-primary);
+			opacity: 0.9;
+		}
 
 		.btn-secondary {
 			background-color: var(--clr-secondary);
 			color: var(--clr-text-on-secondary);
 		}
 
-			.btn-secondary:hover {
-				background-color: var(--clr-secondary);
-				opacity: 0.9;
-			}
+		.btn-secondary:hover {
+			background-color: var(--clr-secondary);
+			opacity: 0.9;
+		}
+
+		.btn-close {
+			background-color: #FF4D4D;
+			color: var(--clr-text-on-secondary);
+		}
+
+		.btn-close:hover {
+			background-color: #FF6666;
+		}
 	</style>
 }
 
@@ -693,6 +698,7 @@
 			let result = await getData(url, "POST", request)
 
 			if (result.isValid) {
+				resetSelection()
 				modal_container.classList.add("d-none")
 				showSuccessToast("Ok", 'Reserved Successfully',5);
 			} else {
@@ -735,13 +741,13 @@
 			list.forEach(item => {
 				let _am = true;
 
-				const [hoursStart, minutesStart] = item.start.split(':').map(Number);
+				let [hoursStart, minutesStart] = item.start.split(':').map(Number);
 				if (hoursStart >= 12) {
 					_am = false;
 					hoursStart -= 12;
 				}
 
-				const [hoursEnd, minutesEnd] = item.end.split(':').map(Number);
+				let [hoursEnd, minutesEnd] = item.end.split(':').map(Number);
 				if (hoursEnd >= 12) {
 					_am = false;
 					hoursEnd -= 12;
@@ -782,6 +788,7 @@
 		leftArrow.addEventListener('click', async () => {
 			if ((currentDate.getDate() - 1) < new Date().getDate()) return
 			currentDate.setDate(currentDate.getDate() - 1);
+			resetSelection()
 			startLoading()
 			await renderComponent()
 			endLoading()
@@ -790,6 +797,7 @@
 		// Move forward in time
 		rightArrow.addEventListener('click', async () => {
 			currentDate.setDate(currentDate.getDate() + 1);
+			resetSelection()
 			startLoading()
 			await renderComponent()
 			endLoading()

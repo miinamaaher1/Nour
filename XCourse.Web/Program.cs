@@ -32,6 +32,7 @@ namespace XCourse.Web
             builder.Services.AddStudentServices();
             builder.Services.AddTeacherServices();
             builder.Services.AddIntegratedServices();
+            builder.Services.AddCenterAdminServices();
 
             builder.Services.AddCors(options =>
             {
