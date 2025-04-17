@@ -5,6 +5,7 @@ using XCourse.Services.Interfaces.PaymentService;
 
 namespace XCourse.Web.Areas.Teachers.Controllers
 {
+    [Area("Teachers")]
     public class PaymentController : Controller
     {
         private readonly IStripeService _stripeService;
