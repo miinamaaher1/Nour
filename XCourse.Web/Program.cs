@@ -28,11 +28,11 @@ namespace XCourse.Web
             builder.Services.AddDbContext<XCourseContext>(options => options.UseSqlServer(connectionString, options => options.UseNetTopologySuite()));
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IEmailSender, GmailSender>();
+
             builder.Services.AddStudentServices();
             builder.Services.AddTeacherServices();
+            builder.Services.AddIntegratedServices();
             builder.Services.AddCenterAdminServices();
-           
 
             builder.Services.AddCors(options =>
             {
@@ -83,6 +83,7 @@ namespace XCourse.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
             app.UseCors("AllowAll");
 
