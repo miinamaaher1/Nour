@@ -17,7 +17,7 @@ namespace XCourse.Core.Entities
         public Address? Address { get; set; }
 
         public bool IsOnline { get; set; }
-
+        public string? Description { get; set; }
         [Url]
         public string? URL { get; set; } // for online groups [optional]
         public DateTime StartDateTime { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using XCourse.Infrastructure.Data;
@@ -12,9 +13,11 @@ using XCourse.Infrastructure.Data;
 namespace XCourse.Infrastructure.Migrations
 {
     [DbContext(typeof(XCourseContext))]
-    partial class XCourseContextModelSnapshot : ModelSnapshot
+    [Migration("20250417181304_Adding the invitation status enum to the assistant invitation table & added the description property to some of the DB entity")]
+    partial class AddingtheinvitationstatusenumtotheassistantinvitationtableaddedthedescriptionpropertytosomeoftheDBentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
