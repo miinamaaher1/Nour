@@ -12,13 +12,15 @@ namespace XCourse.Services.Interfaces.Teachers
     public interface IGroupService 
     {
         Task<IEnumerable<Subject>> GetMatchingSubjects(RequestSubjectDto request);
+        Task<IEnumerable<Subject>> GetAllSubjects(RequestSubjectDto request);
         Task<IEnumerable<ResponseCenterDto>> GetAllCentersPerGovernorate(string governorate);
         Task<IEnumerable<Room>> GetAllAvailableRooms(RequestRoomDto request);
-        Task<IEnumerable<string>> GetAllGovernorates();
-        Task<bool> ReserveAnOfflineGroupInCenter(RequestOfflineGroupReservation request);
+        Task<ReserveGroupResponseDTO> ReserveAnOfflineGroupInCenter(RequestOfflineGroupReservation request);
         Task<IEnumerable<GroupVM>> GetAllGroups(int userId);
         Task<Teacher> GetTeacherByUserId(string userId);
         Task<GroupDetailsVM> GetGroupDetailsById(int id);
         Task<bool> PostAnnouncement(int groupId, int teacherId, string body, bool isImportnat, string? title);
+        Task<ReserveGroupResponseDTO> ReserveOnlineGroup(ReserveOnlineGroupRequestDTO request);
+        Task<ReserveGroupResponseDTO> ReserveOfflineLocalGroup(ReserveOfflineLocalGroupRequestDTO request);
     }
 }

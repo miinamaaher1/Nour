@@ -1,251 +1,184 @@
-﻿@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Areas/Teachers/Views/Shared/_Layout.cshtml";
+﻿@using XCourse.Core.ViewModels.TeachersViewModels
+@model List<TeacherSessionVM>
+
+@{
+    ViewData["Title"] = "My Sessions";
 }
 
 @section Styles {
+    <link rel="stylesheet" href="~/Content/tui-calendar/tui-calendar.min.css">
+
+    <!--Search styling-->
     <style>
-        /* Calendar Loading Overlay */
-        .calendar-loading-overlay {
-            position: absolute;
-            top: 60px; /* Matches your calendar-controls height */
-            left: 0;
-            right: 0;
-            bottom: 0;
+        .search {
+            padding: 10px 35px 10px 15px; /* Add padding for text and icon space */
+            border: 1px solid var(--clr-border);
+            border-radius: 25px;
+            font-size: 1rem;
+            color: var(--clr-text-primary);
             background-color: var(--clr-surface);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            width: 100%; /* Make it take full width of its container */
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+            transition: border-color 0.3s ease; /* Smooth transition for focus state */
         }
 
-        .loading-message {
-            margin-top: 20px;
-            font-size: 18px;
-            color: var(--clr-primary);
-            text-align: center;
-        }
+            .search::placeholder {
+                color: var(--clr-text-secondary);
+            }
 
-        /* Calendar Grid Animation */
-        .calendar-grid-loader {
-            width: 200px;
-            height: 200px;
+            .search:focus {
+                outline: none; /* Remove default focus outline */
+                border-color: var(--clr-primary); /* Change border color on focus */
+            }
+
+        /* Styling for the container to hold the input and the icon */
+        .search-container {
             position: relative;
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            grid-template-rows: repeat(6, 1fr);
-            gap: 4px;
+            margin: 15px auto;
         }
 
-        .calendar-cell {
-            background-color: var(--clr-border);
-            border-radius: 4px;
-            opacity: 0.2;
-            animation: pulse-fade 2s infinite;
+            .search-container i, .search-container svg { /* Style the Font Awesome icon */
+                position: absolute;
+                top: 50%;
+                right: 15px; /* Adjust as needed */
+                transform: translateY(-50%);
+                color: var(--clr-text-secondary);
+                font-size: 1.2rem; /* Adjust icon size */
+                cursor: pointer;
+            }
+
+        .calendar-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-            /* Create highlight effects on cells */
-            .calendar-cell:nth-child(7n+1) {
-                animation-delay: 0.1s;
-            }
-
-            .calendar-cell:nth-child(7n+2) {
-                animation-delay: 0.2s;
-            }
-
-            .calendar-cell:nth-child(7n+3) {
-                animation-delay: 0.3s;
-            }
-
-            .calendar-cell:nth-child(7n+4) {
-                animation-delay: 0.4s;
-            }
-
-            .calendar-cell:nth-child(7n+5) {
-                animation-delay: 0.5s;
-            }
-
-            .calendar-cell:nth-child(7n+6) {
-                animation-delay: 0.6s;
-            }
-
-            .calendar-cell:nth-child(7n) {
-                animation-delay: 0.7s;
-            }
-
-            /* Special highlighted "today" cell */
-            .calendar-cell:nth-child(17) {
-                background-color: var(--clr-accent);
-                opacity: 0.6;
-                animation: pulse-today 2s infinite;
-            }
-
-        /* Calendar event animations */
-        .calendar-event {
+        .empty-message {
             position: absolute;
-            height: 16px;
-            border-radius: 3px;
-            background-color: var(--clr-primary);
-            opacity: 0.7;
-            animation: slide-in 3s infinite;
-        }
-
-            .calendar-event:nth-child(43) {
-                top: 40%;
-                left: 20%;
-                width: 30%;
-                animation-delay: 0.5s;
-            }
-
-            .calendar-event:nth-child(44) {
-                top: 60%;
-                left: 50%;
-                width: 25%;
-                background-color: var(--clr-secondary);
-                animation-delay: 1s;
-            }
-
-            .calendar-event:nth-child(45) {
-                top: 20%;
-                left: 60%;
-                width: 20%;
-                background-color: var(--clr-accent);
-                animation-delay: 1.5s;
-            }
-
-        /* Clock spinner animation */
-        .calendar-clock {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid var(--clr-border);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            text-align: center;
+            background: var(--clr-secondary);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 10;
         }
 
-        .clock-hand {
-            position: absolute;
-            width: 2px;
-            height: 20px;
-            background-color: var(--clr-primary);
-            top: 50%;
-            left: 50%;
-            transform-origin: bottom center;
-            animation: rotate 2s linear infinite;
+        .btn-calendar-view {
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            margin-left: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
-            .clock-hand:nth-child(2) {
-                height: 15px;
-                width: 3px;
-                background-color: var(--clr-secondary);
-                animation: rotate 12s linear infinite;
+            .btn-calendar-view:hover, .btn-calendar-view.active {
+                background-color: var(--clr-accent);
             }
 
-        @@keyframes pulse-fade {
-            0%, 100%
+            .btn-calendar-view i {
+                margin-right: 5px;
+            }
 
-        {
-            opacity: 0.2;
+        /* Calendar customization */
+        #calendar .tui-full-calendar-month-week-item {
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        50% {
-            opacity: 0.5;
+        #calendar .tui-full-calendar-weekday-grid-line {
+            border-color: #edf2f7;
         }
 
+            #calendar .tui-full-calendar-weekday-grid-line:hover {
+                background-color: #f8fafc;
+            }
+
+        #calendar .tui-full-calendar-month-week-item {
+            cursor: pointer;
         }
 
-        @@keyframes pulse-today {
-            0%, 100%
-
-        {
-            opacity: 0.6;
+        #calendar .tui-full-calendar-month-more-button {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
         }
 
-        50% {
-            opacity: 1;
-        }
-
-        }
-
-        @@keyframes slide-in {
-            0%
-
-        {
-            transform: translateX(-10px);
-            opacity: 0.3;
-        }
-
-        50% {
-            transform: translateX(0);
-            opacity: 0.7;
-        }
-
-        100% {
-            transform: translateX(-10px);
-            opacity: 0.3;
-        }
-
-        }
-
-        @@keyframes rotate {
-            0%
-
-        {
-            transform: translate(-50%, 0) rotate(0deg);
-        }
-
-        100% {
-            transform: translate(-50%, 0) rotate(360deg);
-        }
-
-        }
-
-        /* Loading dots */
-        .loading-dots {
+        /* Custom template styles */
+        .session-template {
+            padding: 4px;
+            border-radius: 4px;
             display: flex;
-            margin-top: 10px;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+            overflow: hidden;
         }
 
-            .loading-dots .dot {
-                width: 10px;
-                height: 10px;
-                margin: 0 5px;
+            .session-template .session-icon {
+                margin-right: 4px;
+                width: 16px;
+                height: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 border-radius: 50%;
-                background-color: var(--clr-primary);
-                animation: dots-fade 1.5s infinite ease-in-out;
             }
 
-                .loading-dots .dot:nth-child(1) {
-                    animation-delay: 0s;
-                }
+            .session-template .session-title {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
 
-                .loading-dots .dot:nth-child(2) {
-                    animation-delay: 0.3s;
-                }
-
-                .loading-dots .dot:nth-child(3) {
-                    animation-delay: 0.6s;
-                }
-
-        @@keyframes dots-fade {
-            0%, 100%
-
-        {
-            opacity: 0.3;
-            transform: scale(0.8);
+        .online-session {
+            background-color: rgba(19, 194, 150, 0.15);
+            border-left: 3px solid var(--online-color);
         }
 
-        50% {
-            opacity: 1;
-            transform: scale(1);
+            .online-session .session-icon {
+                background-color: var(--online-color);
+                color: var(--clr-primary);
+            }
+
+        .offline-session {
+            background-color: rgba(74, 108, 247, 0.15);
+            border-left: 3px solid var(--offline-color);
         }
 
+            .offline-session .session-icon {
+                background-color: var(--offline-color);
+                color: var(--clr-accent);
+            }
+
+        /* Popup styles */
+        .tui-full-calendar-popup-container {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 10px !important;
+            overflow: hidden !important;
         }
 
-        /* Calendar Controls Styling - copied from your CSS */
+        .tui-full-calendar-popup-section-item {
+            padding: 8px 0 !important;
+        }
+
+        .tui-full-calendar-popup-section-title {
+            font-weight: 600 !important;
+        }
+
+        .tui-full-calendar-section-button {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 4px !important;
+        }
+
+        /* Calendar Controls Styling */
         .calendar-controls {
             padding: 10px 20px;
             background-color: var(--clr-surface);
@@ -279,260 +212,497 @@
 
         /* Calendar Container */
         #calendar {
-            height: calc(100vh - 60px); /* Adjust height based on controls */
+            height: calc(100vh - 120px); /* Adjust height based on controls */
             border: 1px solid var(--clr-border);
             position: relative;
         }
 
-        /* Error message styling */
-        .calendar-error {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            background-color: rgba(220, 53, 69, 0.1);
-            border: 1px solid #dc3545;
-            border-radius: 4px;
-            color: #dc3545;
-            margin: 20px;
+        /* Teacher specific styles */
+        .session-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
         }
 
-            .calendar-error code {
-                display: block;
-                margin-top: 10px;
-                background-color: rgba(0,0,0,0.05);
-                padding: 10px;
-                border-radius: 4px;
-                white-space: pre-wrap;
-                text-align: left;
-                font-size: 14px;
+        .session-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .year-badge {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .semester-badge {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+
+        .btn {
+            display: inline-block;
+			margin-top: 10px;
+            padding: 2px 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 0.375rem; /* Rounded corners */
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            background-color: transparent;
+        }
+
+        .btn-outline-info {
+            color: #0dcaf0; /* Bootstrap "info" color */
+            border-color: #0dcaf0;
+            background-color: transparent;
+        }
+
+            .btn-outline-info:hover {
+                background-color: #0dcaf0;
+                color: white;
             }
 
-            .calendar-error button {
-                margin-top: 15px;
-                background-color: #dc3545;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                cursor: pointer;
-            }
+        .popup_btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        /* Add missing header-date-display style */
+        .header-date-display {
+            font-size: 16px;
+            margin-left: 8px;
+        }
+
     </style>
 }
 
-<h1>Index</h1>
-<div class="col-12">
-    <div class="container">
-        <div class="calendar-controls">
-            <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
-            <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
-            <button id="todayBtn">Today</button>
-            <span id="current-range"></span>
-            <div style="margin-left: auto;">
-                <button id="viewDayBtn">Day</button>
-                <button id="viewWeekBtn">Week</button>
-                <button id="viewMonthBtn">Month</button>
+<div class="container">
+    <div class="col-12 row">
+        <div class="col-3"></div>
+        <div class="col-lg-6 col-12">
+            <div class="search-container">
+                <input class="search" id="sessionSearch" placeholder="Search sessions..." />
+                <i class="fas fa-search"></i>
             </div>
         </div>
-
-        <div id="calendar">
-            <!-- Loading overlay -->
-            <div class="calendar-loading-overlay" id="calendarLoadingOverlay">
-                <div class="calendar-grid-loader">
-                    <!-- Generate 42 cells (6 rows x 7 days) -->
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-                    <div class="calendar-cell"></div>
-
-                    <!-- Calendar events -->
-                    <div class="calendar-event"></div>
-                    <div class="calendar-event"></div>
-                    <div class="calendar-event"></div>
-
-                    <!-- Clock spinner -->
-                    <div class="calendar-clock">
-                        <div class="clock-hand"></div>
-                        <div class="clock-hand"></div>
-                    </div>
-                </div>
-
-                <div class="loading-message">
-                    Loading Calendar
-                    <div class="loading-dots">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </div>
+        <div class="col-3"></div>
+    </div>
+    <!-- Calendar view -->
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="container">
+            <div class="calendar-controls">
+                <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                <button id="todayBtn">Today</button>
+                <span id="current-range"></span>
+                <div style="margin-left: auto;">
+                    <button id="dayView" class="btn-calendar-view">Day</button>
+                    <button id="weekView" class="btn-calendar-view">Week</button>
+                    <button id="monthView" class="btn-calendar-view active">Month</button>
                 </div>
             </div>
-
-            <!-- Error message that appears if calendar fails to load -->
-            <div class="calendar-error" id="calendarError">
-                <h3>⚠️ Calendar Loading Error</h3>
-                <p>
-                    There was an error initializing the calendar. The TUI Calendar library may not be
-                    properly loaded.
-                </p>
-                <code id="errorDetails">toastui is not defined</code>
-                <p>Make sure you've included the TUI Calendar library in your HTML:</p>
-                <code>&lt;script src="https://uicdn.toast.com/calendar/v2.1.0/toastui-calendar.min.js"&gt;&lt;/script&gt;</code>
-                <button onclick="window.location.reload()">Try Again</button>
+        </div>
+        <div class="col-12">
+            <div class="container">
+                <div>
+                    <div class="calendar-container">
+                        <div id="calendar" style="height: 650px;"></div>    @*Calendar*@
+                        <div id="emptyMessage" class="empty-message" style="display: none;">
+                            <h4><i class="fas fa-search text-primary" style="font-size: 2rem;"></i></h4>
+                            <h4>No sessions match your search</h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 @section Scripts {
-    <script src="~/Scripts/tui-calendar.min.js"></script>
-      <script>
-                         document.addEventListener('DOMContentLoaded', function () {
-            const loadingOverlay = document.getElementById('calendarLoadingOverlay');
-            const errorMessage = document.getElementById('calendarError');
-            const errorDetails = document.getElementById('errorDetails');
-            const calendarContainer = document.getElementById('calendar'); // Get the calendar container element
+    <script src="@Url.Content("~/Scripts/tui-code-snippet.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/tui-calendar.min.js")"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Template functions
+            function getMonthEventTemplate(event) {
+                var isOnline = event.raw.isOnline === 'true';
+                var iconClass = isOnline ? 'fa-wifi' : 'fa-building';
+                var sessionClass = isOnline ? 'online-session' : 'offline-session';
 
-            // Check if the necessary elements exist
-            if (!loadingOverlay || !errorMessage || !errorDetails || !calendarContainer) {
-                console.error('One or more required HTML elements (calendarLoadingOverlay, calendarError, errorDetails, calendar) are missing.');
-                // Optionally display a general error message to the user
-                if (errorMessage) {
-                    errorMessage.textContent = 'Error: Required page elements are missing.';
-                    errorMessage.style.display = 'block';
-                }
-                if(loadingOverlay) {
-                    loadingOverlay.style.display = 'none'; // Hide loading if elements are missing
-                }
-                return; // Stop execution if essential elements are not found
+                return '<div class="session-template ' + sessionClass + '">' +
+                    '<div class="session-icon"><i class="fas ' + iconClass + '" style="font-size: 8px;"></i></div>' +
+                    '<div class="session-title">' + event.title +
+                    '<div class="session-info mt-1">' +
+                    '<span class="session-badge year-badge">Y' + event.raw.year + '</span>' +
+                    '<span class="session-badge semester-badge">S' + event.raw.semester + '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
             }
 
-            // Check if the TUI Calendar library is loaded correctly
-            // The library exposes itself as tui.Calendar
-            if (typeof tui === 'undefined' || typeof tui.Calendar !== 'function') {
-                console.error('TUI Calendar library (tui.Calendar) not found. Make sure the library script is included correctly before this script.');
-                // Show error message
-                loadingOverlay.style.display = 'none';
-                errorMessage.style.display = 'block';
-                errorDetails.textContent = 'TUI Calendar library failed to load.';
-            } else {
-                console.log('TUI Calendar library detected. Initializing...');
-                initializeCalendar();
+            function getWeekEventTemplate(event) {
+                var isOnline = event.raw.isOnline === 'true';
+                var iconClass = isOnline ? 'fa-wifi' : 'fa-building';
+                var sessionClass = isOnline ? 'online-session' : 'offline-session';
+
+                return '<div class="session-template ' + sessionClass + '" style="height: 100%;">' +
+                    '<div class="session-icon"><i class="fas ' + iconClass + '" style="font-size: 8px;"></i></div>' +
+                    '<div class="session-title">' + event.title + '</div>' +
+                    '</div>';
             }
 
-            function initializeCalendar() {
-                try {
-                    // Use the correct global object: tui.Calendar
-                    var Calendar = tui.Calendar;
-                    var calendar = new Calendar(calendarContainer, { // Pass the container element directly
-                        defaultView: 'week',
-                        useCreationPopup: true, // Example options - enable default popups
-                        useDetailPopup: true,   // Example options - enable default popups
-                        // taskView: true, // 'taskView' might be deprecated or need specific setup depending on version. Check docs.
-                        // scheduleView: true // 'scheduleView' might be deprecated or need specific setup depending on version. Check docs.
-                        // Add other necessary calendar options here based on v1.15.3 documentation
-                        // e.g., template: { ... }, month: { ... }, week: { ... }
-                    });
+        function getPopupDetailTemplate(event) {
+            var isOnline = event.raw.isOnline === 'true';
+            var iconClass = isOnline ? 'fa-wifi' : 'fa-building';
+            var locationText = isOnline ? 'Online Session' : 'Offline Session: ' + event.raw.centerName;
+            var locationColor = isOnline ? '#248a6b' : '#15479e';
 
-                    console.log('TUI Calendar initialized successfully.');
+            var start = new Date(event.start);
+            var end = new Date(event.end);
 
-                    // Hide loading overlay
-                    loadingOverlay.style.display = 'none';
+            var formattedDate = start.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
 
-                    // --- Optional: Example Event Listeners ---
-                    calendar.on('clickSchedule', function(event) {
-                        console.log('clickSchedule', event);
-                        // var schedule = event.schedule;
-                        // You can access schedule details here
-                    });
+            var formattedStartTime = start.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
-                     calendar.on('beforeCreateSchedule', function(event) {
-                        console.log('beforeCreateSchedule', event);
-                        // You can modify event data here before creation
-                        // e.g., event.guide.clear(); // Clear default guide elements if needed
+            var formattedEndTime = end.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
-                        // Example: Create a schedule manually based on the event data
-                        // const scheduleData = {
-                        //     id: String(Date.now()),
-                        //     calendarId: '1', // Make sure this calendarId exists if using calendars option
-                        //     title: event.title || 'New Event',
-                        //     category: 'time',
-                        //     start: event.start,
-                        //     end: event.end,
-                        //     isAllDay: event.isAllDay
-                        // };
-                        // calendar.createSchedules([scheduleData]);
-                     });
+            // Only show these fields for offline sessions
+            var offlineInfo = '';
+            if (!isOnline) {
+                // Room info
+                if (event.raw.roomName !== 'UnKnown') {
+                    offlineInfo += '<div class="mb-2"><i class="fas fa-door-open me-2"></i> <strong>Room:</strong> ' + event.raw.roomName + '</div>';
+                }
 
-                    calendar.on('beforeUpdateSchedule', function(event) {
-                        console.log('beforeUpdateSchedule', event);
-                        // var schedule = event.schedule;
-                        // var changes = event.changes;
-                        // calendar.updateSchedule(schedule.id, schedule.calendarId, changes);
-                    });
+                // Center info
+                if (event.raw.centerName !== 'UnKnown') {
+                    offlineInfo += '<div class="mb-2"><i class="fas fa-building me-2"></i> <strong>Center:</strong> ' + event.raw.centerName + '</div>';
+                }
 
-                    calendar.on('beforeDeleteSchedule', function(event) {
-                         console.log('beforeDeleteSchedule', event);
-                        // var schedule = event.schedule;
-                        // calendar.deleteSchedule(schedule.id, schedule.calendarId);
-                    });
-                    // --- End Optional Examples ---
-
-                } catch (error) {
-                    console.error('Calendar Initialization Error:', error);
-                    errorDetails.textContent = error.message + (error.stack ? '\n' + error.stack : ''); // Include stack trace if available
-                    errorMessage.style.display = 'block';
-                    loadingOverlay.style.display = 'none'; // Ensure loading is hidden on error
+                // Address info
+                if (event.raw.address) {
+                    offlineInfo += '<div class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> <strong>Address:</strong> ' + event.raw.address + '</div>';
                 }
             }
 
-            // General error listener (optional but helpful for debugging)
-            window.addEventListener('error', function (event) {
-                console.error('Unhandled Globl Error caught:', event.error);
-                // Avoid showing the specific calendar error again if it was already handled
-                if (errorMessage.style.display !== 'block') {
-                    errorDetails.textContent = 'An unexpected error occurred: ' + (event.error ? event.error.message : event.message);
-                    errorMessage.style.display = 'block';
-                    loadingOverlay.style.display = 'none';
+            // Subject year and semester badges
+            var academicInfo = `<div class="mb-2">
+                     <span class="session-badge year-badge">${event.raw.year} Year</span>
+                    <span class="session-badge semester-badge"> ${event.raw.semester} Semester</span></div>`;
+
+            return `
+                    <div class="p-3" style="color:black;">
+                        <h4 class="mb-3">${event.title}</h4>
+                        ${academicInfo}
+                        <div class="mb-2"><i class="fas fa-calendar-day me-2"></i> <strong>Date:</strong> ${formattedDate}</div>
+                        <div class="mb-2"><i class="fas fa-clock me-2"></i> <strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</div>
+                        <div class="mb-2"><i class="fas fa-hourglass-half me-2"></i> <strong>Duration:</strong> ${event.raw.duration}</div>
+                        ${offlineInfo}
+                        <div class="mt-3 pt-2 border-top">
+                            <span style="color: ${locationColor};">
+                                <i class="fas ${iconClass} me-2"></i> ${locationText}
+                            </span>
+                            <div class="popup_btn">
+                                <a href="/Teacher/Session/Details/${event.id}" class="btn btn-outline-info">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+            // Initialize calendar
+            var calendar = new tui.Calendar("#calendar", {
+                defaultView: "month",
+                taskView: false,
+                useDetailPopup: true,
+                isReadOnly: true,
+                usageStatistics: false,
+                month: {
+                    daynames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                    startDayOfWeek: 0,
+                    narrowWeekend: false
+                },
+                week: {
+                    daynames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    hourStart: 8,
+                    hourEnd: 20
+                },
+                template: {
+                    monthDayname: function(dayname) {
+                        return '<span class="fw-bold">' + dayname.label + '</span>';
+                    },
+                    monthGridHeader: function(model) {
+                        var date = new Date(model.date);
+                        return '<span class="tui-full-calendar-weekday-grid-date">' + date.getDate() + '</span>';
+                    },
+                    monthMoreTitleDate: function(date) {
+                        var day = date.split('-')[2];
+                        return '<span class="fw-bold">' + day + '</span> more';
+                    },
+                    monthMoreClose: function() {
+                        return '<i class="fas fa-times"></i>';
+                    },
+                    monthGridHeaderExceed: function(hiddenEvents) {
+                        return '<span class="badge bg-primary rounded-pill">+' + hiddenEvents + '</span>';
+                    },
+                    monthDayname: function(model) {
+                        return (
+                            '<span class="tui-full-calendar-dayname-name">' + model.label + '</span>'
+                        );
+                    },
+                    weekDayname: function(model) {
+                        return '<span class="tui-full-calendar-dayname-name">' + model.dayName + '</span>';
+                    },
+                    timegridDisplayPrimaryTime: function(time) {
+                        return time.hour + ':00';
+                    },
+                    timegridCurrentTime: function(timezone) {
+                        var templates = [];
+                        var date = new Date();
+
+                        templates.push('<div class="tui-full-calendar-timegrid-timezone">');
+                        templates.push(date.getHours() + ':' + date.getMinutes());
+                        templates.push('</div>');
+
+                        return templates.join('');
+                    },
+                    popupDetailBody: function(schedule) {
+                        return getPopupDetailTemplate(schedule);
+                    },
+                    // Custom event templates
+                    time: function(event) {
+                        return getWeekEventTemplate(event);
+                    },
+                    allday: function(event) {
+                        return getMonthEventTemplate(event);
+                    },
+                    schedule: function(event) {
+                        return getMonthEventTemplate(event);
+                    }
                 }
             });
+
+            // Store all session data
+            const allSessions = [];
+        const centers = new Set();
+
+        // Process session data from the model
+        @foreach (var session in Model)
+        {
+            <text>
+                    const startDateTime_@(session.ID) = new Date('@session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss")');
+                    let endDateTime_@(session.ID);
+
+                @if (session.Duration != null)
+                {
+                    <text>
+                                // Parse duration and add to start time
+                                const durationParts_@(session.ID) = '@session.Duration?.ToString(@"hh\:mm")'.split(':');
+                                const hours_@(session.ID) = parseInt(durationParts_@(session.ID)[0]);
+                                const minutes_@(session.ID) = parseInt(durationParts_@(session.ID)[1]);
+
+                                endDateTime_@(session.ID) = new Date(startDateTime_@(session.ID));
+                                endDateTime_@(session.ID).setHours(endDateTime_@(session.ID).getHours() + hours_@(session.ID));
+                                endDateTime_@(session.ID).setMinutes(endDateTime_@(session.ID).getMinutes() + minutes_@(session.ID));
+                    </text>
+                }
+                else
+                {
+                    <text>
+                                // Default to 1 hour if duration is not provided
+                                endDateTime_@(session.ID) = new Date(startDateTime_@(session.ID));
+                                endDateTime_@(session.ID).setHours(endDateTime_@(session.ID).getHours() + 1);
+                    </text>
+                }
+
+                    // Add center to list of centers if not already exists
+                @if (!string.IsNullOrEmpty(session.CenterName) && session.CenterName != "UnKnown")
+                {
+                    <text>centers.add('@session.CenterName');</text>
+                }
+
+                    // Store session data for searching
+                    allSessions.push({
+                        id: '@session.ID',
+                        calendarId: '@(session.IsOnline ? "online" : "offline")',
+                        title: '@session.Subject',
+                        body: 'Year: @session.Year, Semester: @session.Semester',
+                        category: 'time',
+                        start: startDateTime_@(session.ID),
+                        end: endDateTime_@(session.ID),
+                        isReadOnly: true,
+                        raw: {
+                            centerName: '@session.CenterName',
+                            roomName: '@session.RoomName',
+                            isOnline: @(session.IsOnline ? "true" : "false").toString(),
+                            location: '@(session.IsOnline ? "Online" : session.Address.Street?? session.CenterName)',
+                            duration: '@(session.Duration?.ToString(@"hh\:mm") ?? "01:00")',
+                            year: '@session.Year',
+                            semester: '@session.Semester'
+                        }
+                    });
+            </text>
+        }
+
+        // Set calendar color categories
+        calendar.setCalendarColor('online', {
+            backgroundColor: 'rgba(19, 194, 150, 0.05)',
+            borderColor: '#13c296',
+            dragBackgroundColor: '#13c296',
+            color: '#212b36'
         });
-      </script>
+
+        calendar.setCalendarColor('offline', {
+            backgroundColor: 'rgba(74, 108, 247, 0.05)',
+            borderColor: '#4a6cf7',
+            dragBackgroundColor: '#4a6cf7',
+            color: '#212b36'
+        });
+
+        // Add all sessions to calendar
+        calendar.createSchedules(allSessions);
+
+        // Update header date display
+        function updateDateRangeDisplay() {
+            const currentDate = calendar.getDate();
+            const currentView = calendar.getViewName();
+
+            let dateRangeText = '';
+
+            if (currentView === 'month') {
+                dateRangeText = currentDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+            } else if (currentView === 'week') {
+                const weekStart = new Date(currentDate);
+                weekStart.setDate(currentDate.getDate() - currentDate.getDay());
+
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+
+                dateRangeText = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+                                ' - ' +
+                                weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            } else if (currentView === 'day') {
+                dateRangeText = currentDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+
+            // Create or update the date display in the header
+            let headerDateDisplay = document.querySelector('.header-date-display');
+
+            if (!headerDateDisplay) {
+                headerDateDisplay = document.createElement('div');
+                headerDateDisplay.className = 'header-date-display text-white ms-3';
+                document.querySelector('.calendar-header h4').after(headerDateDisplay);
+            }
+
+            headerDateDisplay.textContent = dateRangeText;
+        }
+
+        // Function to handle search filtering
+                function handleSearch() {
+            const searchQuery = document.getElementById('sessionSearch').value.toLowerCase();
+            let filteredSessions = [];
+
+            if (searchQuery === '') {
+                // If search is empty, show all sessions
+                filteredSessions = allSessions;
+                document.getElementById('emptyMessage').style.display = 'none';
+            } else {
+                // Filter sessions based on search query
+                filteredSessions = allSessions.filter(session => {
+                    const titleMatch = session.title.toLowerCase().includes(searchQuery);
+                    const centerMatch = session.raw.centerName.toLowerCase().includes(searchQuery);
+                    const roomMatch = session.raw.roomName.toLowerCase().includes(searchQuery);
+                    const locationMatch = session.raw.location.toLowerCase().includes(searchQuery);
+                    const yearMatch = session.raw.year.toString().includes(searchQuery);
+                    const semesterMatch = session.raw.semester.toString().includes(searchQuery);
+
+                    return titleMatch || centerMatch || roomMatch || locationMatch || yearMatch || semesterMatch;
+                });
+
+                // Show/hide empty message
+                if (filteredSessions.length === 0) {
+                    document.getElementById('emptyMessage').style.display = 'block';
+                } else {
+                    document.getElementById('emptyMessage').style.display = 'none';
+                }
+            }
+
+            // Clear calendar and add filtered sessions
+            calendar.clear();
+            calendar.createSchedules(filteredSessions);
+            calendar.render();
+        }
+
+        // Set up search handler
+        document.getElementById('sessionSearch').addEventListener('keyup', handleSearch);
+
+        // Set up calendar view controls
+        document.getElementById('monthView').addEventListener('click', function() {
+            setActiveViewButton(this);
+            calendar.changeView('month');
+            updateDateRangeDisplay();
+        });
+
+        document.getElementById('weekView').addEventListener('click', function() {
+            setActiveViewButton(this);
+            calendar.changeView('week');
+            updateDateRangeDisplay();
+        });
+
+        document.getElementById('dayView').addEventListener('click', function() {
+            setActiveViewButton(this);
+            calendar.changeView('day');
+            updateDateRangeDisplay();
+        });
+
+        document.getElementById('todayBtn').addEventListener('click', function() {
+            calendar.today();
+            updateDateRangeDisplay();
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            calendar.prev();
+            updateDateRangeDisplay();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            calendar.next();
+            updateDateRangeDisplay();
+        });
+
+        function setActiveViewButton(button) {
+            document.querySelectorAll('.btn-calendar-view').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+        }
+
+        // Initialize date display
+        updateDateRangeDisplay();
+    });
+</script>
 }

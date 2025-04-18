@@ -358,6 +358,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("ID")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<int?>("TeacherID")
                         .HasColumnType("int");
 
@@ -417,6 +420,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.Property<int>("CenterAdminID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -484,6 +490,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.Property<int>("DefaultSessionDays")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -607,6 +616,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("CenterID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Equipment")
                         .HasColumnType("int");
 
@@ -685,6 +697,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeSpan?>("Duration")
                         .HasColumnType("time");

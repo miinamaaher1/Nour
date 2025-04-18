@@ -1,0 +1,19 @@
+﻿@model IEnumerable<XCourse.Core.ViewModels.AssistantViewModels.PendingRequestVM>
+
+<h2>Pending Requests</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>

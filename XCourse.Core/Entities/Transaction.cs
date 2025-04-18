@@ -7,7 +7,8 @@ namespace XCourse.Core.Entities
     {
         Deposit,
         Withdrawal,
-        Refund
+        Refund,
+        Payment
     }
     public class Transaction
     {

@@ -165,6 +165,25 @@ namespace XCourse.Services.Implementations.Student
         }
 
 
+
+        public async Task<bool> SessionRemoveFeedbackService(FeedBackDTO feedBackDTO)
+        {
+            if (feedBackDTO == null)
+                return false;
+            var feedback = _unitOfWork.Attendances.Find(
+                a => a.SessionID == feedBackDTO.SessionID && a.StudentID == feedBackDTO.StudentId
+            );
+            if (feedback != null)
+            {
+                feedback.Feedback = null; 
+                feedback.Rating = null;
+                await _unitOfWork.SaveAsync();
+                return true;
+            }
+            return false;
+
+        }
+
         /**----------------------------------------------------------------------------------**/
         public async Task<ICollection<Session>> GetStudentUpcomingSessions(int studentId)
         {

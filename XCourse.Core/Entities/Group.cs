@@ -43,6 +43,8 @@ namespace XCourse.Core.Entities
         public bool IsOnline { get; set; }
         public bool IsGirlsOnly { get; set; }
 
+        public string? Description { get; set; }
+
         [ForeignKey(nameof(Teacher))]
         [Display(Name = nameof(Teacher))]
         public int TeacherID { get; set; }
@@ -70,7 +72,7 @@ namespace XCourse.Core.Entities
         public virtual ICollection<GroupDefaults>? GroupDefaults { get; set; }
 
 
-        // IsDeleted 
+        // IsDeleted
         public bool IsDeleted { get; set; }
 
     }

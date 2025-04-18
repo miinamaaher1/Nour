@@ -17,10 +17,21 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             this._groupService = groupService;
         }
 
-        public IActionResult Create()
+        // Group Creation 
+        public IActionResult CreateOffline()
         {
             return View();
         }
+        public IActionResult CreateOfflineLocal()
+        {
+            return View();
+        }
+        public IActionResult CreateOnline()
+        {
+            return View();
+        }
+
+        // Group Details 
         public async Task<IActionResult> Index()
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -34,10 +45,41 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return View(groupDetailsVM);
         }
 
-        
 
 
-        // JSON Actions
+        // Reservation endpoints
+        [HttpPost]
+        public async Task<IActionResult> ReserveGroupInCenter([FromBody] RequestOfflineGroupReservation request)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            request.TeacherId = teacher.ID;
+            var result = await _groupService.ReserveAnOfflineGroupInCenter(request);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReserveOnlineGroup([FromBody] ReserveOnlineGroupRequestDTO request)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            request.TeacherId = teacher.ID;
+            var result = await _groupService.ReserveOnlineGroup(request);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReserveOfflineLocalGroup([FromBody] ReserveOfflineLocalGroupRequestDTO request)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            request.TeacherId = teacher.ID;
+            var result = await _groupService.ReserveOfflineLocalGroup(request);
+            return Ok(result);
+        }
+
+
+        // Utils
         [HttpPost]
         public async Task<IActionResult> Centers([FromBody] RequestCenterDto request)
         {
@@ -56,17 +98,20 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return Ok(rooms);
         }
         [HttpPost]
-        public async Task<IActionResult> Subjects ([FromBody] RequestSubjectDto request)
+        public async Task<IActionResult> Subjects([FromBody] RequestSubjectDto request)
         {
+            //var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            //Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            //request.TeacherId = teacher.ID;
+            request.TeacherId = 1;
             var subjects = await _groupService.GetMatchingSubjects(request);
             return Ok(subjects);
         }
         [HttpPost]
-        public async Task<IActionResult> ReserveGroupInCenter([FromBody] RequestOfflineGroupReservation request)
+        public async Task<IActionResult> AllSubjects([FromBody] RequestSubjectDto request)
         {
-            Console.WriteLine($"Received Request: {JsonSerializer.Serialize(request)}");
-            var result = await _groupService.ReserveAnOfflineGroupInCenter(request);
-            return Ok(result);
+            var subjects = await _groupService.GetAllSubjects(request);
+            return Ok(subjects);
         }
         [HttpPost]
         public async Task<bool> InsertAnnouncement([FromBody]RequestAnnouncement request)

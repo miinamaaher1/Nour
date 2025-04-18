@@ -40,5 +40,11 @@ namespace XCourse.Web.Areas.Students.Controllers
 
             return Json(new { isValid = isSaved });
         }
+
+        public async Task<IActionResult> RemoveFeedback([FromBody]FeedBackDTO feedBackDTO)
+        {
+            bool isRemoved = await _studentHomeService.SessionRemoveFeedbackService(feedBackDTO);
+            return Json(new { isValid = isRemoved });
+        }
     }
 }

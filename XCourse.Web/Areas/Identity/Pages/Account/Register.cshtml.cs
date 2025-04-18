@@ -45,7 +45,19 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _unitOfWork = unitOfWork;
+
+            Governorates = new List<string>
+            {
+                "Cairo", "Alexandria", "Giza", "Port Said", "Suez",
+                "Dakahlia", "Sharqia", "Qalyubia", "Beheira", "Minya",
+                "Helwan", "6th of October", "Ismailia", "Gharbia", "Monufia",
+                "Kafr El Sheikh", "Faiyum", "Beni Suef", "Asyut", "Sohag",
+                "Qena", "Aswan", "Luxor", "Red Sea", "New Valley",
+                "Matrouh", "North Sinai", "South Sinai", "Damietta"
+            };
         }
+
+        public List<string> Governorates;
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

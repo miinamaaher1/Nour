@@ -10,10 +10,8 @@ namespace XCourse.Core.DTOs.Teachers
 {
     public class RequestSubjectDto
     {
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Year Year { get; set; }
-
-        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public int TeacherId { get; set; }
         public Semester Semester { get; set; }
     }
 

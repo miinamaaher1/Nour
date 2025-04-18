@@ -1,397 +1,397 @@
 ﻿@model XCourse.Core.ViewModels.TeachersViewModels.GroupDetailsVM
 
 @section Styles {
-    <!-- Cover styling-->
-    <style>
-        .group-card {
-            background-color: var(--clr-surface);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 20px;
-        }
+<!-- Cover styling-->
+<style>
+    .group-card {
+    background-color: var(--clr-surface);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+    }
 
-            .group-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-            }
+    .group-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    }
 
-        .group-image {
-            position: relative;
-            width: 100%;
-            height: 240px;
-            overflow: hidden;
-        }
+    .group-image {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    }
 
-            .group-image img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.5s ease;
-            }
+    .group-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    }
 
-        .group-card:hover .group-image img {
-            transform: scale(1.05);
-        }
+    .group-card:hover .group-image img {
+    transform: scale(1.05);
+    }
 
-        .group-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, var(--clr-overlay), transparent);
-            padding: 20px;
-        }
+    .group-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, var(--clr-overlay), transparent);
+    padding: 20px;
+    }
 
-        .center-name {
-            color: white;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
+    .center-name {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    }
 
-        .subject-name {
-            color: var(--clr-accent);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 8px;
-        }
+    .subject-name {
+    color: var(--clr-accent);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+    }
 
-        .group-price {
-            background-color: var(--clr-primary);
-            color: var(--clr-text-on-primary);
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 0.9rem;
-        }
+    .group-price {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.9rem;
+    }
 
-        .group-content {
-            padding: 20px;
-        }
+    .group-content {
+    padding: 20px;
+    }
 
-        .group-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
+    .group-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    }
 
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.875rem;
-            color: var(--clr-text-secondary);
-        }
+    .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: var(--clr-text-secondary);
+    }
 
-            .meta-item i {
-                color: var(--clr-secondary);
-            }
+    .meta-item i {
+    color: var(--clr-secondary);
+    }
 
-        .session-days {
-            background-color: var(--clr-background);
-            border-radius: 10px;
-            padding: 15px;
-        }
+    .session-days {
+    background-color: var(--clr-background);
+    border-radius: 10px;
+    padding: 15px;
+    }
 
-        .session-title {
-            font-size: 0.9rem;
-            color: var(--clr-text-secondary);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
+    .session-title {
+    font-size: 0.9rem;
+    color: var(--clr-text-secondary);
+    font-weight: 600;
+    margin-bottom: 8px;
+    }
 
-        .session-time {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-        }
+    .session-time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    }
 
-        .day-circle {
-            background-color: var(--clr-accent);
-            color: var(--clr-text-on-accent);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
+    .day-circle {
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    }
 
-        .badge {
-            background-color: var(--clr-accent);
-            color: var(--clr-text-on-accent);
-            padding: 5px 12px;
-            border-radius: 20px;
-            margin-right: 8px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
+    .badge {
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-right: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    }
 
-        .badge-online {
-            background-color: #28a745;
-            color: white;
-        }
+    .badge-online {
+    background-color: #28a745;
+    color: white;
+    }
 
-        .badge-offline {
-            background-color: var(--clr-secondary);
-            color: white;
-        }
+    .badge-offline {
+    background-color: var(--clr-secondary);
+    color: white;
+    }
 
-        .badge-private {
-            background-color: #ffc107;
-            color: #212529;
-        }
+    .badge-private {
+    background-color: #ffc107;
+    color: #212529;
+    }
 
-        .badge-girls {
-            background-color: #d63384;
-            color: white;
-        }
+    .badge-girls {
+    background-color: #d63384;
+    color: white;
+    }
 
-        .badge-status {
-            background-color: var(--clr-primary);
-            color: var(--clr-text-on-primary);
-        }
+    .badge-status {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    }
 
-        .students-count {
-            margin-top: 15px;
-            height: 6px;
-            background-color: var(--clr-border);
-            border-radius: 3px;
-            overflow: hidden;
-        }
+    .students-count {
+    margin-top: 15px;
+    height: 6px;
+    background-color: var(--clr-border);
+    border-radius: 3px;
+    overflow: hidden;
+    }
 
-        .students-progress {
-            height: 100%;
-            background-color: var(--clr-secondary);
-            border-radius: 3px;
-        }
+    .students-progress {
+    height: 100%;
+    background-color: var(--clr-secondary);
+    border-radius: 3px;
+    }
 
-        .students-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            color: var(--clr-text-secondary);
-        }
-    </style>
+    .students-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    color: var(--clr-text-secondary);
+    }
+</style>
 
-    <!-- Table styling-->
-    <style>
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+<!-- Table styling-->
+<style>
+    .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    }
 
-        .title {
-            color: var(--clr-primary);
-            margin: 0;
-        }
+    .title {
+    color: var(--clr-primary);
+    margin: 0;
+    }
 
-        .theme-toggle {
-            background-color: var(--clr-surface);
-            color: var(--clr-text-primary);
-            border: 1px solid var(--clr-border);
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    .theme-toggle {
+    background-color: var(--clr-surface);
+    color: var(--clr-text-primary);
+    border: 1px solid var(--clr-border);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    }
 
-            .theme-toggle:hover {
-                background-color: var(--clr-accent);
-                color: var(--clr-text-on-accent);
-            }
+    .theme-toggle:hover {
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+    }
 
-        .search-controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+    .search-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    }
 
-        .search-input {
-            flex-grow: 1;
-            margin-right: 10px;
-            padding: 8px 12px;
-            border: 1px solid var(--clr-border);
-            border-radius: 20px; /* More rounded search box */
-            background-color: var(--clr-surface);
-            color: var(--clr-text-primary);
-        }
+    .search-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--clr-border);
+    border-radius: 20px; /* More rounded search box */
+    background-color: var(--clr-surface);
+    color: var(--clr-text-primary);
+    }
 
-        .table-container {
-            background-color: var(--clr-surface);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+    .table-container {
+    background-color: var(--clr-surface);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    }
 
-        thead {
-            background-color: var(--clr-primary);
-            color: var(--clr-text-on-primary);
-        }
+    thead {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    }
 
-        th {
-            padding: 12px 15px;
-            text-align: left;
-            font-weight: 600;
-        }
+    th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    }
 
-        tbody tr {
-            border-bottom: 1px solid var(--clr-border);
-            transition: background-color 0.3s ease;
-        }
+    tbody tr {
+    border-bottom: 1px solid var(--clr-border);
+    transition: background-color 0.3s ease;
+    }
 
-            tbody tr:last-child {
-                border-bottom: none;
-            }
+    tbody tr:last-child {
+    border-bottom: none;
+    }
 
-            tbody tr:hover {
-                background-color: rgba(0, 0, 0, 0.05);
-            }
+    tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    }
 
-        td {
-            padding: 12px 15px;
-        }
+    td {
+    padding: 12px 15px;
+    }
 
-        .email {
-            color: var(--clr-text-secondary);
-        }
+    .email {
+    color: var(--clr-text-secondary);
+    }
 
-        .exam-score {
-            font-weight: bold;
-            text-align: center;
-        }
+    .exam-score {
+    font-weight: bold;
+    text-align: center;
+    }
 
-        .high-score {
-            color: #2e7d32;
-        }
+    .high-score {
+    color: #2e7d32;
+    }
 
-        .medium-score {
-            color: #f57c00;
-        }
+    .medium-score {
+    color: #f57c00;
+    }
 
-        .low-score {
-            color: #c62828;
-        }
+    .low-score {
+    color: #c62828;
+    }
 
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: var(--clr-surface);
-            border-radius: 4px;
-            border: 1px solid var(--clr-border);
-        }
+    .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: var(--clr-surface);
+    border-radius: 4px;
+    border: 1px solid var(--clr-border);
+    }
 
-        .pagination-info {
-            color: var(--clr-text-secondary);
-        }
+    .pagination-info {
+    color: var(--clr-text-secondary);
+    }
 
-        .pagination-controls button {
-            background-color: var(--clr-surface);
-            color: var(--clr-primary);
-            border: 1px solid var(--clr-border);
-            padding: 6px 12px;
-            margin: 0 5px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    .pagination-controls button {
+    background-color: var(--clr-surface);
+    color: var(--clr-primary);
+    border: 1px solid var(--clr-border);
+    padding: 6px 12px;
+    margin: 0 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    }
 
-            .pagination-controls button:hover:not(:disabled) {
-                background-color: var(--clr-accent);
-                color: var(--clr-text-on-accent);
-            }
+    .pagination-controls button:hover:not(:disabled) {
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+    }
 
-            .pagination-controls button:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+    .pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    }
 
-        /* Combined attendance styling */
-        .attendance-container {
-            display: flex;
-            gap: 10px;
-        }
+    /* Combined attendance styling */
+    .attendance-container {
+    display: flex;
+    gap: 10px;
+    }
 
-        .checkbox-container {
-            position: relative;
-            padding-left: 30px;
-            cursor: not-allowed;
-            user-select: none;
-            display: flex;
-            align-items: center;
-        }
+    .checkbox-container {
+    position: relative;
+    padding-left: 30px;
+    cursor: not-allowed;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    }
 
-            .checkbox-container input {
-                position: absolute;
-                opacity: 0;
-                cursor: not-allowed;
-                height: 0;
-                width: 0;
-            }
+    .checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: not-allowed;
+    height: 0;
+    width: 0;
+    }
 
-        .checkmark {
-            position: absolute;
-            left: 0;
-            height: 20px;
-            width: 20px;
-            background-color: var(--clr-surface);
-            border: 1px solid var(--clr-border);
-            border-radius: 3px;
-        }
+    .checkmark {
+    position: absolute;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: 3px;
+    }
 
-        .status-none .checkmark {
-            background-color: #e0e0e0;
-        }
+    .status-none .checkmark {
+    background-color: #e0e0e0;
+    }
 
-        .status-absent .checkmark {
-            background-color: #ffcdd2;
-        }
+    .status-absent .checkmark {
+    background-color: #ffcdd2;
+    }
 
-            .status-absent .checkmark:after {
-                content: "✕";
-                position: absolute;
-                display: block;
-                left: 2px;
-                top: -2px;
-                color: #d32f2f;
-                font-weight: bold;
-            }
+    .status-absent .checkmark:after {
+    content: "✕";
+    position: absolute;
+    display: block;
+    left: 2px;
+    top: -2px;
+    color: #d32f2f;
+    font-weight: bold;
+    }
 
-        .status-attended .checkmark {
-            background-color: #c8e6c9;
-        }
+    .status-attended .checkmark {
+    background-color: #c8e6c9;
+    }
 
-            .status-attended .checkmark:after {
-                content: "✓";
-                position: absolute;
-                display: block;
-                left: 2px;
-                top: -2px;
-                color: #388e3c;
-                font-weight: bold;
-            }
-    </style>
+    .status-attended .checkmark:after {
+    content: "✓";
+    position: absolute;
+    display: block;
+    left: 2px;
+    top: -2px;
+    color: #388e3c;
+    font-weight: bold;
+    }
+</style>
 }
 
 <div class="col-12">
@@ -505,32 +505,35 @@
                     {
                         <div class="session-time">
                             <div class="day-circle">
-                                @switch ((int)(session.WeekDay!))
+                                @if (session.WeekDay != null)
                                 {
-                                    case 1:
-                                        <div class="day-circle">SAT</div>
-                                        break;
-                                    case 2:
-                                        <div class="day-circle">SUN</div>
-                                        break;
-                                    case 4:
-                                        <div class="day-circle">MON</div>
-                                        break;
-                                    case 8:
-                                        <div class="day-circle">TUE</div>
-                                        break;
-                                    case 16:
-                                        <div class="day-circle">WED</div>
-                                        break;
-                                    case 32:
-                                        <div class="day-circle">THU</div>
-                                        break;
-                                    case 64:
-                                        <div class="day-circle">FRI</div>
-                                        break;
-                                    default:
-                                        <div class="day-circle"> - </div>
-                                        break;
+                                    @switch ((int)(session.WeekDay!))
+                                    {
+                                        case 1:
+                                            <div class="day-circle">SAT</div>
+                                            break;
+                                        case 2:
+                                            <div class="day-circle">SUN</div>
+                                            break;
+                                        case 4:
+                                            <div class="day-circle">MON</div>
+                                            break;
+                                        case 8:
+                                            <div class="day-circle">TUE</div>
+                                            break;
+                                        case 16:
+                                            <div class="day-circle">WED</div>
+                                            break;
+                                        case 32:
+                                            <div class="day-circle">THU</div>
+                                            break;
+                                        case 64:
+                                            <div class="day-circle">FRI</div>
+                                            break;
+                                        default:
+                                            <div class="day-circle"> - </div>
+                                            break;
+                                    }
                                 }
                             </div>
                             <div>@session.StartTime - @session.EndTime</div>
@@ -576,8 +579,9 @@
             </div>
 
             @{
-                int percentageOfStudents = Model.CurrentStudents / Model.MaxStudents;
+                var percentageOfStudents = ((decimal)Model.CurrentStudents / Model.MaxStudents) * 100;
             }
+
             <div class="students-count mt-4">
                 <div class="students-progress" style="width: @percentageOfStudents%;"></div>
             </div>
@@ -612,25 +616,54 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Attendance (Last 5 Classes)</th>
-                    <th>Latest Exam Score</th>
+                    <th>Last HomeWork Grade</th>
+                    <th>Last Classwork Grade</th>
+
                 </tr>
             </thead>
             <tbody>
-                @foreach (var student in Model?.Students!)
+                @foreach (var student in Model?.GroupAttendanceVM!)
                 {
                     <tr>
-                        <td>@student.AppUser?.FirstName @student.AppUser?.LastName</td>
-                        <td class="email">@student.AppUser?.Email</td>
+                        <td>@student.StudentName</td>
+                        <td class="email">@student.Email</td>
                         <td>
                             <div class="attendance-container">
-                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
-                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
-                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
-                                <label class="checkbox-container status-absent"><input type="checkbox" disabled><span class="checkmark"></span></label>
-                                <label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+
+								@if (student.LastFiveAttendencies == null || student.LastFiveAttendencies.Count() <= 0)
+								{
+									<label class="checkbox-container status-none"><input type="checkbox" disabled><span class="checkmark"></span></label>
+									<label class="checkbox-container status-none"><input type="checkbox" disabled><span class="checkmark"></span></label>
+									<label class="checkbox-container status-none"><input type="checkbox" disabled><span class="checkmark"></span></label>
+									<label class="checkbox-container status-none"><input type="checkbox" disabled><span class="checkmark"></span></label>
+									<label class="checkbox-container status-none"><input type="checkbox" disabled><span class="checkmark"></span></label>
+								}
+								else
+								{
+									foreach (var attendance in student.LastFiveAttendencies)
+									{
+										if (attendance.HasAttended == true)
+										{
+											<label class="checkbox-container status-attended"><input type="checkbox" checked disabled><span class="checkmark"></span></label>
+										}
+										else
+										{
+											<label class="checkbox-container status-absent"><input type="checkbox" disabled><span class="checkmark"></span></label>
+										}
+									}
+									if (student.LastFiveAttendencies.Count() < 5)
+									{
+										for (int i = student.LastFiveAttendencies.Count(); i < 5; i++)
+										{
+											<label class="checkbox-container status-none"><input type="checkbox" disabled><span class="checkmark"></span></label>
+										}
+									}
+								}
                             </div>
                         </td>
-                        <td class="exam-score high-score">92</td>
+                        <td class="exam-score high-score">@student.LastHomeWorkGrade</td>
+                        <td class="exam-score high-score">@student.LastClassWorkGrade</td>
+
                     </tr>
                 }
 
