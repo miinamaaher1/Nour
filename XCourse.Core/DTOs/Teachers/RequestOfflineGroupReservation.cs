@@ -13,13 +13,16 @@ namespace XCourse.Core.DTOs.Teachers
     public class RequestOfflineGroupReservation
     {
         public int TeacherId { get; set; }
-        public string Governorate { get; set; }
+        public string? Governorate { get; set; }
         public Year YearId { get; set; }
         public Semester SemesterId { get; set; }
         public int CenterId { get; set; }
         public int SubjectId { get; set; }
         public int NumberOfSessions { get; set; }
         public int Capacity { get; set; }
+        public bool IsGirlsOnly { get; set; }
+        public bool IsPrivate { get; set; }
+        public decimal PricePerSession { get; set; }
         public List<SessionDetailsRequest> Sessions { get; set; } = new List<SessionDetailsRequest>();
     }
 

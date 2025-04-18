@@ -17,7 +17,8 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             this._groupService = groupService;
         }
 
-        public IActionResult Create()
+        // Group Creation 
+        public IActionResult CreateOffline()
         {
             return View();
         }
@@ -25,12 +26,12 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         {
             return View();
         }
-
         public IActionResult CreateOnline()
         {
             return View();
         }
 
+        // Group Details 
         public async Task<IActionResult> Index()
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -44,43 +45,17 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return View(groupDetailsVM);
         }
 
-        // JSON Actions
-        [HttpPost]
-        public async Task<IActionResult> Centers([FromBody] RequestCenterDto request)
-        {
-            var centers = await _groupService.GetAllCentersPerGovernorate(request.Governorate);
-            return Ok(centers);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Rooms([FromBody] RequestRoomDto request)
-        {
-            if (request == null)
-            {
-                return BadRequest("Invalid request payload");
-            }
 
-            var rooms = await _groupService.GetAllAvailableRooms(request);
-            return Ok(rooms);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Subjects ([FromBody] RequestSubjectDto request)
-        {
-            var subjects = await _groupService.GetMatchingSubjects(request);
-            return Ok(subjects);
-        }
 
-        [HttpPost]
-        public async Task<IActionResult> AllSubjects([FromBody] RequestSubjectDto request)
-        {
-            var subjects = await _groupService.GetAllSubjects(request);
-            return Ok(subjects);
-        }
+        // Reservation endpoints
         [HttpPost]
         public async Task<IActionResult> ReserveGroupInCenter([FromBody] RequestOfflineGroupReservation request)
         {
-            Console.WriteLine($"Received Request: {JsonSerializer.Serialize(request)}");
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            request.TeacherId = teacher.ID;
             var result = await _groupService.ReserveAnOfflineGroupInCenter(request);
-            return Ok(result);
+            return Json(result);
         }
 
         [HttpPost]
@@ -104,9 +79,40 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         }
 
 
-
-
         // Utils
+        [HttpPost]
+        public async Task<IActionResult> Centers([FromBody] RequestCenterDto request)
+        {
+            var centers = await _groupService.GetAllCentersPerGovernorate(request.Governorate);
+            return Ok(centers);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Rooms([FromBody] RequestRoomDto request)
+        {
+            if (request == null)
+            {
+                return BadRequest("Invalid request payload");
+            }
+
+            var rooms = await _groupService.GetAllAvailableRooms(request);
+            return Ok(rooms);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Subjects([FromBody] RequestSubjectDto request)
+        {
+            //var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            //Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            //request.TeacherId = teacher.ID;
+            request.TeacherId = 1;
+            var subjects = await _groupService.GetMatchingSubjects(request);
+            return Ok(subjects);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AllSubjects([FromBody] RequestSubjectDto request)
+        {
+            var subjects = await _groupService.GetAllSubjects(request);
+            return Ok(subjects);
+        }
         [HttpPost]
         public async Task<bool> InsertAnnouncement([FromBody]RequestAnnouncement request)
         {

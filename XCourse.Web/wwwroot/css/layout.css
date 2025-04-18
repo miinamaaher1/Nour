@@ -127,6 +127,10 @@ body {
     border-radius: 15px;
 }
 
+.modebar.expanded {
+    left: 295px;
+}
+
 /* Sidebar Styles */
 .sidebar {
     width: 300px;
@@ -189,12 +193,12 @@ body {
 .logo-text {
     margin-left: 10px;
     transition: opacity 0.3s ease;
-    font-weight: bold !important;
+    height: 24px;
 }
 
 .sidebar.collapsed .logo-text {
     opacity: 0;
-    width: 0;
+    height: 0;
 }
 
 .toggle-btn {
@@ -206,9 +210,9 @@ body {
     transition: color 0.3s ease;
 }
 
-    .toggle-btn:hover {
-        color: var(--clr-primary);
-    }
+.toggle-btn:hover {
+    color: var(--clr-primary);
+}
 
 .nav-menu {
     list-style: none;
@@ -242,21 +246,22 @@ button.nav-link {
     white-space: nowrap;
     width: 100%;
 }
-    .nav-link:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-        color: var(--clr-primary);
-    }
+.nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--clr-primary);
+}
 
-    .nav-link.active {
-        background-color: var(--clr-accent);
-        color: var(--clr-text-on-accent);
-    }
+.nav-link.active {
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+}
 
 .nav-icon {
     font-size: 1.2rem;
     min-width: 30px;
     display: flex;
     justify-content: center;
+    margin-right: 15px;
 }
 
 .nav-text {
@@ -287,9 +292,9 @@ button.nav-link {
     transition: max-height 0.3s ease;
 }
 
-    .submenu.open {
-        max-height: 500px;
-    }
+.submenu.open {
+    max-height: 500px;
+}
 
 .submenu-item {
     padding-left: 20px;
@@ -305,9 +310,9 @@ button.nav-link {
     font-size: 0.9rem;
 }
 
-    .submenu-link:hover {
-        color: var(--clr-primary);
-    }
+.submenu-link:hover {
+    color: var(--clr-primary);
+}
 
 /* Main Content */
 .main-content {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - XCourse.Web</title>
+    <title>Nour - @ViewData["Title"]</title>
     <script type="importmap"></script>
     <script>
         (function () {
@@ -26,6 +26,7 @@
           }
         })();
     </script>
+    <link id="favicon" rel="icon" type="image/svg+xml" href="~/favicons/favicon-light.svg">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-grid.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
     @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> *@
@@ -39,7 +40,7 @@
         <!-- Sidebar Header (Logo and Toggle Button) -->
         <div class="sidebar-header">
             <div class="logo" id="logo">
-                <span class="logo-text">XCourse</span>
+                <img id="logo-text" class="logo-text" src="~/branding/logo-en-light.svg" width="95px" />
             </div>
             <button class="toggle-btn" id="toggle-sidebar">
                 <i class="fa-solid fa-bars"></i>
@@ -89,7 +90,7 @@
         </ul>
     </nav>
 
-    <div id="map"></div>
+    <div id="map-max"></div>
     <!-- Main Content -->
     <main class="main-content expanded" id="main-content">
         <div class="container-fluid row">
