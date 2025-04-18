@@ -18,8 +18,8 @@ namespace XCourse.Core.Entities
 
         [Column(TypeName = "geography")]
         public Point? Location { get; set; }
-        
-         
+        public string? Description { get; set; }
+
         public Address? Address { get; set; }
 
         [Column(TypeName = "varbinary(MAX)")]
