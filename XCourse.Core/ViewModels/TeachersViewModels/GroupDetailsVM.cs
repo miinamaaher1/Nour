@@ -29,6 +29,6 @@ namespace XCourse.Core.ViewModels.TeachersViewModels
         public virtual Subject? Subject { get; set; }
         public virtual ICollection<Student>? Students { get; set; }
         public virtual ICollection<SessionDeatils>? Sessions { get; set; }
-        public virtual ICollection<Announcement>? Announcements { get; set; }
+        public virtual ICollection<GroupAttendanceVM>? GroupAttendanceVM { get; set; }
     }
 }

@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XCourse.Core.Entities
 {
+    public enum AssistantInvitationStatus
+    {
+        Pending, 
+        Accepted,
+        Rejected
+    }
     public class AssistantInvitation
     {
         [Key]
@@ -17,7 +23,7 @@ namespace XCourse.Core.Entities
         [ForeignKey(nameof(Group))]
         [Display(Name = nameof(Group))]
         public int GroupID { get; set; }
-
+        public AssistantInvitationStatus Status { get; set; }
         public virtual Group? Group { get; set; }
     }
 }

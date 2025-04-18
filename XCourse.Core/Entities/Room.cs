@@ -22,7 +22,7 @@ namespace XCourse.Core.Entities
         public int Capacity { get; set; }
         [EnumDataType(typeof(Equipment))]
         public Equipment Equipment { get; set; }
-
+        public string? Description { get; set; }
         [Display(Name = "Price per Hour")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal PricePerHour { get; set; }

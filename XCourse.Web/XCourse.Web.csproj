@@ -51,13 +51,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Assistants\Data\" />
+    <Folder Include="Areas\Assistants\Models\" />
     <Folder Include="Areas\CenterAdmins\Data\" />
     <Folder Include="Areas\CenterAdmins\Models\" />
     <Folder Include="Areas\Students\Data\" />
     <Folder Include="Areas\Students\Models\" />
     <Folder Include="Areas\Teachers\Controllers\" />
+    <Folder Include="Areas\Teachers\Data\" />
+    <Folder Include="Areas\Teachers\Models\" />
     <Folder Include="Areas\Teachers\Views\" />
-    <Folder Include="wwwroot\js\Students\" />
   </ItemGroup>
 
 </Project>

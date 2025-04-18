@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 {
     public class GroupService : IGroupService
     {
+        private static readonly GeometryFactory _geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         private readonly IUnitOfWork _unitOfWork;
         public GroupService(IUnitOfWork unitOfWork)
         {
@@ -68,8 +71,20 @@ namespace XCourse.Services.Implementations.TeacherServices
         }
         public async Task<IEnumerable<Subject>> GetMatchingSubjects(RequestSubjectDto request)
         {
-            var subjects = await _unitOfWork.Subjects.FindAllAsync(s => s.Year == request.Year && s.Semester == request.Semester);
-            return subjects;
+            var teacherSubjects = await _unitOfWork.Subjects.FindAllAsync(s => s.Teachers!.Any(t => t.ID == request.TeacherId));
+
+            var filteredSubjects = teacherSubjects
+                .Where(s => s.Year == request.Year && s.Semester == request.Semester)
+                .ToList();
+
+            return filteredSubjects;
+
+        }
+        public async Task<IEnumerable<Subject>> GetAllSubjects(RequestSubjectDto request)
+        {
+            var teacherSubjects = await _unitOfWork.Subjects.FindAllAsync(s => s.Teachers!.Any(t => t.ID == request.TeacherId));
+            return teacherSubjects;
+
         }
         public async Task<bool> ReserveAnOfflineGroupInCenter(RequestOfflineGroupReservation request)
         {
@@ -160,6 +175,11 @@ namespace XCourse.Services.Implementations.TeacherServices
             groupDetailsVM.Subject = group.Subject;
             groupDetailsVM.DefaultSessionDays = group.DefaultSessionDays;
             groupDetailsVM.Sessions = new List<SessionDeatils>();
+            groupDetailsVM.Students = group.Students;
+
+            var announcements = await _unitOfWork.Attendances.FindAllAsync(a => a.Session.GroupID == id);
+
+
 
             List<GroupDefaults> groupDefaults = group.GroupDefaults!.ToList();
 
@@ -179,6 +199,33 @@ namespace XCourse.Services.Implementations.TeacherServices
                 groupDetailsVM.Sessions?.Add(sessionDeatils);
             }
             groupDetailsVM.Students = group.Students;
+
+            // Group Attendance Mapping
+            groupDetailsVM.GroupAttendanceVM = new List<GroupAttendanceVM>();
+
+            foreach (var student in group.Students)
+            {
+                var studentAttendances = await _unitOfWork.Attendances
+                    .FindAllAsync(a => a.StudentID == student.ID && a.Session.GroupID == id, ["Session"]);
+
+                var lastFive = studentAttendances
+                    .OrderByDescending(a => a.Session!.StartDateTime)
+                    .Take(5)
+                    .ToList();
+
+                var groupAttendanceVM = new GroupAttendanceVM
+                {
+                    StudentName = student.AppUser?.FirstName + " " + student.AppUser?.LastName ?? "Unknown",
+                    Email = student.AppUser?.Email!,
+                    LastFiveAttendencies = lastFive,
+                    LastClassWorkGrade = lastFive.FirstOrDefault()?.ClassWorkGrade,
+                    LastHomeWorkGrade = lastFive.FirstOrDefault()?.HomeWorkGrade
+                };
+
+                groupDetailsVM.GroupAttendanceVM.Add(groupAttendanceVM);
+            }
+
+
             return groupDetailsVM;
         }
         public async Task<bool> PostAnnouncement(int groupId, int teacherId, string body, bool isImportant, string? title)
@@ -202,12 +249,318 @@ namespace XCourse.Services.Implementations.TeacherServices
                 };
                 announcement.Groups.Add(group);
                 return true;
-                
+
             }
             catch
             {
                 return false;
             }
+        }
+        async public Task<ReserveGroupResponseDTO> ReserveOnlineGroup(ReserveOnlineGroupRequestDTO request)
+        {
+            if (request.TeacherId <= 0)
+            {
+                return new ReserveGroupResponseDTO
+                {
+                    IsValid = false,
+                    Errors = ["Something went wrong! Invalid Teacher Id"]
+                };
+            }
+            var response = new ReserveGroupResponseDTO();
+            response.IsValid = true;
+            response.Errors = new List<string>();
+
+            var teacher = await _unitOfWork.Teachers.FindAsync(t => t.ID == request.TeacherId, ["Subjects"]);
+            var validationResponse = ValidateOnlineGroupRequest(request, teacher);
+
+            if (!validationResponse.IsValid)
+                return validationResponse;
+
+            // Creating the group 
+            Group onlineGroup = new Group();
+
+            // Assigning properties
+            onlineGroup.SubjectID = request.SubjectId;
+            onlineGroup.Address = null;
+            onlineGroup.IsPrivate = request.IsPrivate;
+            onlineGroup.IsGirlsOnly = request.IsGirlsOnly;
+            onlineGroup.IsActive = true;
+            onlineGroup.CurrentStudents = 0;
+            onlineGroup.TeacherID = request.TeacherId;
+            onlineGroup.PricePerSession = request.PricePerSession;
+            onlineGroup.MaxStudents = request.MaxNumberOfStudents;
+
+
+            // Reserving sessions 
+            onlineGroup.Sessions = new List<Session>();
+            foreach (var defaultSession in request.DefaultSessionResrvations!)
+            {
+                DateOnly current = request.StartDate;
+
+                while (!MatchesWeekDay(current, defaultSession.WeekDay))
+                {
+                    current = current.AddDays(1);
+                }
+
+                while (current <= request.EndDate)
+                {
+                    var session = new Session
+                    {
+                        StartDateTime = current.ToDateTime(defaultSession.StartTime),
+                        EndDateTime = current.ToDateTime(defaultSession.EndTime),
+                        Duration = defaultSession.EndTime.ToTimeSpan() - defaultSession.StartTime.ToTimeSpan(),
+                        Location = null,
+                        IsOnline = true,
+                        Address = null
+                    };
+
+                    onlineGroup.Sessions.Add(session);
+                    current = current.AddDays(7);
+                }
+            }
+
+            try
+            {
+                await _unitOfWork.Groups.AddAsync(onlineGroup);
+                await _unitOfWork.SaveAsync();
+            }
+            catch
+            {
+                return new ReserveGroupResponseDTO()
+                {
+                    IsValid = false,
+                    Errors = ["Something went wrong while saving the data! try again later"]
+                };
+            }
+
+            return response;
+        }
+        async public Task<ReserveGroupResponseDTO> ReserveOfflineLocalGroup(ReserveOfflineLocalGroupRequestDTO request)
+        {
+            if (request.TeacherId <= 0)
+            {
+                return new ReserveGroupResponseDTO
+                {
+                    IsValid = false,
+                    Errors = ["Something went wrong! Invalid Teacher Id"]
+                };
+            }
+            Point? parsedLocation = ParseLocation(request.Location);
+            if (parsedLocation == null)
+            {
+                return new ReserveGroupResponseDTO
+                {
+                    IsValid = false,
+                    Errors = ["Invalid Location please choose your location again!"]
+                };
+            }
+
+            var response = new ReserveGroupResponseDTO();
+            response.IsValid = true;
+            response.Errors = new List<string>();
+
+            var teacher = await _unitOfWork.Teachers.FindAsync(t => t.ID == request.TeacherId, ["Subjects"]);
+            var validationResponse = ValidateOfflinLocalGroupRequest(request, teacher);
+
+            if (validationResponse is not { IsValid: true })
+            {
+                return new ReserveGroupResponseDTO
+                {
+                    IsValid = false,
+                    Errors = validationResponse?.Errors ?? ["Validation failed"]
+                };
+            }
+
+            // Creating the group 
+            Group offlineLocalGroup = new Group();
+
+            // Assigning properties
+            offlineLocalGroup.IsOnline = false;
+            offlineLocalGroup.SubjectID = request.SubjectId;
+            offlineLocalGroup.Address = new Address
+            {
+                Street = request.Street,
+                City = request.City,
+                Governorate = request.Governorate,
+                Neighborhood = request.Neighborhood
+            };
+            offlineLocalGroup.Location = parsedLocation;
+            offlineLocalGroup.IsPrivate = request.IsPrivate;
+            offlineLocalGroup.IsGirlsOnly = request.IsGirlsOnly;
+            offlineLocalGroup.IsActive = true;
+            offlineLocalGroup.CurrentStudents = 0;
+            offlineLocalGroup.TeacherID = request.TeacherId;
+            offlineLocalGroup.PricePerSession = request.PricePerSession;
+            offlineLocalGroup.MaxStudents = request.MaxNumberOfStudents;
+
+
+            // Reserving sessions 
+            offlineLocalGroup.Sessions = new List<Session>();
+            foreach (var defaultSession in request.DefaultSessionResrvations!)
+            {
+                DateOnly current = request.StartDate;
+
+                while (!MatchesWeekDay(current, defaultSession.WeekDay))
+                {
+                    current = current.AddDays(1);
+                }
+
+                while (current <= request.EndDate)
+                {
+                    var session = new Session
+                    {
+                        StartDateTime = current.ToDateTime(defaultSession.StartTime),
+                        EndDateTime = current.ToDateTime(defaultSession.EndTime),
+                        Duration = defaultSession.EndTime.ToTimeSpan() - defaultSession.StartTime.ToTimeSpan(),
+                        Location = parsedLocation,
+                        IsOnline = false,
+                        Address = new Address
+                        {
+                            Street = request.Street,
+                            City = request.City,
+                            Governorate = request.Governorate,
+                            Neighborhood = request.Neighborhood
+                        }
+                    };
+
+                    offlineLocalGroup.Sessions.Add(session);
+                    current = current.AddDays(7);
+                }
+            }
+
+            try
+            {
+                await _unitOfWork.Groups.AddAsync(offlineLocalGroup);
+                await _unitOfWork.SaveAsync();
+            }
+            catch
+            {
+                return new ReserveGroupResponseDTO()
+                {
+                    IsValid = false,
+                    Errors = ["Something went wrong while saving the data! try again later"]
+                };
+            }
+
+            return response;
+        }
+
+        // Utils methods
+        private bool MatchesWeekDay(DateOnly date, WeekDay weekDays)
+        {
+            var day = date.DayOfWeek switch
+            {
+                DayOfWeek.Saturday => WeekDay.Saturday,
+                DayOfWeek.Sunday => WeekDay.Sunday,
+                DayOfWeek.Monday => WeekDay.Monday,
+                DayOfWeek.Tuesday => WeekDay.Tuesday,
+                DayOfWeek.Wednesday => WeekDay.Wednesday,
+                DayOfWeek.Thursday => WeekDay.Thursday,
+                DayOfWeek.Friday => WeekDay.Friday,
+                _ => WeekDay.None
+            };
+
+            return (weekDays & day) != 0;
+        }
+        private ReserveGroupResponseDTO ValidateOnlineGroupRequest(ReserveOnlineGroupRequestDTO request, Teacher? teacher)
+        {
+            var errors = new List<string>();
+
+            if (request.DefaultSessionResrvations == null ||
+                request.DefaultSessionResrvations.Count != request.NumberOfSessionsPerWeek)
+                errors.Add("Number of sessions per week doesn't match the sessions data");
+
+            if (request.StartDate >= request.EndDate)
+                errors.Add("End date can't be before the start date");
+
+            if (request.StartDate < DateOnly.FromDateTime(DateTime.Now))
+                errors.Add("Start date can't be in the past");
+
+            if (request.EndDate <= DateOnly.FromDateTime(DateTime.Now))
+                errors.Add("End date can't be before or equal to today");
+
+            if (request.MaxNumberOfStudents <= 0)
+                errors.Add("Group should allow at least one student");
+
+            if (teacher == null)
+                errors.Add("Teacher not found");
+
+            if (teacher?.Subjects?.Any(s => s.ID == request.SubjectId) == false)
+                errors.Add("Teacher doesn't have access to this subject");
+
+            return new ReserveGroupResponseDTO
+            {
+                IsValid = errors.Count == 0,
+                Errors = errors
+            };
+        }
+        private ReserveGroupResponseDTO ValidateOfflinLocalGroupRequest(ReserveOfflineLocalGroupRequestDTO request, Teacher? teacher)
+        {
+            var errors = new List<string>();
+            if (request.Governorate == null || request.Governorate == "")
+            {
+                errors.Add("Governorate can't be empty please provide the governorate");
+            }
+            if (request.City == null || request.City == "")
+            {
+                errors.Add("City can't be empty please provide the city");
+            }
+            if (request.Street == null || request.Street == "")
+            {
+                errors.Add("Street can't be empty please provide the street");
+            }
+
+            if (request.Street == null || request.Street == "")
+            {
+                errors.Add("Street can't be empty please provide the street");
+            }
+
+            if (request.DefaultSessionResrvations == null ||
+                request.DefaultSessionResrvations.Count != request.NumberOfSessionsPerWeek)
+                errors.Add("Number of sessions per week doesn't match the sessions data");
+
+            if (request.StartDate >= request.EndDate)
+                errors.Add("End date can't be before the start date");
+
+            if (request.StartDate < DateOnly.FromDateTime(DateTime.Now))
+                errors.Add("Start date can't be in the past");
+
+            if (request.EndDate <= DateOnly.FromDateTime(DateTime.Now))
+                errors.Add("End date can't be before or equal to today");
+
+            if (request.MaxNumberOfStudents <= 0)
+                errors.Add("Group should allow at least one student");
+
+            if (teacher == null)
+                errors.Add("Teacher not found");
+
+            if (teacher?.Subjects?.Any(s => s.ID == request.SubjectId) == false)
+                errors.Add("Teacher doesn't have access to this subject");
+
+            return new ReserveGroupResponseDTO
+            {
+                IsValid = errors.Count == 0,
+                Errors = errors
+            };
+        }
+
+        private Point? ParseLocation(string? locationString)
+        {
+            if (string.IsNullOrWhiteSpace(locationString))
+                return null;
+
+            var parts = locationString.Split(',');
+
+            if (parts.Length != 2)
+                return null;
+
+            if (double.TryParse(parts[0].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out double latitude) &&
+                double.TryParse(parts[1].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out double longitude))
+            {
+                return _geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
+            }
+
+            return null;
         }
 
     }

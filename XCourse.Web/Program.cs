@@ -8,10 +8,12 @@ using Xcourse.Infrastructure.Repositories;
 using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
+using XCourse.Infrastructure.Repositories;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
 using XCourse.Web.ServicesCollections;
-
+using XCourse.Services.Implementations.SubjectServices;
+using XCourse.Services.Interfaces.SubjectServices;
 namespace XCourse.Web
 {
     public class Program
@@ -73,6 +75,8 @@ namespace XCourse.Web
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
+            builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
+            builder.Services.AddScoped<ISubjectService, SubjectService>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -92,6 +96,11 @@ namespace XCourse.Web
             app.MapStaticAssets();
 
             app.MapRazorPages();
+
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Subject}/{action=Index}"
+            ).WithStaticAssets();
 
             app.MapControllerRoute(
                 name: "areas",
