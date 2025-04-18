@@ -1,0 +1,739 @@
+﻿@using XCourse.Core.ViewModels.PaymentViewModels
+@model PaymentDetailsVM
+@{
+    ViewData["Title"] = "Top Up Wallet";
+    var toast = Model.Toast;
+    int maxTransactionsToShow = 3; // Constant number of transactions to display
+}
+
+<div class="container col-10">
+    <div class="wallet-header">
+        <h1>Wallet</h1>
+        <p class="wallet-subtitle">Manage your wallet balance</p>
+    </div>
+
+    <div class="wallet-card">
+        <div class="wallet-info">
+            <div class="user-details">
+                <h2>@Model.UserName</h2>
+                <p class="username-subtitle">Account holder</p>
+            </div>
+            <div class="balance-container">
+                <span class="balance-label">Current Balance</span>
+                <div class="balance-amount">
+                    <span class="currency">LE</span>
+                    <span class="amount">@Model.Balance.ToString("N2")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wallet-content-layout">
+        <div class="top-up-section col-6">
+            <h2>Top Up Your Wallet</h2>
+
+            @using (Html.BeginForm("TopUpWallet", "Payment", FormMethod.Post, new { @class = "top-up-form" }))
+            {
+                <div class="form-group">
+                    <label for="amount">Amount to add:</label>
+                    <div class="input-container">
+                        <span class="currency-symbol">LE</span>
+                        <input type="number" id="amount" name="amount" min="5" step="0.01" required placeholder="0.00" class="amount-input" />
+                    </div>
+                </div>
+
+                <div class="quick-amounts">
+                    <button type="button" class="quick-amount-btn" data-amount="100">100 LE</button>
+                    <button type="button" class="quick-amount-btn" data-amount="200">200 LE</button>
+                    <button type="button" class="quick-amount-btn" data-amount="400">400 LE</button>
+                    <button type="button" class="quick-amount-btn" data-amount="1000">1000 LE</button>
+                </div>
+
+                <button type="submit" class="top-up-btn">
+                    <i class="fa fa-credit-card"></i> Top Up Wallet
+                </button>
+            }
+        </div>
+
+        <div class="transaction-history col-4">
+            <h2>Transaction History</h2>
+
+            @if (Model.PaymentHistory != null && Model.PaymentHistory.Any())
+            {
+                <div class="transaction-list">
+                    @foreach (var transaction in Model.PaymentHistory.OrderByDescending(t => t.Date).Take(maxTransactionsToShow))
+                    {
+                        <div class="transaction-item">
+                            <div class="transaction-details">
+                                <span class="transaction-type @transaction.Status.ToString().ToLower()">
+                                    @transaction.Status
+                                </span>
+                                <span class="transaction-date">@transaction.Date.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                            <div class="transaction-amount @(transaction.Amount > 0 ? "positive" : "negative")">
+                                @(transaction.Amount > 0 ? "+" : "")LE @Math.Abs(transaction.Amount).ToString("N2")
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.PaymentHistory.Count > maxTransactionsToShow)
+                {
+                    <div class="view-more">
+                        <button class="view-more-btn" id="viewAllTransactionsBtn">View All Transactions</button>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-transactions">
+                    <i class="fa fa-receipt empty-icon"></i>
+                    <p>No transaction history available</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Modal -->
+<div id="transactionsModal" class="transactions-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>All Transactions</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            @if (Model.PaymentHistory != null && Model.PaymentHistory.Any())
+            {
+                <div class="transactions-list">
+                    @foreach (var transaction in Model.PaymentHistory.OrderByDescending(t => t.Date))
+                    {
+                        <div class="transaction-item">
+                            <div class="transaction-details">
+                                <span class="transaction-type @transaction.Status.ToString().ToLower()">
+                                    @transaction.Status
+                                </span>
+                                <span class="transaction-date">@transaction.Date.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                            <div class="transaction-amount @(transaction.Amount > 0 ? "positive" : "negative")">
+                                @(transaction.Amount > 0 ? "+" : "")LE @Math.Abs(transaction.Amount).ToString("N2")
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-transactions">
+                    <i class="fa fa-receipt empty-icon"></i>
+                    <p>No transaction history available</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+@section Styles {
+
+    <style>
+        /* Container styling */
+        .wallet-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header styling */
+        .wallet-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+            .wallet-header h1 {
+                color: var(--clr-primary);
+                font-size: 2.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+        .wallet-subtitle {
+            color: var(--clr-text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Wallet card styling */
+        .wallet-card {
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--clr-border);
+        }
+
+        .wallet-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-details h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--clr-text-primary);
+        }
+
+        .username-subtitle {
+            color: var(--clr-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .balance-container {
+            text-align: right;
+        }
+
+        .balance-label {
+            display: block;
+            color: var(--clr-text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--clr-primary);
+        }
+
+        .currency {
+            font-size: 1.8rem;
+            vertical-align: top;
+            margin-right: 0.2rem;
+        }
+
+        /* Layout for side-by-side content */
+        .wallet-content-layout {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Top up section styling */
+        .top-up-section {
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid var(--clr-border);
+            flex: 1;
+            min-width: 300px;
+        }
+
+            .top-up-section h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+                color: var(--clr-primary);
+            }
+
+        .top-up-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+            .form-group label {
+                font-weight: 500;
+                color: var(--clr-text-primary);
+            }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 1rem;
+            font-size: 1.2rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .amount-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 2.5rem;
+            font-size: 1.2rem;
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+        }
+
+            .amount-input:focus {
+                outline: none;
+                border-color: var(--clr-primary);
+                box-shadow: 0 0 0 2px rgba(93, 42, 102, 0.2);
+            }
+
+        .quick-amounts {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-amount-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 0.75rem;
+            background-color: var(--clr-background);
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            color: var(--clr-text-primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .quick-amount-btn:hover {
+                background-color: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+                border-color: var(--clr-accent);
+            }
+
+        .top-up-btn {
+            padding: 1rem;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+            .top-up-btn:hover {
+                background-color: #4a2152; /* Slightly darker shade of primary */
+            }
+
+        /* Transaction history styling */
+        .transaction-history {
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid var(--clr-border);
+            min-width: 300px;
+            max-height: 550px;
+            overflow-y: auto;
+        }
+
+            .transaction-history h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+                color: var(--clr-primary);
+            }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background-color: var(--clr-background);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--clr-border);
+        }
+
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .transaction-type {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+            .transaction-type.credit,
+            .transaction-type.topup {
+                color: #2e7d32; /* Green for credit/topup */
+            }
+
+            .transaction-type.debit,
+            .transaction-type.withdrawal {
+                color: #c62828; /* Red for debit/withdrawal */
+            }
+
+        .transaction-date {
+            color: var(--clr-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 1.2rem;
+            align-self: center;
+        }
+
+            .transaction-amount.positive {
+                color: #2e7d32; /* Green for positive */
+            }
+
+            .transaction-amount.negative {
+                color: #c62828; /* Red for negative */
+            }
+
+        .empty-transactions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            opacity: 0.6;
+        }
+
+        /* View more button */
+        .view-more {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .view-more-btn {
+            background-color: transparent;
+            color: var(--clr-primary);
+            border: 1px solid var(--clr-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .view-more-btn:hover {
+                background-color: var(--clr-primary);
+                color: var(--clr-text-on-primary);
+            }
+
+        /* Toast styling */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .toast-success {
+            background-color: #e8f5e9;
+            border-left: 4px solid #2e7d32;
+            color: #1b5e20;
+        }
+
+        .toast-error {
+            background-color: #ffebee;
+            border-left: 4px solid #c62828;
+            color: #b71c1c;
+        }
+
+        @@keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @@keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 992px) {
+            .wallet-content-layout {
+                flex-direction: column;
+            }
+
+            .transaction-history {
+                max-height: none;
+            }
+
+          
+        }
+
+        @@media (max-width: 768px) {
+            .wallet-info {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .balance-container, .user-details {
+                text-align: center;
+                width: 100%;
+            }
+
+            .quick-amounts {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        /* Transactions Modal Styling */
+        .transactions-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: var(--clr-surface);
+            margin: 5% auto;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            color: var(--clr-text-primary);
+            animation: modalSlideIn 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            background-color: var(--clr-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--modal-secondary, #7E69AB);
+        }
+
+            .modal-header h2 {
+                margin: 0;
+                color: var(--modal-text, #FFFFFF);
+                font-size: 1.8rem;
+            }
+
+        .close-modal {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--modal-text, #FFFFFF);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+            .close-modal:hover {
+                color: var(--modal-highlight, #D6BCFA);
+            }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(80vh - 80px);
+        }
+
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+            .transactions-list .transaction-item {
+                background-color:var(--clr-background);
+                border-left: 4px solid var(--clr-primary);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+                .transactions-list .transaction-item:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                }
+
+        .modal-show {
+            display: block;
+        }
+
+        @@keyframes modalSlideIn {
+            from
+
+        {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        }
+
+        /* Additional responsive styles for modal */
+        @@media (max-width: 992px) {
+            .modal-content
+
+        {
+            width: 95%;
+            margin: 5% auto;
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .modal-header h2
+
+        {
+            font-size: 1.5rem;
+        }
+
+        }
+
+
+    </style>
+
+}
+
+@section Scripts {
+    <script>
+        // Handle quick amount buttons
+        document.querySelectorAll('.quick-amount-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                document.getElementById('amount').value = this.dataset.amount;
+            });
+        });
+
+        // Check for toast messages
+        document.addEventListener('DOMContentLoaded', function () {
+            const toast = "@toast".toLowerCase(); // embed the Razor variable
+
+            if (toast === "success") {
+                showSuccessToast('Success', 'Your wallet was topped up successfully!', 5);
+            } else if (toast === "error") {
+                showErrorToast('Error', 'There was a problem processing your top-up. Please try again.', 5);
+            }
+                   // Set up modal functionality
+            setupTransactionsModal();
+        });
+
+        // Function to set up transactions modal
+        function setupTransactionsModal() {
+            const modal = document.getElementById('transactionsModal');
+            const btn = document.getElementById('viewAllTransactionsBtn');
+            const closeBtn = document.querySelector('.close-modal');
+
+            // Open modal when View All Transactions button is clicked
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    modal.classList.add('modal-show');
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                });
+            }
+
+            // Close modal when close button is clicked
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    modal.classList.remove('modal-show');
+                    document.body.style.overflow = ''; // Restore scrolling
+                });
+            }
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.classList.remove('modal-show');
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
+
+            // Close modal with ESC key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('modal-show')) {
+                    modal.classList.remove('modal-show');
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
+        }
+
+        // Function to show success toast
+        function showSuccessToast(title, message, duration = 5000) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-success';
+            toast.innerHTML = `<i class="fa fa-check-circle"></i> <strong>${title}</strong>: ${message}`;
+            toastContainer.appendChild(toast);
+
+            // Auto-remove after duration
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, duration);
+        }
+
+        // Function to show error toast
+        function showErrorToast(title, message, duration = 5000) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast toast-error';
+            toast.innerHTML = `<i class="fa fa-exclamation-circle"></i> <strong>${title}</strong>: ${message}`;
+            toastContainer.appendChild(toast);
+
+            // Auto-remove after duration
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, duration);
+        }
+    </script>
+}
