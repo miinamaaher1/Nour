@@ -10,12 +10,14 @@ const themeLight = document.getElementById('theme-light');
 const themeDark = document.getElementById('theme-dark');
 const themeSystem = document.getElementById('theme-system');
 const modeBar = document.getElementById('modebar');
+const favicon = document.getElementById('favicon');
+const logoText = document.getElementById('logo-text');
 
 // Toggle sidebar collapse
 toggleBtn.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
     mainContent.classList.toggle('expanded');
-
+    modeBar.classList.toggle('expanded')
     // For mobile
     sidebar.classList.toggle('mobile-open');
     mainContent.classList.toggle('mobile-expanded');
@@ -45,6 +47,8 @@ function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     modeBar.classList.add('d-none');
+    favicon.href = `/favicons/favicon-${theme}.svg`;
+    logoText.src = `/branding/logo-en-${theme}.svg`;
 }
 
 function applyLightTheme() {
@@ -82,23 +86,19 @@ onload = () => {
     const mode = localStorage.getItem('mode');
     if (mode) {
         if (mode == 'system') {
-            themeToggle.innerHTML = `<i class="fa-solid fa-laptop nav-icon"></i>
-                                <span class="nav-text">Toggle Theme</span>`;
+            applySystemTheme();
         } else {
             const theme = localStorage.getItem('theme');
             if (theme) {
                 if (theme == 'dark') {
-                    themeToggle.innerHTML = `<i class="fa-solid fa-moon nav-icon"></i>
-                                <span class="nav-text">Toggle Theme</span>`;
+                    applyDarkTheme();
                 }
             } else {
-                themeToggle.innerHTML = `<i class="fa-solid fa-sun nav-icon"></i>
-                                <span class="nav-text">Toggle Theme</span>`;
+                applyLightTheme();
             }
         }
     } else {
-        themeToggle.innerHTML = `<i class="fa-solid fa-sun nav-icon"></i>
-                                <span class="nav-text">Toggle Theme</span>`;
+        applyLightTheme();
     }
 }
 
