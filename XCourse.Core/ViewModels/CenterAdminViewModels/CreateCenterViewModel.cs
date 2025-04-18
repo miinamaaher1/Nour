@@ -15,8 +15,9 @@ namespace XCourse.Core.ViewModels.CenterAdminViewModels
         [Key]
        public int CenterAdminid{set;get;}
         public int CenterID { set; get; }
+        [MaxLength(80, ErrorMessage = "Number of characters for center's name must be less than or equal 80")]
+        [Display(Name = "Center's Name")]
         public string Name { get; set; }
-        public string? Key { set; get; }
 
         public bool IsGirlsOnly { get; set; }
 

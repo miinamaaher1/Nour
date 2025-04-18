@@ -13,7 +13,7 @@ namespace XCourse.Core.DTOs.CenterAdmins
         [Key]
         public int CenterId { get; set; }
         public int RoomId { set; get; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         public int Capacity { get; set; }
         [EnumDataType(typeof(Equipment))]

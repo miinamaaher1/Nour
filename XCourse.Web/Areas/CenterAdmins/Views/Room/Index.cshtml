@@ -60,6 +60,10 @@
                     <a asp-action="Delete" asp-route-id="@item.RoomId" class="btn btn-outline-danger btn-sm">
                         Delete
                     </a>
+
+                    <a asp-controller="Reservation" asp-action="IndexForReservations" asp-route-id="@item.RoomId" class="btn btn-outline-danger btn-sm">
+                        Reservations
+                    </a>
                 </td>
             </tr>
         }
