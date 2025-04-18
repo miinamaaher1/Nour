@@ -110,6 +110,12 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 if (Regex.IsMatch(Input.UserName, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
                 {
                     var user = await _userManager.FindByEmailAsync(Input.UserName);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Incorrect username or password.");
+                        return Page();
+                    }
+
                     result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 }
                 else
@@ -134,7 +140,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Incorrect username or password.");
                     return Page();
                 }
             }

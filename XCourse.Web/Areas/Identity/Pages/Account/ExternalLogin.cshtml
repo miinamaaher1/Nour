@@ -14,8 +14,10 @@
         <div class="form-container">
             <h1 class="form-header">@ViewData["Title"]</h1>
             <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <input asp-for="Input.AccountType" hidden value="@Model.AccountType" />
+                <div class="form-group">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                </div>
                 <div class="form-group">
                     <p id="external-login-description">
                         You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.

@@ -1,0 +1,642 @@
+﻿@model XCourse.Core.Entities.Session
+
+@section Styles {
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Cover Section */
+        .cover-section {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .cover-image {
+            width: 100%;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+            .cover-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .info-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--clr-surface);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            .card h3 {
+                color: var(--clr-primary);
+                margin-bottom: 15px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid var(--clr-accent);
+            }
+
+            .card .info-row {
+                display: flex;
+                padding: 8px 0;
+            }
+
+            .card .info-label {
+                flex: 1;
+                font-weight: 600;
+                color: var(--clr-text-secondary);
+            }
+
+            .card .info-value {
+                flex: 2;
+                color: var(--clr-text-primary);
+            }
+
+            .card .map-container {
+                height: 300px;
+                width: 300px;
+                margin: auto;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: var(--clr-surface);
+                border: solid 2px var(--clr-accent);
+                color: var(--clr-text-primary);
+                border-radius: 50%;
+                overflow: hidden;
+                margin-top: 15px;
+                font-size: 2rem;
+            }
+
+        .session-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+        /* Responsive Styles */
+        @@media (max-width: 768px) {
+            .info-cards {
+                flex-direction: column;
+            }
+
+            .attendance-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .card {
+                min-width: 100%;
+            }
+        }
+    </style>
+
+    <style>
+        .attendance-section {
+            margin-top: 40px;
+        }
+
+            .attendance-section h2 {
+                color: var(--clr-primary);
+                margin-bottom: 20px;
+                font-size: 1.5rem;
+                font-weight: 600;
+            }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--clr-surface);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            .attendance-table th,
+            .attendance-table td {
+                padding: 12px 15px;
+                text-align: left;
+                border-bottom: 1px solid var(--clr-border);
+                font-size: 1rem;
+                font-weight: 400;
+            }
+
+            .attendance-table th {
+                background-color: var(--clr-primary);
+                color: var(--clr-text-on-primary);
+                font-weight: 600;
+            }
+
+            .attendance-table tr:last-child td {
+                border-bottom: none;
+            }
+
+            .attendance-table tr:nth-child(even) {
+                background-color: rgba(0, 0, 0, 0.03);
+            }
+
+            .attendance-table tr:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+
+        input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid var(--clr-border);
+            border-radius: 4px;
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+            input[type="number"]::-webkit-inner-spin-button,
+            input[type="number"]::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--clr-primary);
+            cursor: pointer;
+            transform: scale(1.1);
+            border-radius: 4px;
+        }
+
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 100px;
+        }
+
+        .save-button {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            .save-button:hover {
+                background-color: var(--clr-text-secondary, #2c6cbf);
+                transform: translateY(-1px);
+            }
+
+            .save-button:active {
+                transform: scale(0.97);
+            }
+
+            .save-button i {
+                font-size: 1rem;
+            }
+
+            .save-button.loading {
+                opacity: 0.7;
+                pointer-events: none;
+            }
+
+                .save-button.loading i {
+                    animation: spin 1s linear infinite;
+                }
+
+        @@keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .attendance-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        .animation-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+        }
+
+        /* Spinner 3 - Growing Bars */
+        .growing-bars {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .growing-bars .bar {
+                width: 8px;
+                height: 30px;
+                background-color: var(--clr-primary);
+                animation: grow 1.2s infinite ease-in-out;
+            }
+
+                .growing-bars .bar:nth-child(1) {
+                    animation-delay: 0s;
+                }
+
+                .growing-bars .bar:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .growing-bars .bar:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+                .growing-bars .bar:nth-child(4) {
+                    animation-delay: 0.6s;
+                }
+
+                .growing-bars .bar:nth-child(5) {
+                    animation-delay: 0.8s;
+                }
+
+        @@keyframes grow {
+            0%, 100% {
+                transform: scaleY(0.5);
+            }
+
+            50% {
+                transform: scaleY(1);
+            }
+        }
+    </style>
+}
+
+<div class="container">
+
+    <!-- Cover Section -->
+    <section class="cover-section">
+        <div class="cover-image">
+            @if (Model?.Group?.CoverPicture != null)
+            {
+                <img alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(Model?.Group?.CoverPicture))"
+                     class="group__profile__image" />
+            }
+            else
+            {
+                <img alt="profile" src="~/images/default_cover.png" />
+            }
+        </div>
+
+        <div class="info-cards">
+            <!-- Session Info Card -->
+            <div class="card">
+                <h3>Session Information</h3>
+
+                <div class="info-row">
+                    <div class="info-label">Subject</div>
+                    <div class="info-value">@Model?.Group?.Subject?.Topic</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Time</div>
+                    <div class="info-value">
+                        @Model?.StartDateTime.ToString("hh:mm tt") : @Model?.EndDateTime.ToString("hh:mm tt")
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Date</div>
+                    <div class="info-value">
+                        @Model?.StartDateTime.ToString("yyyy-MM-dd")
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Location</div>
+                    <div class="info-value">@Model?.Address?.Governorate | @Model?.Address?.City |  @Model?.Address?.Street</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Center</div>
+                    <div class="info-value">Main Learning Center</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Type</div>
+                    <div class="info-value">
+                        <div class="info-value">
+                            @if (Model != null)
+                            {
+                                if (Model.IsOnline)
+                                {
+                                    <span>Online </span>
+                                }
+                                else
+                                {
+                                    <span>OffLine </span>
+                                }
+                                <span>|</span>
+                                if (Model.Group != null && Model.Group!.IsPrivate)
+                                {
+                                    <span>Privare</span>
+                                }
+                                else
+                                {
+                                    <span>Public</span>
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Map Card -->
+            <div class="card">
+                <h3>Session Location</h3>
+                <div class="map-container">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Attendance Table Section -->
+    <section class="attendance-section">
+        <div class="table-header">
+            <h2>Student Attendance</h2>
+            <div>
+                <button class="save-button" id="submit-attendance-btn">
+                    Save changes <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+            </div>
+        </div>
+        <div class="animation-container" id="animation">
+            <div class="growing-bars">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+        <table class="attendance-table d-none" id="attendance-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Homework</th>
+                    <th>Exam</th>
+                    <th>Attended</th>
+                    <th>Has Paid</th>
+                </tr>
+            </thead>
+
+            <tbody id="attendance-table-body">
+            </tbody>
+        </table>
+    </section>
+
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", ()=>{
+
+                     let sessionAttendanceRequest = {
+            sessionId: @Model?.ID,
+            teacherId: 1,
+            sessionDayAttendances: []
+        }
+
+        sendAsyncRequest = async (url, method, requestBody) => {
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                return new Error(error);
+            }
+        }
+
+        async function GetAttendance() {
+            let url = "/Teachers/Attendance/GetSessionAttendance"
+            let requstBody = {
+                "sessionId": 3,
+                "teacherId": 1
+            }
+            let errorResponse = {
+                isValid: true,
+                errors: ["Soething went wrong! contact the server owner"],
+                sessionId: 3,
+                teacherId: 1,
+                sessionDayAttendances: []
+            }
+            try {
+                let res = await sendAsyncRequest(url, "POST", requstBody);
+                console.log(res);
+                return res;
+            } catch (error) {
+                console.log(error);
+                return errorResponse;
+            }
+        }
+
+        function CollectAttendance() {
+            let studentDegreeInputs = document.querySelectorAll("input[data-student-id]");
+
+
+            let sessionData = {};
+            studentDegreeInputs.forEach(input => {
+                const studentId = input.dataset.studentId;
+                const field = input.dataset.for;
+                const value = input.type === "checkbox" ? input.checked : input.value;
+
+
+                if (!sessionData[studentId]) {
+                    sessionData[studentId] = {
+                        studentId: studentId
+                    };
+                }
+
+                sessionData[studentId][field] = value;
+            });
+            const sessionArray = Object.values(sessionData);
+
+
+            sessionAttendanceRequest.sessionDayAttendances = sessionArray;
+            console.log(sessionAttendanceRequest);
+            return sessionArray;
+        }
+
+        function bindCollectAttendace() {
+            let studentDegreeInputs = document.querySelectorAll('input');
+            studentDegreeInputs.forEach((element) => {
+                element.addEventListener("change", () => {
+                    CollectAttendance();
+
+                })
+            })
+        }
+
+        async function renderData() {
+            let attendanceTable = document.getElementById("attendance-table");
+            let animation = document.getElementById("animation");
+            let tableBody = document.getElementById("attendance-table-body");
+
+            let res = await GetAttendance();
+            if (res.isValid == true) {
+                let htmlContent = ``;
+                res.sessionDayAttendances.forEach((sessionAttendance) => {
+                    htmlContent += `
+                                     <tr>
+                                         <td>${sessionAttendance.studentName}</td>
+                                         <td>${sessionAttendance.studentEmail}</td>
+                                         <td>
+                                             <input type="number" min="0" max="100"
+                                                    value="${sessionAttendance.classWorkGrade ?? 0}"
+                                                    data-student-id="${sessionAttendance.studentId}"
+                                                    data-for="classWorkGrade">
+                                         </td>
+                                         <td>
+                                             <input type="number" min="0" max="100"
+                                                    value="${sessionAttendance.homeWorkGrade ?? 0}"
+                                                    data-student-id="${sessionAttendance.studentId}"
+                                                    data-for="homeWorkGrade">
+                                         </td>
+                                         <td>
+                                             <input type="checkbox"
+                                                    ${sessionAttendance.hasAttended ? "checked" : ""}
+                                                    data-student-id="${sessionAttendance.studentId}"
+                                                    data-for="hasAttended">
+                                         </td>
+                                         <td>
+                                             <input type="checkbox"
+                                                    ${sessionAttendance.hasPaid ? "checked" : ""}
+                                                    data-student-id="${sessionAttendance.studentId}"
+                                                    data-for="hasPaid">
+                                         </td>
+                                     </tr>
+                                 `;
+                    attendanceTable.classList.remove("d-none");
+                    animation.classList.add("d-none");
+                    tableBody.innerHTML = htmlContent;
+
+                })
+            }
+        }
+
+        function freezePage(){
+            const submitAttendanceButton = document.getElementById("submit-attendance-btn");
+            const attendanceTable = document.getElementById("attendance-table");
+            const animation = document.getElementById("animation");
+            if (submitAttendanceButton) {
+                submitAttendanceButton.classList.add("loading");
+                submitAttendanceButton.setAttribute("disabled", "true");
+            };
+            if (attendanceTable) {
+                attendanceTable.classList.add("d-none");
+            }
+            if (animation) {
+                animation.classList.remove("d-none")
+            }
+        }
+
+        function freePage(){
+            const submitAttendanceButton = document.getElementById("submit-attendance-btn");
+            const attendanceTable = document.getElementById("attendance-table");
+            const animation = document.getElementById("animation");
+            if (submitAttendanceButton) {
+                submitAttendanceButton.classList.remove("loading");
+                submitAttendanceButton.removeAttribute("disabled");
+            };
+            if (attendanceTable) {
+                attendanceTable.classList.remove("d-none");
+            }
+            if (animation) {
+                animation.classList.add("d-none")
+            }
+        }
+
+        async function submitSessionAttendance() {
+            let url = "/Teachers/Attendance/SubmitSessionAttendance"
+            try {
+                res = await sendAsyncRequest(url, "POST", sessionAttendanceRequest)
+                if (res.isValid == true) {
+                    console.log("Submitted Successfully!")
+                }
+            } catch (err) {
+                console.log("Something went wrong while submitting!")
+            }
+        }
+
+        function bindSubmitSessionAttendance(){
+            const submitAttendanceButton = document.getElementById("submit-attendance-btn");
+            if (submitAttendanceButton) {
+                submitAttendanceButton.addEventListener("click", async ()=>{
+                    try {
+                        freezePage();
+                        await submitSessionAttendance();
+                        freePage();
+                    }catch(error){
+                        freePage();
+                    }
+                })
+            }
+        }
+
+        renderData().then(CollectAttendance).then(bindCollectAttendace).then(bindSubmitSessionAttendance);
+        })
+    </script>
+}

@@ -45,6 +45,7 @@ namespace Xcourse.Infrastructure.Repositories
             Students = new BaseRepository<Student>(context);
             Subjects = new BaseRepository<Subject>(context);
             Teachers = new BaseRepository<Teacher>(context);
+            //Teachers = new TeacherRepository(context);
             Transactions = new BaseRepository<Transaction>(context);
             Wallets = new BaseRepository<Wallet>(context);
             GroupDefaults = new BaseRepository<GroupDefaults>(context);

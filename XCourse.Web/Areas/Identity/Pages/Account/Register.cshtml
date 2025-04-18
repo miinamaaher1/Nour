@@ -2,6 +2,8 @@
 @model RegisterModel
 @{
     ViewData["Title"] = "Sign up";
+
+    var GovernoratesList = new SelectList(Model.Governorates);
 }
 
 @section Styles {
@@ -14,8 +16,10 @@
         <div class="form-container">
             <h1 class="form-header">@ViewData["Title"]</h1>
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <input asp-for="Input.AccountType" hidden value="@Model.AccountType" />
+                <div class="form-group">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                </div>
                 <div class="form-group">
                     <label asp-for="Input.FirstName">First Name</label>
                     <input asp-for="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" placeholder="first name" />
@@ -63,8 +67,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Input.Governorate">Governorate</label>
-                    <input asp-for="Input.Governorate" class="form-control" autocomplete="governorate" aria-required="false" placeholder="cairo governorate" />
-                    <span asp-validation-for="Input.Governorate" class="text-danger"></span>
+                    <select asp-for="Input.Governorate" class="form-select" asp-items="@GovernoratesList" > </Select>
                 </div>
                 <div class="form-group">
                     <label asp-for="Input.DateOfBirth">DateOfBirth</label>
@@ -89,8 +92,12 @@
                 @if (Model.AccountType == AccountType.Teacher)
                 {
                     <div class="form-group">
-                        <label asp-for="Input.IsAvailableForPrivateGroups" class="form-check-label">Available For Private Groups</label>
-                        <input asp-for="Input.IsAvailableForPrivateGroups" class="form-check-input" aria-required="false" />
+                        <div class="checkbox-group">
+                            <label asp-for="Input.IsAvailableForPrivateGroups" class="form-check-label">
+                                <input asp-for="Input.IsAvailableForPrivateGroups" class="form-check-input" aria-required="false" />
+                                Available For Private Groups
+                            </label>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label asp-for="Input.PrivatePrice" class="form-label">Private Group Price Per Session</label>
