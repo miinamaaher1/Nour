@@ -19,13 +19,14 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         }
         // GET: ReservationController
 
-        public ActionResult IndexForReservations(int id)
+        public ActionResult Index(int id)
         {
             var Reservations = _centerAdminService.GetReservations(id);
             if (Reservations == null) return NotFound();
 
             return View(Reservations);
         }
+
         public ActionResult AcceptReservation(int id)
         {
             int t = _centerAdminService.ApproveReservation(id);
@@ -33,11 +34,8 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction("IndexForReservations", new { id = t });
-
+            return RedirectToAction("Index", new { id = t });
         }
-
-
 
         public ActionResult RejectReservation(int id)
         {
@@ -46,28 +44,21 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction("IndexForReservations", new { id = t });
-
+            return RedirectToAction("Index", new { id = t });
         }
+
         // GET: ReservationController/Details/5
-        public ActionResult DetailsReservation(int id)
+        public ActionResult Details(int id)
         {
             var model = _centerAdminService.DetailsReservation(id);
-
-
             if (model == null) return NotFound();
-
-
-
             return View(model);
         }
-
-
     
         // GET: ReservationController/Edit/5
-        public ActionResult EditReservation(int id)
+        public ActionResult Edit(int id)
         {
-       var Result=     _centerAdminService.EditRoomReservation(id);
+       var Result = _centerAdminService.EditRoomReservation(id);
             if(Result==null)
                 return NotFound();
             return View(Result);
@@ -76,7 +67,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // POST: ReservationController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditReservation(EditRoomReservation editRoom)
+        public ActionResult Edit(EditRoomReservation editRoom)
         {
             try
             {
@@ -85,40 +76,18 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                     int t = _centerAdminService.UpdateReservtion(editRoom);
                     if (t == 0) return NotFound();
 
-                    return RedirectToAction("IndexForReservations", new { id = t });
+                    return RedirectToAction("Index", new { id = t });
                 }
                 else
                 {
                    var Rooms = _centerAdminService.EditRoomReservation(editRoom.ID);
                     return View(Rooms);
                 }
-
             }
             catch
             {
                 var Rooms = _centerAdminService.EditRoomReservation(editRoom.ID);
                 return View(Rooms);
-            }
-        }
-
-        // GET: ReservationController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ReservationController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
             }
         }
     }
