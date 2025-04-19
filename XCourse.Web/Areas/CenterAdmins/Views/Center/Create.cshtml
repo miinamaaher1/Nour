@@ -63,7 +63,7 @@
             </div>
             <div class="form-group m-4 row justify-content-around ">
                 <label asp-for="Address.City" class="control-label"></label>
-                <select asp-for="Address.City" asp-items="@governorates" class="form-control"></select>
+                <input asp-for="Address.City"  class="form-control"/>
                 
             </div>
             <div class="form-group m-4 row justify-content-around ">
@@ -79,7 +79,7 @@
             </div>
             <div class="form-group m-4 row justify-content-around ">
                 <label asp-for="Address.Governorate" class="control-label"></label>
-                <input class="form-control" asp-for="Address.Governorate" />
+                <select asp-items="@governorates"  class="form-control" asp-for="Address.Governorate" ></select>
 
             </div>
             <div class="form-group m-4 row justify-content-around" style="text-align: center">
@@ -91,7 +91,7 @@
                 else
                 {
                     <img id="PreviewPicture" alt="profile" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;"
-                         src="~/images/default_profile.png" />
+                         src="~/images/CenterProfile.jpg" />
                 }
                 <div class="custom-file mt-2">
                     <input type="file"
@@ -105,8 +105,8 @@
             <div class="form-group m-4 row justify-content-around">
        
                 <div id="googleMap" style="height:300px;width:100%;"></div>
-                <input type="hidden" id="lat" asp-for="Location.OriginX" />
-                <input type="hidden" id="lng" asp-for="Location.OriginY" />
+                <input type="hidden" id="lat" asp-for="Location.OriginY" />
+                <input type="hidden" id="lng" asp-for="Location.OriginX" />
                 <input type="hidden" asp-for="Location.Key" />
 
                 <script>
@@ -151,7 +151,7 @@
                     }
                 </script>
 
-                <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=initMap" defer></script>
+                <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Location.Key&callback=initMap" defer></script>
 
             </div>
         
