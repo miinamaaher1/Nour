@@ -83,6 +83,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             onlineGroup.SubjectID = request.SubjectId;
             onlineGroup.Address = null;
             onlineGroup.IsPrivate = request.IsPrivate;
+            onlineGroup.IsOnline = true;
             onlineGroup.IsGirlsOnly = request.IsGirlsOnly;
             onlineGroup.IsActive = true;
             onlineGroup.CurrentStudents = 0;
@@ -93,8 +94,18 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             // Reserving sessions 
             onlineGroup.Sessions = new List<Session>();
+            onlineGroup.GroupDefaults = new List<GroupDefaults>();
             foreach (var defaultSession in request.DefaultSessionResrvations!)
             {
+                GroupDefaults gd = new GroupDefaults()
+                {
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    StartTime = defaultSession.StartTime,
+                    EndTime = defaultSession.EndTime,
+                    WeekDay = defaultSession.WeekDay
+                };
+
                 DateOnly current = request.StartDate;
 
                 while (!MatchesWeekDay(current, defaultSession.WeekDay))
@@ -115,6 +126,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     };
 
                     onlineGroup.Sessions.Add(session);
+                    onlineGroup.GroupDefaults.Add(gd);
                     current = current.AddDays(7);
                 }
             }
@@ -738,6 +750,11 @@ namespace XCourse.Services.Implementations.TeacherServices
         private bool IsOverlapping(TimeOnly s1, TimeOnly e1, TimeOnly s2, TimeOnly e2)
         {
             return (s1 < e2 && e1 > s2);
+        }
+
+        public Task<IEnumerable<string>> GetAllGovernorates()
+        {
+            throw new NotImplementedException();
         }
     }
 }
