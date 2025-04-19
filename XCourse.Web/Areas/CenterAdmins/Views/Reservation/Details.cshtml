@@ -70,10 +70,9 @@
             <img alt="profile" src="~/images/RoomProfile.webp" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;" />
             }
         </dd>
-
     </dl>
 </div>
 <div>
-    @Html.ActionLink("EditReservation", "EditReservation", new { id = Model.ID }, new {@class="btn btn-outline-success"}) |
-    <a asp-action="IndexForReservations" asp-route-id="@Model.RoomID" class="btn btn-outline-success">Back to List</a>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }, new {@class="btn btn-outline-success"}) |
+    <a asp-action="Index" asp-route-id="@Model.RoomID" class="btn btn-outline-success">Back to List</a>
 </div>

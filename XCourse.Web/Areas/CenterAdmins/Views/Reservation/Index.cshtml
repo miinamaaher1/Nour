@@ -134,9 +134,9 @@
                     @Html.DisplayFor(modelItem => item.EndTime)
                 </td>
                 <td>
-                    @Html.ActionLink("EditReservation", "EditReservation", new { id = item.ID }, new { @class = "btn btn-outline-success" }) |
-                    @Html.ActionLink("DetailsReservation", "DetailsReservation", new { id = item.ID }, new { @class = "btn btn-outline-success" }) |
-                    @Html.ActionLink("DeleteReservation", "DeleteReservation", new { id = item.ID }, new { @class = "btn btn-outline-success" })
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "btn btn-outline-success" }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "btn btn-outline-success" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "btn btn-outline-success" })
                 </td>
             </tr>
         }
