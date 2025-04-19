@@ -58,7 +58,10 @@
                     </div>
                     @if (isOnline)
                     {
-                        <div class="session__info-item">
+
+                        <div class="session__info-item" id="session-url"
+                        data-start="@Model.Session.StartDateTime.ToString("o")"
+                        data-end="@Model.Session.EndDateTime.ToString("o")">
                             <a href="@Model.Session.URL" class="session__info-link">
                                 Join Session <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
@@ -147,12 +150,23 @@
         <section class="session__feedback">
             <div class="session__feedback-header">
                 <h2 class="session__feedback-title">Feedback</h2>
+                <div id="feedback-btn-cont">
                 @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue)
                 {
-                    <button class="session__feedback-add" onclick="openAddFeedbackModal()">
-                        <i class="fa-solid fa-plus"></i> Add Feedback
-                    </button>
+                    @if (hasFeedback)
+                    {
+                        <button class="session__feedback-add" onclick="openEditFeedbackModal(this)">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Feedback
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="session__feedback-add" onclick="openAddFeedbackModal()">
+                            <i class="fa-solid fa-plus"></i> Add Feedback
+                        </button>
+                    }
                 }
+                </div>
             </div>
 
             <div class="session__feedback-list" id="feedback-container">
@@ -176,10 +190,8 @@
                             @Model.Attendances.Feedback
                         </div>
                         <div class="session__feedback-meta">
+                            <div class="session__feedback-date"></div>
                             <div class="session__feedback-actions">
-                                <button class="session__feedback-edit" onclick="openEditFeedbackModal(this)">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
                                 <button class="session__feedback-delete" onclick="openDeleteFeedbackModal()">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
@@ -281,12 +293,21 @@
 
         async function submitFeedback(request) {
             freezeButton("save-feedback-btn");
+
+            let btnContainer =document.getElementById("feedback-btn-cont");
+            
+
             try {
                 let response = await sendAsyncRequest("https://localhost:7054/Students/Session/SaveFeedBack", "POST", request);
                 if (response.isValid == true) {
                     if (typeof showSuccessToast === 'function') {
                         showSuccessToast("OK", "Feedback Saved Successfully", 3);
                     }
+					// 1. Change the button to Edit Feedback
+					btnContainer.innerHTML=`
+                            <button class="session__feedback-add" onclick="openEditFeedbackModal(this)">
+							<i class="fa-solid fa-pen-to-square"></i> Edit Feedback
+						    </button>`
 
                     freeButton("save-feedback-btn");
                     // 2. Append to the added feedback
@@ -312,11 +333,8 @@
                                 ${request.feedback}
                                 </div>
                                 <div class="session__feedback-meta">
-                                    <div class="session__feedback-date">${request.dateTime}</div>
+                                    <div class="session__feedback-date"></div>
                                     <div class="session__feedback-actions">
-                                        <button class="session__feedback-edit" onclick="openEditFeedbackModal(this)">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
                                         <button class="session__feedback-delete" onclick="openDeleteFeedbackModal()">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
@@ -473,6 +491,8 @@
         }
 
         async function deleteFeedback() {
+			let btnContainer =document.getElementById("feedback-btn-cont");
+
             let request = {
                 studentId: studentId,
                 sessionId: sessionId
@@ -486,6 +506,12 @@
                         showSuccessToast("OK", "Feedback Deleted Successfully", 3);
                     }
 
+                    btnContainer.innerHTML=`
+                        <button class="session__feedback-add" onclick="openAddFeedbackModal()">
+                            <i class="fa-solid fa-plus"></i> Add Feedback
+                        </button>
+                        
+                    `
                     // remove the element from the DOM
                     let feedbackContainer = document.getElementById("feedback-container");
                     if (feedbackContainer) feedbackContainer.innerHTML = ``;
@@ -510,6 +536,49 @@
                 }
             }
         }
+
+   
+        document.addEventListener("DOMContentLoaded", function () {
+            const sessionElement = document.getElementById("session-url");
+            const link = sessionElement?.querySelector("a");
+
+            if (!sessionElement || !link) return;
+
+            const start = new Date(sessionElement.dataset.start);
+            const end = new Date(sessionElement.dataset.end);
+
+             const now = new Date();
+                if (now >= start && now <= end) {
+                    enableLink(link);
+                } else {
+                    disableLink(link);
+                }
+
+            setInterval(() => {
+                const now = new Date();
+                if (now >= start && now <= end) {
+                    enableLink(link);
+                } else {
+                    disableLink(link);
+                }
+            }, 1000);
+        });
+
+        function disableLink(link) {
+            link.classList.add("disabled-link"); 
+            link.style.pointerEvents = "none";
+            link.style.opacity = "0.5";
+            link.setAttribute("aria-disabled", "true");
+        }
+
+        function enableLink(link) {
+            link.classList.remove("disabled-link");
+            link.style.pointerEvents = "auto";
+            link.style.opacity = "1";
+            link.removeAttribute("aria-disabled");
+        }
+
+
 
         function freezeButton(id) {
             const button = document.getElementById(id);

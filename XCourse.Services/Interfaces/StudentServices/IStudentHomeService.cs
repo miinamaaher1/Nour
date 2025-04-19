@@ -19,13 +19,8 @@ namespace XCourse.Services.Interfaces.Student
 
         public Task<bool> SessionSaveFeedbackService(FeedBackDTO feedBackDTO, string userId);
 
-        public Task<ICollection<Session>> GetStudentSessions(int studentId);
+        public Task<bool> SessionRemoveFeedbackService(FeedBackDTO feedBackDTO);
 
-        public Task<List<Group>> GetStudentGroups(int studentId);
 
-        public Task<List<Group>> GetRecommendedGroups(int studentId);
-
-        public Task<List<AnnouncementVM>> GetStudentAnnouncements(int studentId);
-        Task<ICollection<Session>> GetStudentUpcomingSessions(int studentId);
     }
 }

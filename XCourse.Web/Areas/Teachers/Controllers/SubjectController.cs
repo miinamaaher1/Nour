@@ -106,26 +106,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             }
         }
 
-        //// GET: SubjectController/Edit/5
-        //public async Task<IActionResult> Edit(int id)
-        //{
-        //    return View();
-        //}
 
-        //// POST: SubjectController/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
 
         // GET: SubjectController/Delete/5
         public async Task<IActionResult> Delete(int id)
