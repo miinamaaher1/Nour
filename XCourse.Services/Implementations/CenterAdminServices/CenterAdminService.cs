@@ -119,10 +119,9 @@ namespace XCourse.Services.Implementations.CenterAdminServices
         public List<RoomsViewModel> getAllRooms(int CenterId)
         {
             var center = _unitOfWork.Centers.Find(
-
                 c => c.ID == CenterId,
                 new string[] {"Rooms"}
-                );
+            );
 
             if (center == null || center.Rooms == null)
             {
@@ -132,28 +131,19 @@ namespace XCourse.Services.Implementations.CenterAdminServices
             foreach(var room in center.Rooms)
             {
                 Rooms.Add(
-                 new RoomsViewModel()
-                 {
-                     CenterId=center.ID,
-                      RoomId=room.ID,
-                     Name=room.Name,
-                     Capacity=room.Capacity,
-                     Equipment=room.Equipment,
-                     PricePerHour=room.PricePerHour,
-         
-
-
-                 }
-
-                    );
+                new RoomsViewModel()
+                {
+                    CenterId=center.ID,
+                    CenterName=center.Name,
+                    RoomId=room.ID,
+                    Name=room.Name,
+                    Capacity=room.Capacity,
+                    Equipment=room.Equipment,
+                    PricePerHour=room.PricePerHour,
+                });
             }
             return Rooms;
-
-
         }
-
-
-
 
 
         public int AddNewCenter(CreateCenterViewModel Center)

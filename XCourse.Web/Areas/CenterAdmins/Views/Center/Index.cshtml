@@ -1,51 +1,207 @@
 ﻿@model IEnumerable<XCourse.Core.ViewModels.CenterAdminViewModels.CenterViewModel>
 
-
-
-
-<p>
-    <a asp-action="Create" asp-route-centeradminid="@ViewBag.centeradmin" class="btn btn-outline-success">Create New</a>
-</p>
-<table class="table">
-    <thead class="table-dark">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsGirlsOnly)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address.City)
-            </th>
-          
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsGirlsOnly)
-            </td>
-            <td>
-
-                    @Html.DisplayFor(modelItem => item.Address.City)
-                </td>
-            <td>
-
-                    @Html.ActionLink("Edit", "Edit", new { id = item.CenterID }, new { @class = "btn btn-outline-danger btn-sm" }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.CenterID }, new { @class = "btn btn-outline-danger btn-sm" }) |
-                    <a asp-area="CenterAdmins" asp-controller="Room" asp-action="Index" asp-route-id="@item.CenterID"
-                       class="btn btn-outline-danger btn-sm">
-                        Rooms
-                    </a>
-                    @Html.ActionLink("Reservations", "Reservations", new { id = item.CenterID }, new { @class = "btn btn-outline-danger btn-sm" })
-            </td>
-        </tr>
+@{
+    ViewData["Title"] = "All Centers";
 }
-    </tbody>
-</table>
+
+<div class="col-12">
+    <div class="container">
+        <h1>All Centers</h1>
+        <div class="data-table">
+            <div class="data-table__container">
+                <table class="data-table__table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Gender</th>
+                            <th>City</th>
+                            <th colspan="4"
+                            style="text-align: center !important">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @if(item.IsGirlsOnly)
+                                    {
+                                        <span>Girls</span>
+                                    } else
+                                    {
+                                        <span>Mixed</span>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Address.City)
+                                </td>
+                                <td class="data-table__actions">
+                                    <a class="data-table__btn data-table__btn--edit" asp-action="Details" asp-route-id="@item.CenterID">
+                                        <i class="fas fa-eye me-1"></i> Details
+                                    </a>
+                                </td>
+                                <td class="data-table__actions">
+                                    <a class="data-table__btn data-table__btn--edit" asp-action="Edit" asp-route-id="@item.CenterID">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </a>
+                                </td>
+                                <td class="data-table__actions">
+                                    <a class="data-table__btn data-table__btn--edit" asp-controller="Room" asp-action="Index" asp-route-id="@item.CenterID">
+                                        <i class="fa-solid fa-key me-1"></i>
+                                        Rooms
+                                    </a>
+                                </td>
+                                <td class="data-table__actions">
+                                    <a class="data-table__btn data-table__btn--edit" asp-controller="Reservation" asp-action="Index" asp-route-id="@item.CenterID">
+                                        <i class="fa-solid fa-ticket me-1"></i>
+                                        Reservations
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a class="add-button" id="addButton" asp-action="Create" asp-route-centeradminid="@ViewBag.centeradmin">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .data-table {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4rem;
+        }
+
+        .data-table__container {
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        .data-table__table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+            .data-table__table th {
+                background-color: var(--clr-secondary);
+                color: var(--clr-text-on-secondary);
+                font-weight: 500;
+                text-align: left;
+                padding: 14px 16px;
+            }
+
+                .data-table__table th:first-child {
+                    border-top-left-radius: 8px;
+                }
+
+                .data-table__table th:last-child {
+                    border-top-right-radius: 8px;
+                }
+
+            .data-table__table tbody tr {
+                transition: background-color 0.2s;
+            }
+
+                .data-table__table tbody tr:hover {
+                    background-color: rgba(224, 169, 109, 0.1);
+                }
+
+            .data-table__table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid var(--clr-border);
+                color: var(--clr-text-secondary);
+            }
+
+            .data-table__table tr:last-child td {
+                border-bottom: none;
+            }
+
+        .data-table__actions {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+
+        .data-table__btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 4px;
+            text-decoration: none;
+        }
+
+            .data-table__btn:last-child {
+                margin-right: 0;
+            }
+
+        .data-table__btn--edit {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+            .data-table__btn--edit:hover {
+                background-color: color-mix(in srgb, var(--clr-accent) 85%, black);
+            }
+
+        .data-table__btn--details {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+            .data-table__btn--details:hover {
+                background-color: color-mix(in srgb, var(--clr-secondary) 85%, black);
+            }
+
+        .data-table__btn--delete {
+            background-color: #d44848;
+            color: #ffffff;
+        }
+
+            .data-table__btn--delete:hover {
+                background-color: #b33a3a;
+            }
+
+        /* Add Button */
+        .add-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+            .add-button:hover {
+                background-color: color-mix(in srgb, var(--clr-primary) 85%, black);
+                transform: translateY(-5px);
+            }
+    </style>
+}
