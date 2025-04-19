@@ -7,7 +7,7 @@ using NuGet.DependencyResolver;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels;
 using XCourse.Infrastructure.Data;
-using XCourse.Services.Interfaces.SubjectServices;
+using XCourse.Services.Interfaces.TeacherServices;
 
 namespace XCourse.Web.Areas.Teachers.Controllers
 {
