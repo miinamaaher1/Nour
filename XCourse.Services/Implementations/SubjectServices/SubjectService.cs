@@ -10,42 +10,65 @@ using Xcourse.Infrastructure.Repositories;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Web.Mvc;
+using static NetTopologySuite.Geometries.Utilities.GeometryMapper;
+using Stripe;
 
 namespace XCourse.Services.Implementations.SubjectServices
 {
     public class SubjectService : ISubjectService
     {
-        private readonly ISubjectRepository _subjectRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public SubjectService(ISubjectRepository subjectRepository, IUnitOfWork unitOfWork)
+        public SubjectService(IUnitOfWork unitOfWork)
         {
-            _subjectRepository = subjectRepository;
             _unitOfWork = unitOfWork;
         }
+        //public async Task<IEnumerable<SelectListItem>> GetDistinctTopicsAsync()
+        //{
+        //    var topics = await _unitOfWork.Subjects
+        //        .GetAll() // this must returns IQueryable<Subject> not IEnumerable
+        //        .Select(s => s.Topic)
+        //        .Distinct()
+        //        .ToListAsync(); // ToListAsync works on IQueryable, not IEnumerable
+
+        //    return topics.Select(t => new SelectListItem
+        //    {
+        //        Value = t,
+        //        Text = t
+        //    });
+        //}
         public async Task<IEnumerable<Subject>> GetAllSubjectsAsync()
         {
-            return await _subjectRepository.GetAllSubjectsAsync();
+            //return await _subjectRepository.GetAllSubjectsAsync();
+            return await _unitOfWork.Subjects.GetAllAsync();
         }
 
         public async Task<Subject> GetSubjectByIdAsync(int id)
         {
-            return await _subjectRepository.GetSubjectByIdAsync(id);
+            return await _unitOfWork.Subjects
+                .FindAsync(s => s.ID == id, new[] { "Teachers" });
         }
 
         public async Task AddSubjectAsync(Subject subject)
         {
-            await _subjectRepository.AddSubjectAsync(subject);
+            await _unitOfWork.Subjects.AddAsync(subject);
         }
 
         public async Task UpdateSubjectAsync(Subject subject)
         {
-            await _subjectRepository.UpdateSubjectAsync(subject);
+            _unitOfWork.Subjects.Update(subject);
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteSubjectAsync(int id)
         {
-            await _subjectRepository.DeleteSubjectAsync(id);
+            var subject = _unitOfWork.Subjects.Get(id);
+            if (subject != null)
+            {
+                _unitOfWork.Subjects.Delete(subject);
+                await _unitOfWork.SaveAsync();
+            }
         }
         public async Task<Teacher> GetTeacherByUserId(string id)
         {
@@ -68,20 +91,24 @@ namespace XCourse.Services.Implementations.SubjectServices
 
         public async Task<Subject> GetSubjectByCriteriaAsync(string topic, Major major, Year year, Semester semester)
         {
-            return await _subjectRepository.FindAsync(s =>
+            return await _unitOfWork.Subjects.FindAsync(s =>
                 s.Topic == topic &&
                 s.Major == major &&
                 s.Year == year &&
-                s.Semester == semester);
+                s.Semester == semester
+                );
         }
 
         public async Task AddSubjectAsync(Subject subject, int teacherId)
         {
-            var existingSubject = await _subjectRepository.FindByCriteriaAsync(
-                subject.Topic, subject.Major, subject.Year, subject.Semester);
+            var existingSubject = await _unitOfWork.Subjects.FindAsync(s =>
+                s.Topic == subject.Topic &&
+                s.Major == subject.Major &&
+                s.Year == subject.Year &&
+                s.Semester ==subject.Semester);
 
             if (existingSubject == null)
-                await _subjectRepository.AddSubjectAsync(subject);
+                await _unitOfWork.Subjects.AddAsync(subject);
 
             var teacher = await _unitOfWork.Teachers.GetAsync(teacherId);
             if (teacher != null)

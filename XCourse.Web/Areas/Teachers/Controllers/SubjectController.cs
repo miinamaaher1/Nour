@@ -44,6 +44,10 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         // GET: SubjectController/Create
         public async Task<IActionResult> Create()
         {
+            //var viewModel = new SubjectCreateVM
+            //{
+            //    Topics = await _subjectService.GetDistinctTopicsAsync()
+            //};    // need maintenance in service
             var viewModel = new SubjectCreateVM
             {
                 Topics = _context.Subjects

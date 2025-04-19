@@ -3,17 +3,32 @@
 <h2>Pending Requests</h2>
 
 <table class="table">
-    <thead>
-        <tr>
-            <th>Status</th>
-        </tr>
-    </thead>
     <tbody>
-        @foreach (var request in Model)
+        @if(Model == null || !Model.Any())
         {
             <tr>
-                <td>@request.Status</td>
+                <td>No pending requests.</td>
             </tr>
+        }
+        else
+        {
+            @foreach (var request in Model)
+            {
+                <tr>
+                    <td>Status : @request.Status</td>
+				    <td>---Teacher Name: @request.TeacherName</td>
+				    <td>---Group Description: @request.GroupDescription</td>
+				    <td>---Subject : @request.SubjectName</td>
+				    <td>---Major : @request.Major</td>
+				    <td>---Year : @request.Year</td>
+				    <td>---Semester : @request.Semester</td>
+
+                    <td>
+                        <a asp-action="Accept" asp-route-id="@request.InvitationID" class="btn btn-warning">---Accept</a>
+                        <a asp-action="Reject" asp-route-id="@request.InvitationID" class="btn btn-primary">---Reject</a>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>

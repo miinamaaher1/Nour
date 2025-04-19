@@ -35,7 +35,7 @@ namespace XCourse.Web
             builder.Services.AddTeacherServices();
             builder.Services.AddIntegratedServices();
             builder.Services.AddCenterAdminServices();
-
+            builder.Services.AddAssistantServices();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>

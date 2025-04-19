@@ -1,0 +1,43 @@
+﻿@model XCourse.Core.ViewModels.AssistantViewModels.PendingRequestVM
+
+<h2>Pending Requests</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Are you sure you want to reject this Request?</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td>---Teacher Name: @Model.TeacherName</td>
+        </tr>
+
+        <tr>
+            <td>---Group Description: @Model.GroupDescription</td>
+        </tr>
+        <tr>
+            <td>---Subject : @Model.SubjectName</td>
+        </tr>
+        <tr>
+            <td>---Major : @Model.Major</td>
+        </tr>
+        <tr>
+            <td>---Year : @Model.Year</td>
+        </tr>
+        <tr>
+            <td>---Semester : @Model.Semester</td>
+        </tr>
+        <tr>
+            <td>Status : @Model.Status</td>
+        </tr>
+        <tr>
+            <td>
+                <form asp-action="RejectConfirmed" asp-route-id="@Model.InvitationID" method="post">
+                    <button type="submit">Confirm Reject</button>
+                    </form>
+				<a asp-action="Index" class="btn btn-primary">Back to List</a>
+            </td>
+        </tr>
+	</tbody>
+</table>
