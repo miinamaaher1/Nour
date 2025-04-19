@@ -1,6 +1,8 @@
 ﻿
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 using XCourse.Core.DTOs.Teachers;
 using XCourse.Core.Entities;
 
@@ -31,5 +33,7 @@ namespace XCourse.Services.Interfaces.TeacherServices
         public Task<Subject> GetSubjectByCriteriaAsync(string topic, Major major, Year year, Semester semester);
 
         public Task AddSubjectAsync(Subject subject, int teacherId);
+
+        public Task<IEnumerable<SelectListItem>> GetDistinctTopicsAsync();
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 using XCourse.Core.DTOs.Teachers;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Repositories.Interfaces;
@@ -131,20 +133,22 @@ namespace XCourse.Services.Implementations.TeacherServices
 
         }
         //------------------------------Yasser
-        //public async Task<IEnumerable<SelectListItem>> GetDistinctTopicsAsync()
-        //{
-        //    var topics = await _unitOfWork.Subjects
-        //        .GetAll() // this must returns IQueryable<Subject> not IEnumerable
-        //        .Select(s => s.Topic)
-        //        .Distinct()
-        //        .ToListAsync(); // ToListAsync works on IQueryable, not IEnumerable
+        public async Task<IEnumerable<SelectListItem>> GetDistinctTopicsAsync()
+        {
+            var topics = await _unitOfWork.Subjects
+                .FindAllAsync(s => !string.IsNullOrEmpty(s.Topic)) // Fixed predicate to filter valid topics
+                .ConfigureAwait(false);
 
-        //    return topics.Select(t => new SelectListItem
-        //    {
-        //        Value = t,
-        //        Text = t
-        //    });
-        //}
+            var distinctTopics = topics
+                .Select(s => s.Topic)
+                .Distinct();
+
+            return distinctTopics.Select(t => new SelectListItem
+            {
+                Value = t,
+                Text = t
+            });
+        }
         public async Task<IEnumerable<Subject>> GetAllSubjectsAsync()
         {
             //return await _subjectRepository.GetAllSubjectsAsync();

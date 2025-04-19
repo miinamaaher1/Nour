@@ -16,13 +16,10 @@ namespace XCourse.Web.Areas.Teachers.Controllers
     {
         private readonly ISubjectService _subjectService;
         //var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        private readonly XCourseContext _context;
 
-        public SubjectController(ISubjectService subjectService, XCourseContext context)
+        public SubjectController(ISubjectService subjectService)
         {
             _subjectService = subjectService;
-            _context = context;
-
         }
 
         // GET: Teachers/Subject
@@ -44,19 +41,10 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         // GET: SubjectController/Create
         public async Task<IActionResult> Create()
         {
-            //var viewModel = new SubjectCreateVM
-            //{
-            //    Topics = await _subjectService.GetDistinctTopicsAsync()
-            //};    // need maintenance in service
             var viewModel = new SubjectCreateVM
             {
-                Topics = _context.Subjects
-                    .Select(s => s.Topic)
-                    .Distinct()
-                    .Select(t => new SelectListItem { Value = t, Text = t })
-                    .ToList()
+                Topics = await _subjectService.GetDistinctTopicsAsync()
             };
-
             return View(viewModel);
         }
 
