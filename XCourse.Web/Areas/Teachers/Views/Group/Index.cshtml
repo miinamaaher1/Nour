@@ -4,6 +4,26 @@
 
 @section Styles {
     <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem;
+        }
+
+            .header .add-btn {
+                background-color: var(--clr-primary);
+                color: var(--clr-text-on-primary);
+                padding: 10px;
+                font-size: 1.5rem;
+                height: 50px;
+                width: 50px;
+                border-radius: 50%;
+                cursor: pointer;
+                outline: none;
+                border: none;
+            }
+
         .page-title {
             font-size: 1.5rem;
             color: var(--clr-primary);
@@ -220,10 +240,251 @@
                 color: var(--clr-text-on-primary);
             }
     </style>
+
+    <!--Modal Styling-->
+    <style>
+        .btn {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+            .btn:hover {
+                background-color: var(--clr-secondary);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--clr-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+            .modal-overlay.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .modal {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--clr-text-on-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--clr-text-on-primary);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+            .modal-close:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--clr-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+        .btn-accent {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        /*Cards in the modal Styling*/
+        .create-group-card-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .create-group-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background-color: var(--clr-surface);
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .create-group-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            }
+
+            .create-group-card img {
+                width: 64px;
+                height: 64px;
+                flex-shrink: 0;
+            }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+            .card-content h1 {
+                margin: 0 0 0.4rem;
+                font-size: 1.25rem;
+                color: var(--clr-primary);
+            }
+
+            .card-content p {
+                margin: 0;
+                font-size: 0.95rem;
+                color: var(--clr-text-secondary);
+                line-height: 1.4;
+            }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        @@media (max-width: 600px) {
+            .create-group-card
+
+        {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .card-content h1 {
+            font-size: 1.1rem;
+        }
+
+        }
+    </style>
 }
 
 <div class="container">
-    <h1 class="page-title">Available Groups</h1>
+    <div class="header">
+        <h1 class="page-title">Available Groups</h1>
+        <button class="add-btn" id="openModalBtn">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Modal Title</h2>
+                <button class="modal-close" id="closeModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="create-group-card-container">
+                    <a asp-area="Teachers" asp-controller="Group" asp-action="CreateOnline" class="create-group-card">
+                        <img src="~/images/groupTypes/online-class-svgrepo-com.svg" alt="Online Group Icon" />
+                        <div class="card-content">
+                            <h1>Online Group</h1>
+                            <p>
+                                Join or create a group for remote learning with flexible schedules and live interactive sessions. Perfect for students across any location.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a asp-area="Teachers" asp-controller="Group" asp-action="CreateOfflineLocal" class="create-group-card">
+                        <img src="~/images/groupTypes/building-user-svgrepo-com.svg" alt="Local Group Icon" />
+                        <div class="card-content">
+                            <h1>Local Group</h1>
+                            <p>
+                                Collaborate with nearby peers through organized study groups in your neighborhood for a blend of online and in-person sessions.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a asp-area="Teachers" asp-controller="Group" asp-action="CreateOffline" class="create-group-card">
+                        <img src="~/images/groupTypes/building-flag-svgrepo-com.svg" alt="Center Group Icon" />
+                        <div class="card-content">
+                            <h1>Group in Center</h1>
+                            <p>
+                                Structured sessions held at our educational centers, fully equipped with modern teaching tools and face-to-face learning experiences.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
     <div class="row">
         @if (Model != null && Model.Any())
         {
@@ -354,9 +615,9 @@
                                     {
                                         <div class="session-time">
                                             <div class="day-circle">
-                                                @(session?.WeekDay?.ToString().Substring(0, 2).ToUpper())
+                                                @(session?.WeekDay?.ToString().Substring(0, 3).ToUpper())
                                             </div>
-                                            <div>@session?.StartDate - @session?.EndDate</div>
+                                            <div>@session?.StartTime - @session?.EndTime</div>
                                         </div>
                                     }
                                 }
@@ -405,3 +666,41 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+                    // DOM Elements
+        const openModalBtn = document.getElementById('openModalBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+
+
+        // Modal functionality
+        openModalBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+        });
+
+        const closeModal = () => {
+            modalOverlay.classList.remove('active');
+        };
+
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Close modal when clicking on overlay
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                closeModal();
+            }
+        });
+    </script>
+}
