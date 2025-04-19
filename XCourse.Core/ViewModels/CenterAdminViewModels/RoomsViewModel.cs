@@ -13,18 +13,12 @@ namespace XCourse.Core.ViewModels.CenterAdminViewModels
     {
         [Key]
         public int CenterId { get; set; }
-       public int RoomId { set; get; }
+        public string CenterName { get; set; }
+        public int RoomId { set; get; }
         public string Name { get; set; }
-
         public int Capacity { get; set; }
         [EnumDataType(typeof(Equipment))]
         public Equipment Equipment { get; set; }
-
-    
         public decimal PricePerHour { get; set; }
-
-       
-
-       
     }
 }

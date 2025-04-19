@@ -3,7 +3,7 @@
 @model XCourse.Core.ViewModels.CenterAdminViewModels.CreateCenterViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Center";
     List<SelectListItem> governorates = new List<SelectListItem>
 {
     new SelectListItem { Value = "Cairo", Text = "Cairo" },
@@ -37,20 +37,24 @@
 
 }
 
-<h1 class="align-items-center text-success">Create New Center</h1>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/form.css" />
+}
 
-<hr />
-<div class="row">
-    <div class="col-md-12">
-        <form enctype="multipart/form-data" asp-area="CenterAdmins" asp-controller="Center" method="post" asp-action="Create" class="form-control container p-4 bg-light rounded shadow">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            @Html.HiddenFor(model => model.CenterAdminid)
-           @*  <div class=" form-group m-4 row justify-content-around">
+<div class="col-12">
+    <section id="form-section" class="form-section col-12 ">
+        <div class="form-container">
+            <h1 class="form-header">@ViewData["Title"]</h1>
+            <form enctype="multipart/form-data" asp-area="CenterAdmins" asp-controller="Center" method="post" asp-action="Create">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                @Html.HiddenFor(model => model.CenterAdminid)
+                @*  <div class=" form-group m-4 row justify-content-around">
                 <label asp-for="CenterID" class="control-label"></label>
                 <input asp-for="CenterID" class="form-control" />
                 <span asp-validation-for="CenterID" class="text-danger"></span>
             </div> *@
+
             <div class="form-group m-4 row justify-content-around">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -100,7 +104,10 @@
                            class="form-control"
                            onchange="document.getElementById('PreviewPicture').src = window.URL.createObjectURL(this.files[0])" />
                 </div>
-            </div>
+                <div class="form-group m-4 row justify-content-around ">
+                    <label asp-for="Address.City" class="control-label"></label>
+                    <select asp-for="Address.City" asp-items="@governorates" class="form-control"></select>
+
 
             <div class="form-group m-4 row justify-content-around">
        
@@ -109,46 +116,25 @@
                 <input type="hidden" id="lng" asp-for="Location.OriginX" />
                 <input type="hidden" asp-for="Location.Key" />
 
-                <script>
-                    function initMap() {
-                        var lat = @Model.Location.OriginY;
-                        var lng = @Model.Location.OriginX;
+                </div>
 
-                        if (lat == 0 || lng == 0) {
-                            lat = 30.0444;
-                            lng = 31.2357;
+                <div class="form-group m-4 row justify-content-around ">
+                    <label asp-for="Address.Street" class="control-label"></label>
+                    <input class="form-control" asp-for="Address.Street" />
 
-                        }
+                </div>
+                <div class="form-group m-4 row justify-content-around ">
+                    <label asp-for="Address.Governorate" class="control-label"></label>
+                    <input class="form-control" asp-for="Address.Governorate" />
 
-                        var myCenter = new google.maps.LatLng(lat, lng);
-                        var mapProp = {
-                            center: myCenter,
-                            zoom: 12,
-                            mapTypeId: google.maps.MapTypeId.ROADMAP
-                        };
-
-                        var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-
-                        var marker = new google.maps.Marker({
-                            position: myCenter,
-                            map: map,
-                            draggable: true
-                        });
-
-                        google.maps.event.addListener(map, "click", function (event) {
-                            marker.setPosition(event.latLng);
-                            updateLatLngInputs(event.latLng);
-                        });
-
-                        marker.addListener("dragend", function () {
-                            updateLatLngInputs(marker.getPosition());
-                        });
-
-                        function updateLatLngInputs(location) {
-                            document.getElementById("lat").value = location.lat();
-                            document.getElementById("lng").value = location.lng();
-                        }
+                </div>
+                <div class="form-group m-4 row justify-content-around" style="text-align: center">
+                    @if (Model.PreviewPicture != null)
+                    {
+                        <img id="PreviewPicture" alt="profile" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;"
+                             src="data:image/*;base64,@(Convert.ToBase64String(Model.PreviewPicture))" />
                     }
+
                 </script>
 
                 <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Location.Key&callback=initMap" defer></script>
@@ -164,10 +150,54 @@
     </div>
 </div>
 
-<div>
-   
+                            }
+
+                            var myCenter = new google.maps.LatLng(lat, lng);
+                            var mapProp = {
+                                center: myCenter,
+                                zoom: 12,
+                                mapTypeId: google.maps.MapTypeId.ROADMAP
+                            };
+
+                            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+                            var marker = new google.maps.Marker({
+                                position: myCenter,
+                                map: map,
+                                draggable: true
+                            });
+
+                            google.maps.event.addListener(map, "click", function (event) {
+                                marker.setPosition(event.latLng);
+                                updateLatLngInputs(event.latLng);
+                            });
+
+                            marker.addListener("dragend", function () {
+                                updateLatLngInputs(marker.getPosition());
+                            });
+
+                            function updateLatLngInputs(location) {
+                                document.getElementById("lat").value = location.lat();
+                                document.getElementById("lng").value = location.lng();
+                            }
+                        }
+                    </script>
+
+                    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Key&callback=initMap" defer></script>
+
+                </div>
+
+
+                <div class="form-group  m-4 row justify-content-around">
+                    <input type="submit" value="Create" class="btn btn-outline-success" />
+                    <a asp-action="Index" class="btn btn-outline-success">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </section>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
 }
