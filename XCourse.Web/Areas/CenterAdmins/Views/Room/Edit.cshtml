@@ -1,4 +1,4 @@
-﻿@model XCourse.Core.DTOs.CenterAdmins.RoomDto
+@model XCourse.Core.DTOs.CenterAdmins.RoomDto
 
 @{
     ViewData["Title"] = "Edit Room";
@@ -25,6 +25,7 @@
             <form asp-action="Edit" enctype="multipart/form-data">
                 <input asp-for="CenterId" hidden class="form-control" />
                 <input asp-for="RoomId" hidden class="form-control" />
+
                 <div class="form-group">
                     <div asp-validation-summary="All" class="text-danger" role="alert"></div>
                 </div>
@@ -69,6 +70,7 @@
                             multiple size="3">
                     </select>
                     <span asp-validation-for="Equipment" class="text-danger"></span>
+
                 </div>
 
                 <div class="form-group">

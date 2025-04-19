@@ -38,7 +38,10 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // GET: CenterController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var Center = _centerAdminService.GetCenter(id); 
+            if (Center == null) return NotFound();
+
+            return View(Center);
         }
 
         // GET: CenterController/Create
@@ -101,16 +104,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
 
 
 
-        public ActionResult GetRooms(int id)
-        {
-         var rooms=   _centerAdminService.getAllRooms(id);
-            if(rooms==null)
-            {
-                return NotFound();
-            }
-
-            return View(rooms);
-        }
+       
 
 
 
@@ -118,21 +112,47 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // GET: CenterController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var EditCenter=_centerAdminService.GetCenter(id);
+            if(EditCenter==null) return NotFound();
+            
+
+            return View(EditCenter);
         }
 
         // POST: CenterController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(CreateCenterViewModel EditCenter)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (Request.Form.Files.Count > 0)
+                {
+                    var file = Request.Form.Files.FirstOrDefault();
+
+                    using (var dataStream = new MemoryStream())
+                    {
+                        await file.CopyToAsync(dataStream);
+                        EditCenter.PreviewPicture = dataStream.ToArray();
+                    }
+                }
+                if (ModelState.IsValid)
+                {
+                  int t=  _centerAdminService.EditCenter(EditCenter);
+                    if (t == 1)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    else return View(EditCenter);
+                }
+
+               
+                return View(EditCenter);
             }
             catch
             {
-                return View();
+                return View(EditCenter);
             }
         }
 
