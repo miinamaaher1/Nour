@@ -51,6 +51,12 @@
         <partial name="_ProfilePartial.cshtml" />
 
         <ul class="nav-menu">
+            <li class="nav-item">
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">
+                    <i class="fa-solid fa-house nav-icon"></i>
+                    <span class="nav-text">Home</span>
+                </a>
+            </li>
             <!-- Navigation Menu -->
             @RenderSection("NavigationMenu", false)
 
