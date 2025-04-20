@@ -1,0 +1,94 @@
+﻿
+.container {
+    display:grid;
+    max-width: 600px;
+    height: 80vh;
+    align-items:center
+}
+
+.teacher-card {
+    background-color: var(--clr-surface);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.teacher-card__header {
+    text-align: center;
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+    padding: 16px 20px;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.teacher-card__content {
+    padding: 20px;
+}
+
+.teacher-card__row {
+    display: flex;
+    border-bottom: 1px solid var(--clr-border);
+    padding: 12px 20px;
+}
+
+    .teacher-card__row:last-child {
+        border-bottom: none;
+    }
+
+.teacher-card__label {
+    width: 130px;
+    font-weight: 500;
+    color: var(--clr-text-secondary);
+}
+
+.teacher-card__value {
+    flex: 1;
+    color: var(--clr-text-primary);
+}
+
+.teacher-card__actions {
+    display: flex;
+    gap: 10px;
+    margin: 20px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn--accept {
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+}
+
+    .btn--accept:hover {
+        background-color: #c99a5f;
+    }
+
+.btn--details {
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+}
+
+    .btn--details:hover {
+        background-color: #a06c4e;
+    }
+
+.btn--reject {
+    background-color: #d44848;
+    color: #ffffff;
+}
+
+    .btn--reject:hover {
+        background-color: #b33a3a;
+    }
