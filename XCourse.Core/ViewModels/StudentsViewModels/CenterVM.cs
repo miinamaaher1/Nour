@@ -16,6 +16,7 @@ namespace XCourse.Core.ViewModels.StudentsViewModels
         public ICollection<RoomVM> AvailbleRooms { get; set; }
         public Point? Location { get; set; }
         public string MapKey { get; set; }
+        public decimal? WalletBalance { get; set; }
 
     }
 }
