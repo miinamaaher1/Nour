@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<XCourse.Core.Entities.Subject>
 @section Styles {
-	<link rel="stylesheet" href="~/css/Teachers/SubjectsPage.css" />
+    <link rel="stylesheet" href="~/css/Teachers/SubjectsPage.css" />
 }
 @{
     ViewData["Title"] = "Index";
@@ -10,7 +10,7 @@
     <!-- Table ****  -->
     @* <h2>Subjects</h2> *@
 
-    
+
     @*     <a asp-action="Create" *@
     @*        class="data-table__btn data-table__btn--add" *@
     @*        style="display: inline-block; text-decoration: none;"> *@
@@ -18,88 +18,123 @@
     @*         Add Subject *@
     @*     </a> *@
 
-     <div class="container">
+    <div class="container">
         <div class="header-section">
             <h2>Subjects</h2>
             <a asp-action="Create" class="data-table__btn data-table__btn--add"
                style="display: inline-block; text-decoration: none;">
-                
+
                 <i class="fas fa-plus"></i> Add Subject
             </a>
-     </div>
+        </div>
 
-    <div class="data-table">
-        <div class="data-table__container">
-            <table class="data-table__table">
-                <thead>
-                    <tr>
-                        <th>@Html.DisplayNameFor(model => model.Topic)</th>
-                        <th>@Html.DisplayNameFor(model => model.Major)</th>
-                        <th>@Html.DisplayNameFor(model => model.Year)</th>
-                        <th>@Html.DisplayNameFor(model => model.Semester)</th>
-                        @* <th> *@
-                        @*     @Html.DisplayNameFor(model => model.IsDeleted) *@
-                        @* </th> *@
-                        <th colspan="3"
-                            style="text-align: center !important">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model == null || !Model.Any())
-                    {
+        <div class="data-table">
+            <div class="data-table__container">
+                <table class="data-table__table">
+                    <thead>
                         <tr>
-                            <td>You didn't add any subjects. </td>
+                            <th>@Html.DisplayNameFor(model => model.Topic)</th>
+                            <th>@Html.DisplayNameFor(model => model.Major)</th>
+                            <th>@Html.DisplayNameFor(model => model.Year)</th>
+                            <th>@Html.DisplayNameFor(model => model.Semester)</th>
+                            @* <th> *@
+                            @*     @Html.DisplayNameFor(model => model.IsDeleted) *@
+                            @* </th> *@
+                            <th colspan="3"
+                                style="text-align: center !important">
+                                Action
+                            </th>
                         </tr>
-                    }
-                    else
-                    {
-                        @foreach (var item in Model)
+                    </thead>
+                    <tbody>
+                        @if (Model == null || !Model.Any())
                         {
                             <tr>
-                                @* <td>Status : @request.Status</td> *@
-                                @* Commented the above one because we know that we are in the pending requests page  *@
-                                <td>@Html.DisplayFor(modelItem => item.Topic)</td>
-                                @* <td>---Group Description: @request.GroupDescription</td> *@
-                                @* Commented this one too because it is more appropriate to mention it in the details, and not here *@
-                                <td>@Html.DisplayFor(modelItem => item.Major)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Year)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Semester)</td>
-                                @* <td class="data-table__actions"> *@
-                                @*     <a asp-action="Accept" asp-route-id="@request.InvitationID" *@
-                                @*        class="data-table__btn data-table__btn--accept" *@
-                                @*        style="display: inline-block; text-decoration: none;"> *@
-                                @*         <i class="fas fa-check me-1"></i> *@
-                                @*         Accept *@
-                                @*     </a> *@
-                                @* </td> *@
-
-
-                                @* <td class="data-table__actions"> *@
-                                @*     <a asp-action="Details" asp-route-id="@item.ID" *@
-                                @*        class="data-table__btn data-table__btn--details" *@
-                                @*        style="display: inline-block; text-decoration: none;"> *@
-                                @*         <i class="fas fa-eye me-1"></i> *@
-                                @*         Details *@
-                                @*     </a> *@
-                                @* </td> *@
-                                <td class="data-table__actions">
-                                    <a asp-action="Delete" asp-route-id="@item.ID"
-                                       class="data-table__btn data-table__btn--delete"
-                                       style="display: inline-block; text-decoration: none;">
-                                        <i class="fas fa-trash-alt me-1"></i>
-                                        Delete
-                                    </a>
-                                </td>
+                                <td>You didn't add any subjects. </td>
                             </tr>
                         }
-                    }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>@Html.DisplayFor(modelItem => item.Topic)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Major)</td>
+                                    <td>
+                                        @switch ((int)item.Year)
+                                        {
+                                            case 0:
+                                                <span>Primary One</span>
+                                                break;
+                                            case 1:
+                                                <span>Primary Two</span>
+                                                break;
+                                            case 2:
+                                                <span>Primary Three</span>
+                                                break;
+                                            case 3:
+                                                <span>Primary Four</span>
+                                                break;
+                                            case 4:
+                                                <span>Primary Five</span>
+                                                break;
+                                            case 5:
+                                                <span>Primary Six</span>
+                                                break;
+                                            case 6:
+                                                <span>Preparatory One</span>
+                                                break;
+                                            case 7:
+                                                <span>Preparatory Two</span>
+                                                break;
+                                            case 8:
+                                                <span>Preparatory Three</span>
+                                                break;
+                                            case 9:
+                                                <span>Secondary One</span>
+                                                break;
+                                            case 10:
+                                                <span>Secondary Two</span>
+                                                break;
+                                            case 11:
+                                                <span>Secondary Three</span>
+                                                break;
+                                            default:
+                                                <span>Unknown</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch ((int)item.Semester)
+                                        {
+                                            case 1:
+                                                <span>First Semester</span>
+                                                break;
+                                            case 2:
+                                                <span>Second Semester</span>
+                                                break;
+                                            case 3:
+                                                <span>Full Year</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="data-table__actions">
+                                        <a asp-action="Delete" asp-route-id="@item.ID"
+                                           class="data-table__btn data-table__btn--delete"
+                                           style="display: inline-block; text-decoration: none;">
+                                            <i class="fas fa-trash-alt me-1"></i>
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
 
 
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>

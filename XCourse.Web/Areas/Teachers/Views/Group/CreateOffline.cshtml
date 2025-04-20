@@ -288,14 +288,12 @@
         .demo-container {
             background-color: var(--clr-surface);
             border-radius: 8px;
-            border: 1px solid var(--clr-border);
             padding: 20px;
             margin-bottom: 20px;
             min-height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         h2 {
@@ -875,8 +873,6 @@
                 this.modalParts.submitButton.addEventListener("click", async () => {
                     await this.SubmitFinal();
                 });
-
-                this.RenderStage01();
             }
 
             set stepNumber(value) {
@@ -957,9 +953,12 @@
             RenderBodyLoadingAnimation() {
                 if (this.modalParts.modalBody) {
                     this.modalParts.modalBody.innerHTML = `
-                    <div class="dot-wave">
-                        <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                    </div>`;
+                    <div class="demo-container" style="margin: auto;">
+                        <div class="dot-wave">
+                            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        </div>
+                    </div>
+                    `;
                 }
                 this.modalParts.errorMessage.style.display = 'none';
             }
@@ -991,9 +990,19 @@
                 }
             }
 
-            RenderStage01() {
-                this.RenderBodyLoadingAnimation();
+            async fetchMatchingGrades(){
+                let years = await fetchData("/Teachers/Group/Years", "POST", {});
+                if (Array.isArray(years)) {
+                    this.yearsList = this.yearsList.filter(element => years.includes(element.key));
+                } else {
+                    console.error("Invalid data returned for years:", years);
+                    this.yearsList = [];
+                }
+            }
 
+            async RenderStage01() {
+                this.RenderBodyLoadingAnimation();
+                await this.fetchMatchingGrades();
                 const governorateItems = this.governoratesList
                     .map(element => `<option value="${element}">${element}</option>`)
                     .join('');
@@ -1544,9 +1553,10 @@
 
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             if (document.getElementById('xmodal-body')) {
-                new CreateGroupForm();
+                const form = new CreateGroupForm();
+                await form.RenderStage01()
             } else {
                 console.error("Cannot initialize form: Modal container missing.");
                 document.body.innerHTML = "<p style='color: red; font-weight: bold;'>Error: Failed to load group creation form. HTML structure missing.</p>";

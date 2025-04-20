@@ -23,7 +23,7 @@ namespace XCourse.Services.Implementations.TeacherServices
         {
             _unitOfWork = unitOfWork;
         }
-        
+
         // Adding Announcement Method
         public async Task<bool> PostAnnouncement(int groupId, int teacherId, string body, bool isImportant, string? title)
         {
@@ -53,7 +53,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 return false;
             }
         }
-        
+
 
         // Reservation Methods 
         async public Task<ReserveGroupResponseDTO> ReserveOnlineGroup(ReserveOnlineGroupRequestDTO request)
@@ -376,7 +376,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 
 
         // DB Utility Methods 
-        public async Task<IEnumerable<GroupVM>> GetAllGroups(int teacherId)
+        public async Task<ICollection<GroupVM>> GetAllGroups(int teacherId)
         {
             var groups = await _unitOfWork.Groups.FindAllAsync(g => g.TeacherID == teacherId && g.IsActive == true, ["GroupDefaults.Room.Center", "Subject"]);
             List<GroupVM> groupVMList = new List<GroupVM>();
@@ -493,7 +493,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             return groupDetailsVM;
         }
-        public async Task<IEnumerable<Subject>> GetMatchingSubjects(RequestSubjectDto request)
+        public async Task<ICollection<Subject>> GetMatchingSubjects(RequestSubjectDto request)
         {
             var teacherSubjects = await _unitOfWork.Subjects.FindAllAsync(s => s.Teachers!.Any(t => t.ID == request.TeacherId));
 
@@ -504,13 +504,13 @@ namespace XCourse.Services.Implementations.TeacherServices
             return filteredSubjects;
 
         }
-        public async Task<IEnumerable<Subject>> GetAllSubjects(RequestSubjectDto request)
+        public async Task<ICollection<Subject>> GetAllSubjects(RequestSubjectDto request)
         {
             var teacherSubjects = await _unitOfWork.Subjects.FindAllAsync(s => s.Teachers!.Any(t => t.ID == request.TeacherId));
-            return teacherSubjects;
+            return teacherSubjects.ToList();
 
         }
-        public async Task<IEnumerable<ResponseCenterDto>> GetAllCentersPerGovernorate(string governorate)
+        public async Task<ICollection<ResponseCenterDto>> GetAllCentersPerGovernorate(string governorate)
         {
             var centers = await _unitOfWork.Centers.FindAllAsync(c =>
                 c.Address != null &&
@@ -521,9 +521,9 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 CenterId = c.ID,
                 CenterName = c.Name
-            });
+            }).ToList();
         }
-        public async Task<IEnumerable<Room>> GetAllAvailableRooms(RequestRoomDto request)
+        public async Task<ICollection<Room>> GetAllAvailableRooms(RequestRoomDto request)
         {
             var allRoomsInTheCenter = await _unitOfWork.Rooms
                 .FindAllAsync(r =>
@@ -552,6 +552,22 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             return availableRooms;
         }
+        public async Task<ICollection<int>> GetAllMatchingYears(int teacherId)
+        {
+            List<int> years = new List<int>();
+            if (teacherId <= 0)
+            {
+                return years;
+            }
+            var teacher = await _unitOfWork.Teachers.FindAsync(t => t.ID == teacherId, ["Subjects"]);
+
+            var matchingYears = teacher.Subjects!
+                .Select(s => (int)s.Year)
+                .ToList();
+
+            return matchingYears;
+        }
+
 
 
         // Validation Methods
@@ -752,7 +768,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             return (s1 < e2 && e1 > s2);
         }
 
-        public Task<IEnumerable<string>> GetAllGovernorates()
+        public Task<ICollection<string>> GetAllGovernorates()
         {
             throw new NotImplementedException();
         }
