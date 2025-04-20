@@ -1,0 +1,107 @@
+﻿@model XCourse.Core.ViewModels.CenterAdminViewModels.transfomReservations
+
+@{
+    ViewData["Title"] = "Edit Reservations";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/form.css" />
+}
+
+
+<div class="col-12">
+    <section id="form-section" class="form-section col-12 ">
+        <div class="form-container" style="width:90rem">
+            <h1 class="form-header">@ViewData["Title"]</h1>
+            <form asp-action="TransfomReservations">
+
+
+                <input type="hidden" asp-for="@Model.RoomID" />
+                <input type="hidden" asp-for="@Model.CenterId" />
+
+                <div class="form-group">
+                    <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+                </div>
+                <div class="data-table">
+                    <div class="data-table__container">
+                        <table class="data-table__table">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <label class="control-label">Current Room</label>
+                                            <input type="text" class="form-control" asp-for="@Model.RoomName" readonly />
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label class="control-label">  Capacity</label>
+                                            <input type="text" class="form-control" asp-for="@Model.Capacity" readonly />
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="form-group">
+                                            <label class="control-label"> Equipment</label>
+                                            <input type="text" class="form-control" asp-for="@Model.Equipment" readonly />
+                                        </div>
+                                    </td>
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ApproveReservations != null)
+                                {
+                                    @for (int i = 0; i < Model.ApproveReservations.Count; i++)
+                                    {
+                                        <input type="hidden" asp-for="ApproveReservations[@i].ReservationId" />
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label">Reservation Date</label>
+                                                    <input type="text" class="form-control" asp-for="ApproveReservations[@i].ReservationDate" readonly />
+                                                </div>
+                                            </td>
+
+
+
+                                            <td colspan="2">
+                                                <div class="form-group">
+
+
+                                                    <label asp-for="ApproveReservations[@i].AvailableRooms" class="control-label">Available Rooms</label>
+                                                    <select asp-for ="ApproveReservations[@i].SelectedNewRoomId" asp-items="@(new SelectList(Model.ApproveReservations[i].AvailableRooms.Select(room => new { Value = room.NewRoomID, Text = room.RoomName + " - Equipment  " + room.Equipment + " - Capacity  " + room.Capacity }), "Value", "Text"))" class="form-control">
+                                                       
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    }
+                                }
+                            </tbody>
+                            </table>
+                            </div>
+                            </div>
+               
+
+              
+
+                <div class="form-navigation">
+@*                     <a asp-action="Index" asp-route-id="@Model.RoomID" class="btn btn-close">Cancel</a>
+ *@                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+
+            </form>
+        </div>
+    </section>
+</div>
+
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

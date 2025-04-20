@@ -23,7 +23,7 @@ namespace XCourse.Infrastructure.Data
             modelBuilder.Entity<Subject>().HasQueryFilter(e => !e.IsDeleted);
             modelBuilder.Entity<Teacher>().HasQueryFilter(e => !e.IsDeleted);
             modelBuilder.Entity<Wallet>().HasQueryFilter(e => !e.IsDeleted);
-
+            modelBuilder.Entity<Room>().HasQueryFilter(e => !e.IsDeleted);
             // Mapping Configurations
             modelBuilder.ApplyConfiguration(new AnnouncementConfiguration());
             modelBuilder.ApplyConfiguration(new AppUserConfiguration());
@@ -37,6 +37,7 @@ namespace XCourse.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new SessionConfiguration());
             modelBuilder.ApplyConfiguration(new SubjectConfiguration());
             modelBuilder.ApplyConfiguration(new WalletConfiguration());
+            
         }
         partial void OnConfiguringPartial(DbContextOptionsBuilder optionsBuilder)
         {
@@ -46,7 +47,10 @@ namespace XCourse.Infrastructure.Data
                 .AddInterceptors(new CenterInterceptor()).AddInterceptors(new GroupInterceptor())
                 .AddInterceptors(new RoomReservationInterceptor()).AddInterceptors(new SessionInterceptor())
                 .AddInterceptors(new StudentInterceptor()).AddInterceptors(new SubjectInterceptor())
-                .AddInterceptors(new TeacherInterceptor()).AddInterceptors(new WalletInterceptor());
+                .AddInterceptors(new TeacherInterceptor()).AddInterceptors(new WalletInterceptor())
+                .AddInterceptors(new RoomInterceptor());
+
+
         }
 
     }

@@ -134,32 +134,35 @@
                     {
                         <div class="session-time">
                             <div class="day-circle">
-                                @switch ((int)(def.WeekDay!))
+                                @if (def.WeekDay.HasValue)
                                 {
-                                    case 1:
-                                        <div class="day-circle">SAT</div>
-                                        break;
-                                    case 2:
-                                        <div class="day-circle">SUN</div>
-                                        break;
-                                    case 4:
-                                        <div class="day-circle">MON</div>
-                                        break;
-                                    case 8:
-                                        <div class="day-circle">TUE</div>
-                                        break;
-                                    case 16:
-                                        <div class="day-circle">WED</div>
-                                        break;
-                                    case 32:
-                                        <div class="day-circle">THU</div>
-                                        break;
-                                    case 64:
-                                        <div class="day-circle">FRI</div>
-                                        break;
-                                    default:
-                                        <div class="day-circle"> - </div>
-                                        break;
+                                    @switch ((int)(def.WeekDay!))
+                                    {
+                                        case 1:
+                                            <div class="day-circle">SAT</div>
+                                            break;
+                                        case 2:
+                                            <div class="day-circle">SUN</div>
+                                            break;
+                                        case 4:
+                                            <div class="day-circle">MON</div>
+                                            break;
+                                        case 8:
+                                            <div class="day-circle">TUE</div>
+                                            break;
+                                        case 16:
+                                            <div class="day-circle">WED</div>
+                                            break;
+                                        case 32:
+                                            <div class="day-circle">THU</div>
+                                            break;
+                                        case 64:
+                                            <div class="day-circle">FRI</div>
+                                            break;
+                                        default:
+                                            <div class="day-circle"> - </div>
+                                            break;
+                                    }
                                 }
                             </div>
                             <div>@def.StartTime - @def.EndTime</div>

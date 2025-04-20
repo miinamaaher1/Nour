@@ -34,10 +34,10 @@ namespace XCourse.Web.Controllers
             {
                 return RedirectToAction("Index", "Center", new { area = "CenterAdmins" });
             }
-            //else if (user?.AccountType == AccountType.Assistant)
-            //{
-            //    return RedirectToAction("Index", "Home", new { area = "Assistants" });
-            //}
+            else if (user?.AccountType == AccountType.Assistant)
+            {
+                return RedirectToAction("Index", "Home", new { area = "Assistants" });
+            }
             else
             {
                 return View();
