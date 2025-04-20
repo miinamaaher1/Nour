@@ -61,7 +61,7 @@ namespace XCourse.Services.Implementations.StudentServices
 
             if (centerVM.IncompatibleGender) return centerVM;
 
-            var rooms = _unitOfWork.Rooms.FindAll(r => r.CenterID == center.ID && !r.Equipment.HasFlag(Equipment.Lecture));
+            var rooms = _unitOfWork.Rooms.FindAll(r => r.CenterID == center.ID && (r.Equipment.HasFlag(Equipment.Study) || r.Equipment.HasFlag(Equipment.Meeting)));
 
             foreach (var room in rooms)
             {
@@ -102,21 +102,12 @@ namespace XCourse.Services.Implementations.StudentServices
             RequestStatusDTO status = new RequestStatusDTO();
             try
             {
-
                 var auser = await _userManager.GetUserAsync(user);
-                //var wallet = _unitOfWork.Wallets.Find(w => w.AppUserID == auser.Id);
                 var room = _unitOfWork.Rooms.Find(r=>r.ID==roomId, ["Center"]);
 
                 var centerAdmin= _unitOfWork.CenterAdmins.Find(c=>c.ID == room.Center.CenterAdminID, ["AppUser"]);
 
                 var total = (decimal)(end - start).TotalHours * room.PricePerHour;
-
-            //if (wallet.Balance < total)
-            //{
-            //    status.IsValid = false;
-            //    status.Errors = ["Insufficient Balance"];
-            //    return status;
-            //}
 
                 var reservations = _unitOfWork.RoomReservations.FindAll(r => r.Date == date && r.RoomID == roomId);
 
@@ -137,7 +128,7 @@ namespace XCourse.Services.Implementations.StudentServices
                     EndTime = end,
                     StudentID = stud.ID,
                     TotalPrice = total,
-                    ReservationStatus = ReservationStatus.Pending
+                    ReservationStatus = ReservationStatus.Approved
                 };
 
                 var IsPaid= await _transactionService.MakeTransactionAsync (
@@ -154,19 +145,6 @@ namespace XCourse.Services.Implementations.StudentServices
                 }
 
 
-                //Transaction transaction = new Transaction()
-                //{
-                //    Amount = total,
-                //    CreatedAt = DateTime.Now,
-                //    WalletID = wallet.ID,
-                //    Type = TransactionType.Deposit,
-                //    PaymentTransactionID = "xxx"
-                //};
-
-                //wallet.Balance -= total;
-
-
-                //_unitOfWork.Transactions.Add(transaction);
                 _unitOfWork.RoomReservations.Add(rr);
                 _unitOfWork.Save();
                 status.IsValid = true;
