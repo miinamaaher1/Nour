@@ -9,6 +9,7 @@ namespace XCourse.Web.ServicesCollections
         public static IServiceCollection AddAssistantServices(this IServiceCollection services)
         {
             services.AddScoped<IPendingRequestService, PendingRequestService>();
+            services.AddScoped<IGroupService, GroupService>();
             return services;
         }
     }
