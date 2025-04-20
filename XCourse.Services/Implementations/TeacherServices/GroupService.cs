@@ -286,14 +286,10 @@ namespace XCourse.Services.Implementations.TeacherServices
             };
 
             double totalPrice = 0;
+
             foreach (var session in request.Sessions)
             {
                 var room = await _unitOfWork.Rooms.FindAsync(r => r.ID == session.RoomId);
-                var pricePerHour = (double)room.PricePerHour;
-                var duration = (session.EndTime - session.StartTime).TotalMinutes;
-                double pricePerSession = pricePerHour * (duration / 60);
-
-
 
                 if (room == null)
                 {
@@ -304,8 +300,12 @@ namespace XCourse.Services.Implementations.TeacherServices
                     };
                 }
 
-                // create default sessions
-                GroupDefaults groupDefaults = new GroupDefaults
+                var pricePerHour = (double)room.PricePerHour;
+                var duration = (session.EndTime - session.StartTime).TotalMinutes;
+                double pricePerSession = pricePerHour * (duration / 60);
+
+                // Create default session definition
+                var groupDefaults = new GroupDefaults
                 {
                     WeekDay = session.DayId,
                     StartDate = session.StartDate,
@@ -318,6 +318,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 };
                 groupInCenter.GroupDefaults.Add(groupDefaults);
 
+                // Create all actual sessions
                 DateOnly current = session.StartDate;
                 while (!MatchesWeekDay(current, session.DayId))
                 {
@@ -331,8 +332,8 @@ namespace XCourse.Services.Implementations.TeacherServices
                         StartDateTime = current.ToDateTime(session.StartTime),
                         EndDateTime = current.ToDateTime(session.EndTime),
                         Duration = session.EndTime.ToTimeSpan() - session.StartTime.ToTimeSpan(),
-                        Location = center.Location,
                         IsOnline = false,
+                        Location = center.Location,
                         Address = new Address
                         {
                             Street = center.Address!.Street,
@@ -343,6 +344,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     };
 
                     totalPrice += pricePerSession;
+
                     var reservation = new RoomReservation
                     {
                         ReservationStatus = ReservationStatus.Pending,
@@ -351,27 +353,31 @@ namespace XCourse.Services.Implementations.TeacherServices
                         TotalPrice = room.PricePerHour,
                         StartTime = session.StartTime,
                         EndTime = session.EndTime,
-                        Session = newSession,
                         IsDeleted = false,
-                        WeekDay = session.DayId
+                        WeekDay = session.DayId,
+                        Session = newSession
                     };
 
-
+                    newSession.RoomReservation = reservation;
                     groupInCenter.Sessions.Add(newSession);
-                    _unitOfWork.Sessions.Add(newSession);
-                    _unitOfWork.RoomReservations.Add(reservation);
 
                     current = current.AddDays(7);
                 }
             }
 
-            bool transactionResult = await _transactionService.MakeTransactionAsync(teacher.AppUserID, center.CenterAdmin!.AppUserID, (decimal)totalPrice, TransactionType.Payment);
-            if (transactionResult == false)
+            bool transactionResult = await _transactionService.MakeTransactionAsync(
+                teacher.AppUserID,
+                center.CenterAdmin!.AppUserID,
+                (decimal)totalPrice,
+                TransactionType.Payment
+            );
+
+            if (!transactionResult)
             {
                 return new ReserveGroupResponseDTO
                 {
                     IsValid = false,
-                    Errors = [$"Payment Failed! Check first that you have enough balance"]
+                    Errors = ["Payment Failed! Check first that you have enough balance"]
                 };
             }
 
