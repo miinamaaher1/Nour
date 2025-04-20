@@ -23,5 +23,8 @@ namespace XCourse.Services.Interfaces.CenterAdminServices
         public int ConfirmTransformRoom(transfomReservations transfom);
 
 
+        public int DeleteCenter(CreateCenterViewModel center);
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Algorithm;
 using XCourse.Core.DTOs.CenterAdmins;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
@@ -209,6 +210,11 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         {
 
             var Avalible = _centerAdminService.transfomReservations(RoomId,CenterId);
+            if (Avalible.ApproveReservations.All(r => r.AvailableRooms.Count == 0))
+            {
+                return RedirectToAction("UnableDeleting", new { id = RoomId });
+
+            }
 
 
             return View (Avalible);
@@ -232,6 +238,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 else
                 {
                     return View(transfom);
+                        
+                       
+
 
                 }
             }
@@ -245,6 +254,21 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
 
 
         }
+
+
+        public ActionResult UnableDeleting(int id)
+        {
+
+
+            var Deletemessage = _centerAdminService.GetRoom(id);
+            return View(Deletemessage);
+
+
+        }
+
+
+
+
 
     }
 }
