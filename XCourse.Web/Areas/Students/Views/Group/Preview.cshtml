@@ -15,7 +15,7 @@
                     @if (Model.TeacherProfilePicture != null)
                     {
                         <img alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(Model.TeacherProfilePicture))"
-                        class="group__profile__image" />
+                             class="group__profile__image" />
                     }
                     else
                     {
@@ -37,7 +37,7 @@
         <div class="group-card">
             <div class="group-content">
                 <div class="group-card__meta row g-2">
-                    <di class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                    <div class="group-card__meta-item col-12 col-md-6 col-lg-3">
                         <i class="fa-solid fa-graduation-cap"></i>
                         @switch ((int)(Model?.Year!))
                         {
@@ -81,11 +81,11 @@
                                 <span>Unknown Grade</span>
                                 break;
                         }
-                    </di g-2v>
-                    <di class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                    </div>
+                    <div class="group-card__meta-item col-12 col-md-6 col-lg-3">
                         <i class="fa-solid fa-building-columns"></i>
                         <span>@Model.Major</span>
-                    </di g-2v>
+                    </div>
                     <div class="group-card__meta-item col-12 col-md-6 col-lg-3">
                         <i class="fa-solid fa-school"></i>
                         @switch ((int)Model?.Semester!)
@@ -128,14 +128,10 @@
                             <i class="fas fa-child-dress"></i>&nbsp;Girls Only
                         </span>
                     }
-                    <form asp-area="Students" asp-controller="Group" asp-action="Enroll" method="post" class="join-now-button">
-                        <input type="hidden" name="groupID" value="@Model.ID" />
-                        <input type="hidden" name="studentID" value="@Model.StudentID" />
-                        <button type="submit" class="btn btn-primary @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")"
-                        @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")>
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Join Now
-                        </button>
-                    </form>
+                    <button type="button" id="openPaymentModalBtn" class="btn btn-primary join-now-button @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")"
+                    @(Model.IsGirlsOnly && (Model.StudentGender == Gender.Male) ? "disabled" : "")>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Join Now
+                    </button>
                 </div>
                 <div class="group-card__students mt-4">
                     <div class="group-card__progress-bar">
@@ -153,7 +149,7 @@
             <div class="group-card__content">
                 <div class="group-card__sessions mt-4">
                     <div class="group-card__session-title">Default Session Days</div>
-                    @foreach(var def in Model.DefaultTimes)
+                    @foreach (var def in Model.DefaultTimes)
                     {
                         <div class="session-time">
                             <div class="day-circle">
@@ -216,10 +212,11 @@
                     <!-- Map Icon -->
                     <div class="col-md-4 d-flex justify-content-center align-items-center">
                         <div class="center-info__map">
-                            @if(Model.Location != null)
+                            @if (Model.Location != null)
                             {
                                 <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.MapKey, OriginX=Model.Location.X, OriginY=Model.Location.Y }" style="width:100%; height:100%" />
-                            } else
+                            }
+                            else
                             {
                                 <i class="fa-solid fa-map-location-dot"></i>
                             }
@@ -228,6 +225,60 @@
                 </div>
             </div>
         </section>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Payment Confirmation</h2>
+            <button class="modal-close" id="closePaymentModal">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="payment-details">
+                <div class="payment-row" style="font-size:20px; font-weight:600;">
+                    <span>@Model.SubjectName with @Model.TeacherName</span>
+                </div>
+                <div class="payment-row">
+                    <span>Price Per Session:</span>
+                    <span class="price">L.E. @Model.PricePerSession</span>
+                </div>
+                <div class="payment-row">
+                    <span>Your Wallet Balance:</span>
+                    <span class="balance @(Model.WalletBalance < Model.PricePerSession ? "insufficient" : "")">
+                        L.E. @Model.WalletBalance
+                    </span>
+                </div>
+
+                @if (Model.WalletBalance < Model.PricePerSession)
+                {
+                    <div class="insufficient-funds-alert">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <p>Your wallet balance is insufficient to join this group. Please add funds to your wallet.</p>
+                        <a href="/Students/Wallet/AddFunds" class="btn btn-accent mt-2">Add Funds</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="payment-summary">
+                        <p>By joining this group, you agree to pay L.E. @Model.PricePerSession for the next session.</p>
+                        <p>After enrollment, you'll be charged for each session you attend.</p>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="cancelPaymentBtn">Cancel</button>
+            <form asp-area="Students" asp-controller="Group" asp-action="Enroll" method="post" id="enrollmentForm">
+                <input type="hidden" name="groupID" value="@Model.ID" />
+                <input type="hidden" name="studentID" value="@Model.StudentID" />
+                <button type="submit" class="btn btn-accent" id="confirmPaymentBtn"
+                @(Model.WalletBalance < Model.PricePerSession ? "disabled" : "")>
+                    Confirm Payment & Join
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -303,7 +354,6 @@
             margin-top: -10px;
         }
 
-
         /* ========= 2. GROUP CARD ========= */
         .group-card {
             background-color: var(--clr-surface);
@@ -328,9 +378,9 @@
             color: var(--clr-text-secondary);
         }
 
-        .group-card__meta-item i {
-            color: var(--clr-secondary);
-        }
+            .group-card__meta-item i {
+                color: var(--clr-secondary);
+            }
 
         /* Progress Bar */
         .group-card__progress-bar {
@@ -352,7 +402,6 @@
             justify-content: space-between;
         }
 
-
         /* ========= 3. SESSION TIMES ========= */
         .group-card__sessions {
             background-color: var(--clr-background);
@@ -367,7 +416,7 @@
             color: var(--clr-text-secondary);
         }
 
-        .group-card__session-time {
+        .session-time {
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -375,7 +424,7 @@
             margin-bottom: 0.5rem;
         }
 
-        .group-card__day-circle {
+        .day-circle {
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -387,7 +436,6 @@
             font-weight: 600;
             font-size: 0.75rem;
         }
-
 
         /* ========= Center Info Section ========= */
         .center-info {
@@ -433,21 +481,24 @@
         }
 
         @@media (max-width: 768px) {
-            .center-profile__header {
-                flex-direction: column;
-                align-items: center;
-            }
+            .center-profile__header
 
-            .center-profile__details {
-                margin-left: 0;
-                text-align: center;
-            }
+        {
+            flex-direction: column;
+            align-items: center;
+        }
 
-            .center-info__map {
-                width: 250px;
-                height: 250px;
-                margin-top: 3rem !important;
-            }
+        .center-profile__details {
+            margin-left: 0;
+            text-align: center;
+        }
+
+        .center-info__map {
+            width: 250px;
+            height: 250px;
+            margin-top: 3rem !important;
+        }
+
         }
 
         .btn {
@@ -459,18 +510,18 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-        }
+            .btn:hover {
+                transform: translateY(-2px);
+            }
 
         .btn-primary {
             background-color: var(--clr-primary);
             color: var(--clr-text-on-primary);
         }
 
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
+            .btn-primary:hover {
+                opacity: 0.9;
+            }
 
         .disabled {
             cursor: default;
@@ -478,10 +529,10 @@
             opacity: 0.5;
         }
 
-        .disabled:hover {
-            opacity: 0.5;
-            transform: none;
-        }
+            .disabled:hover {
+                opacity: 0.5;
+                transform: none;
+            }
 
         .group-card__feature {
             display: flex;
@@ -505,5 +556,220 @@
         .join-now-button {
             margin-left: auto;
         }
+
+        .btn {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+            .btn:hover {
+                background-color: var(--clr-secondary);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--clr-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+            .modal-overlay.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .modal {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--clr-text-on-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--clr-text-on-primary);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+            .modal-close:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--clr-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+        .btn-accent {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+        /* Payment Modal Styles */
+        .payment-details {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--clr-border);
+        }
+
+            .payment-row:last-child {
+                border-bottom: none;
+            }
+
+        .price {
+            font-weight: 600;
+            color: var(--clr-accent);
+        }
+
+        .balance {
+            font-weight: 600;
+            color: var(--clr-accent);
+        }
+
+            .balance.insufficient {
+                color: #ff3b30;
+            }
+
+        .insufficient-funds-alert {
+            background-color: rgba(255, 59, 48, 0.1);
+            border-left: 4px solid #ff3b30;
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+            .insufficient-funds-alert i {
+                color: #ff3b30;
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+
+        .payment-summary {
+            background-color: rgba(var(--clr-accent-rgb), 0.1);
+            border-left: 4px solid var(--clr-accent);
+            padding: 16px;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+
+        #confirmPaymentBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
+}
+
+@section Scripts {
+    <script>
+        // DOM Elements
+        const openPaymentModalBtn = document.getElementById('openPaymentModalBtn');
+        const paymentModalOverlay = document.getElementById('paymentModalOverlay');
+        const closePaymentModalBtn = document.getElementById('closePaymentModal');
+        const cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+        const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+        const enrollmentForm = document.getElementById('enrollmentForm');
+
+        // Payment Modal functionality
+        openPaymentModalBtn.addEventListener('click', () => {
+            paymentModalOverlay.classList.add('active');
+        });
+
+        const closePaymentModal = () => {
+            paymentModalOverlay.classList.remove('active');
+        };
+
+        closePaymentModalBtn.addEventListener('click', closePaymentModal);
+        cancelPaymentBtn.addEventListener('click', closePaymentModal);
+
+        // Close modal when clicking on overlay
+        paymentModalOverlay.addEventListener('click', (e) => {
+            if (e.target === paymentModalOverlay) {
+                closePaymentModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && paymentModalOverlay.classList.contains('active')) {
+                closePaymentModal();
+            }
+        });
+    </script>
 }

@@ -30,6 +30,8 @@ namespace XCourse.Services.Implementations.StudentServices
                 return new GroupDetails();
             }
 
+
+
             GroupDetails details = new GroupDetails()
             {
                 Id = group.ID,
@@ -37,7 +39,6 @@ namespace XCourse.Services.Implementations.StudentServices
                 Location = group.Location,
                 Key = _configuration["GoogleMaps:ApiKey"],
                 DefaultRoom = group.DefaultRoom,
-                Sessions = _unitOfWork.Sessions.FindAll(s => s.GroupID == group.ID, new string[] { "RoomReservation.Room" }, null, 3).ToList(),
                 Teacher = group.Teacher,
                 IsOnline = group.IsOnline,
                 IsPrivate = group.IsPrivate,
@@ -46,6 +47,13 @@ namespace XCourse.Services.Implementations.StudentServices
                 PricePerSession = group.PricePerSession,
                 Defaults = new List<DefaultTimeVM>()
             };
+
+            var Sessions = _unitOfWork.Sessions.FindAll(s => s.GroupID == group.ID 
+                                                        && s.StartDateTime>=DateTime.Now
+                        , [ "RoomReservation.Room"], null, 3).ToList();
+            details.Sessions = Sessions;
+
+            
 
             foreach (var def in group.GroupDefaults)
             {
@@ -110,7 +118,7 @@ namespace XCourse.Services.Implementations.StudentServices
                      g.IsPrivate == false &&
                      g.MaxStudents > g.CurrentStudents &&
                      !(g.IsGirlsOnly == true && student.AppUser.Gender == Gender.Male) &&
-                     g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower() &&
+                     (g.IsOnline ==true || g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower())&&
                      !g.Students.Any(st => st.ID == student.ID),
                         ["Subject", "Students", "Teacher.AppUser"]
             );

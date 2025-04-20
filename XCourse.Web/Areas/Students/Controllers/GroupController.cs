@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using XCourse.Core.DTOs.StudentDTOs;
@@ -32,18 +33,21 @@ namespace XCourse.Web.Areas.Students.Controllers
         }
 
         [HttpPost]
-        public IActionResult Enroll(int studentID, int groupID)
+        public async Task<IActionResult> Enroll(int studentID, int groupID)
         {
-            if (_enrollStudentService.Enroll(studentID, groupID))
+            var result = await _enrollStudentService.Enroll(studentID, groupID);
+
+            if (result)
             {
+                TempData["SuccessMessage"] = "You have successfully joined the group!";
                 return RedirectToAction("Details", new { id = groupID });
             }
             else
             {
+                TempData["ErrorMessage"] = "Failed to join group. Insufficient funds or the group is full.";
                 return RedirectToAction("Preview", new { id = groupID });
             }
         }
-
         [HttpPost]
         public IActionResult PrepareRequest([FromBody] PrivateGroupParametersDTO request)
         {

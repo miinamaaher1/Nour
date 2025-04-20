@@ -46,7 +46,7 @@
                                             @foreach (var group in Announcement.GroupSubjectNames!)
                                             {
                                                 <a asp-action="Details" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupID" class="announcement-item__group">
-                                                    <i class="fas fa-users"></i>
+                                                    <i class="fas fa-users"></i>&nbsp;
                                                     @group.GroupSubject Group
                                                 </a>
                                             }
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="announcement-item__date">
-                                <i class="far fa-calendar-alt"></i>
+                                <i class="far fa-calendar-alt"></i>&nbsp;
                                 @Announcement.DateTime?.ToString("dddd, MMMM dd yyyy - hh:mm tt")
                             </div>
                             <div class="announcement-item__body">
@@ -64,7 +64,7 @@
                             @if (Announcement.IsImportant)
                             {
                                 <div class="announcement-item__badge">
-                                    <i class="fas fa-exclamation-circle"></i>
+                                    <i class="fas fa-exclamation-circle"></i> &nbsp;
                                     Important
                                 </div>
                             }
@@ -98,20 +98,20 @@
                                     @if (session.IsOnline)
                                     {
                                         <div class="session-card__status session-card__status--online">
-                                            <i class="fas fa-circle"></i>
+                                                <i class="fas fa-circle"></i>&nbsp;
                                             Online
                                         </div>
                                     }
                                     else
                                     {
                                         <div class="session-card__status session-card__status--offline">
-                                            <i class="fas fa-circle"></i>
+                                                <i class="fas fa-circle"></i> &nbsp;
                                             Offline
                                         </div>
                                     }
                                  
                                     <div class="session-card__duration">
-                                            <i class="fa-solid fa-hourglass-half"></i>
+                                            <i class="fa-solid fa-hourglass-half"></i>&nbsp;
                                             @session.Duration!.Value.ToString(@"hh\:mm")
                                     </div>
                                 </div>
@@ -166,7 +166,7 @@
 
                                 <!-- Group 1 -->
                                 <div class="group-carousel__slide">
-                                    <a class="group-card" style="text-decoration:none;" asp-action="Preview" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupID">
+                                    <a  style="text-decoration:none;" asp-action="Preview" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupID">
                                     <div class="group-card">
                                         <div class="group-card__image">
                                             <img 
@@ -186,26 +186,26 @@
                                                 @if (group.IsOnline)
                                                 {
                                                     <span class="group-card__feature">
-                                                        <i class="fas fa-laptop"></i> Online
+                                                            <i class="fas fa-laptop"></i> &nbsp; Online
                                                     </span>
                                                 }
                                                 else
                                                 {
                                                     <span class="group-card__feature">
-                                                        <i class="fas fa-building"></i> Offline
+                                                            <i class="fas fa-building"></i> &nbsp; Offline
                                                     </span>
                                                 }
                                                 @if(group.IsGirlsOnly)
                                                 {
                                                     <span class="group-card__feature">
-                                                        <i class="fas fa-female"></i> Girls Only
+                                                            <i class="fas fa-female"></i> &nbsp; Girls Only
                                                     </span>
                                                 }
                                             </div>
                                         <div class="group-card__footer">
                                             <div class="group-card__price">@group.PricePerSession EGP</div>
                                             <div class="group-card__capacity">
-                                                <i class="fas fa-users"></i>
+                                                        <i class="fas fa-users"></i>&nbsp;
                                                 @group.CurrentStudentsCount/@group.MaxStudents
                                             </div>
                                         </div>

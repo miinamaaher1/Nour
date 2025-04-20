@@ -6,6 +6,6 @@ namespace XCourse.Services.Interfaces.StudentServices
     public interface IEnrollStudentService
     {
         Task<DetailedGroupVM> GetGroupInfo(int groupID, ClaimsPrincipal user);
-        bool Enroll(int studentID, int groupID);
+        public Task<bool> Enroll(int studentID, int groupID);
     }
 }
