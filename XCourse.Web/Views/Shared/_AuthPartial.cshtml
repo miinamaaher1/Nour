@@ -2,18 +2,28 @@
 @using XCourse.Core.Entities
 @inject SignInManager<AppUser> SignInManager
 
+@{
+    var currentPage = (ViewContext.ActionDescriptor as Microsoft.AspNetCore.Mvc.RazorPages.CompiledPageActionDescriptor)?.ViewEnginePath;
+    var isLoginPage = currentPage == "/Account/Login"
+                    || currentPage == "/Account/ResendEmailConfirmation" 
+                    || currentPage == "/Account/ForgotPassword"
+                    || currentPage == "/Account/ForgotPasswordConfirmation";
+
+    var isRegisterPage = currentPage == "/Account/Register"
+                        || currentPage == "/Account/SelectAccountType"
+                        || currentPage == "/Account/SelectAccountTypeExternal";
+}
+
 @if (SignInManager.IsSignedIn(User))
 {
     <!-- Show Logout when user is signed in -->
 
     <li class="nav-item">
         <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            @* <button type="submit" style="background-color : transparent; border: none; padding:0;" class="nav-link"> *@
             <button class="nav-link">
                 <i class="fa-solid fa-power-off nav-icon"></i>
                 <span class="nav-text">Logout</span>
             </button>
-
         </form>
     </li>
 }
@@ -21,13 +31,13 @@ else
 {
     <!-- Show Login and Sign Up when user is not signed in -->
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+        <a class="nav-link @(isLoginPage ? "active" : "") " asp-area="Identity" asp-page="/Account/Login">
             <i class="fa-solid fa-right-to-bracket nav-icon"></i>
             <span class="nav-text">Sign In</span>
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/SelectAccountType">
+        <a class="nav-link @(isRegisterPage ? "active" : "") " asp-area="Identity" asp-page="/Account/SelectAccountType">
             <i class="fa-solid fa-user-plus nav-icon"></i>
             <span class="nav-text">Sign Up</span>
         </a>

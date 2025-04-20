@@ -1,20 +1,13 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using Xcourse.Infrastructure.Repositories;
 using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
-using XCourse.Infrastructure.Repositories;
 using XCourse.Infrastructure.Repositories.Interfaces;
-using XCourse.Services.Implementations.EmailServices;
 using XCourse.Web.ServicesCollections;
-using XCourse.Services.Implementations.SubjectServices;
-using XCourse.Services.Interfaces.SubjectServices;
-using XCourse.Web.Middleware;
 namespace XCourse.Web
 {
     public class Program
