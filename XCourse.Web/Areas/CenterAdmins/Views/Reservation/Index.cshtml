@@ -1,0 +1,346 @@
+﻿@model IEnumerable<XCourse.Core.ViewModels.CenterAdminViewModels.ReservationViewModel>
+
+@{
+    ViewData["Title"] = "Current Reservations";
+    ViewData["Title1"] = "Pending Reservations";
+
+}
+
+
+
+
+
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+
+
+<div class="col-12">
+    <div class="container">
+        
+        <div>
+            <button id="openModal" class="openModal">
+                <i class="fa fa-cog"></i>
+            </button>
+        </div>
+        
+        <div class="modal d-none " id="pendingModal"  >
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pendingModalLabel">@ViewData["Title1"]</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="data-table">
+                            <div class="data-table__container">
+                                <table class="data-table__table">
+                                    <thead>
+                                     <tr>
+                                    <th> Room Name </th>
+                                    <th> Date </th>
+                                    <th>StartTime</th>
+                                    <th>EndTime</th>
+                                    <th>WeekDay </th>
+                                    <th colspan="2"
+                                        style="text-align: center !important">
+                                        Manage
+                                    </th>
+                                     </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach (var item in Model.Where(r => r.ReservationStatus == ReservationStatus.Pending))
+                                        {
+                                            <tr>
+                                                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+
+                                                <td>@Html.DisplayFor(modelItem => item.StartTime)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.WeekDay)</td>
+                                                <td class="data-table__actions">
+                                                    <a class="data-table__btn data-table__btn--edit" asp-action="AcceptReservation" asp-route-id="@item.ID">
+                                                        <i class="fas fa-edit me-1"></i> Accept
+                                                    </a>
+                                                </td>
+                                                <td class="data-table__actions">
+                                                    <a class="data-table__btn data-table__btn--edit" asp-action="RejectReservation" asp-route-id="@item.ID">
+                                                        <i class="fas fa-edit me-1"></i> Reject
+                                                    </a>
+                                                </td>
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+       
+   </div>
+</div>
+
+
+<div class="col-12">
+    <div class="container">
+        <h1>@ViewData["Title"]</h1>
+        <div class="data-table">
+            <div class="data-table__container">
+                <table class="data-table__table">
+                    <thead>
+                        <tr>
+                            <th>Room Name</th>
+                            <th> Capacity </th>
+                            <th> Equipment </th>
+                            <th>TotalPrice</th>
+                            <th>Date</th>
+                            <th>WeekDay</th>
+                            <th>StartTime</th>
+                            <th>EndTime</th>
+                            <th colspan="2"
+                                style="text-align: center !important">
+                                Actions
+                            </th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.Where(r => r.ReservationStatus == ReservationStatus.Approved))
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Capacity)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Equipment)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Date)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.WeekDay)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StartTime)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EndTime)
+                                </td>
+                              
+
+                                <td class="data-table__actions">
+                                    <a class="data-table__btn data-table__btn--edit" asp-action="Details" asp-route-id="@item.ID">
+                                        <i class="fas fa-eye me-1"></i> Details
+                                    </a>
+                              
+                                </td>
+                                <td class="data-table__actions">
+                                    <a class="data-table__btn data-table__btn--edit" asp-action="Edit" asp-route-id="@item.ID">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        }
+
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+@section Styles {
+    <style>
+        .data-table {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4rem;
+        }
+
+        .data-table__container {
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        .data-table__table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+            .data-table__table th {
+                background-color: var(--clr-secondary);
+                color: var(--clr-text-on-secondary);
+                font-weight: 500;
+                text-align: left;
+                padding: 14px 16px;
+            }
+
+                .data-table__table th:first-child {
+                    border-top-left-radius: 8px;
+                }
+
+                .data-table__table th:last-child {
+                    border-top-right-radius: 8px;
+                }
+
+            .data-table__table tbody tr {
+                transition: background-color 0.2s;
+            }
+
+                .data-table__table tbody tr:hover {
+                    background-color: rgba(224, 169, 109, 0.1);
+                }
+
+            .data-table__table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid var(--clr-border);
+                color: var(--clr-text-secondary);
+            }
+
+            .data-table__table tr:last-child td {
+                border-bottom: none;
+            }
+
+        .data-table__actions {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+
+        .data-table__btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 4px;
+            text-decoration: none;
+        }
+
+            .data-table__btn:last-child {
+                margin-right: 0;
+            }
+
+        .data-table__btn--edit {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+            .data-table__btn--edit:hover {
+                background-color: color-mix(in srgb, var(--clr-accent) 85%, black);
+            }
+
+        .data-table__btn--details {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+            .data-table__btn--details:hover {
+                background-color: color-mix(in srgb, var(--clr-secondary) 85%, black);
+            }
+
+        .data-table__btn--delete {
+            background-color: #d44848;
+            color: #ffffff;
+        }
+
+            .data-table__btn--delete:hover {
+                background-color: #b33a3a;
+            }
+
+        /* Add Button */
+        .add-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+            .add-button:hover {
+                background-color: color-mix(in srgb, var(--clr-primary) 85%, black);
+                transform: translateY(-5px);
+            }
+
+            .openModal
+            {
+                display:block;
+           margin-left:auto;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            padding: 10px;
+            font-size: 1.5rem;
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            outline: none;
+            border: none;
+
+
+            }
+
+          
+
+
+    </style>
+}
+
+
+@section Scripts
+{
+<script>
+        const openModalButton = document.getElementById("openModal");
+        if (openModalButton) {
+            openModalButton.addEventListener("click", ()=>{
+                const modal = document.getElementById("pendingModal")
+                modal.classList.toggle("d-none");
+            })
+        }
+</script>
+
+
+
+
+}
