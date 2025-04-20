@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.Entities;
+using XCourse.Core.ViewModels.TeachersViewModels.Sessions;
 using XCourse.Services.Interfaces.TeacherServices;
 using XCourse.Web.Areas.Students.Controllers;
 
@@ -33,5 +34,107 @@ namespace XCourse.Web.Areas.Teachers.Controllers
 
             return View(session);
         }
+        async public Task<IActionResult> GroupSessions(int id)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                // Access Page
+                Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+
+            var sessions = await _sessionService.GetSessionsInGroup(id, teacherId);
+            return View(sessions);
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userID == null)
+            {
+                // Error Page Here
+            }
+            var teacher = await _sessionService.GetTeacherByUserId(userID!);
+            int groupType = await _sessionService.GetGroupTypeFromSession(id, teacher.ID);
+            switch (groupType)
+            {
+                case 0:
+                    break;
+                case 1:
+                    return RedirectToAction(nameof(EditOnlineGroup), new { id });
+                case 2:
+                    return RedirectToAction(nameof(EditOfflineLocalGroup), new { id });
+                case 3:
+                    return RedirectToAction(nameof(EditOfflineInACenter), new { id });
+            }
+            return null!; // error page 
+        }
+
+        public async Task<IActionResult> EditOnlineGroup(int id)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                // Access Denied here
+                Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+            var session = await  _sessionService.GetSessionDetailsById(id, teacherId);
+            // Mapping here 
+            var onlineSessionVM = new EditOnlineSessionVM();
+            onlineSessionVM.StartTime = TimeOnly.FromDateTime(session.StartDateTime);
+            onlineSessionVM.EndTime = TimeOnly.FromDateTime(session.EndDateTime);
+            onlineSessionVM.Date = DateOnly.FromDateTime(session.StartDateTime);
+            //onlineSessionVM.URL = session.URL;
+            onlineSessionVM.Description = session.Description;
+            onlineSessionVM.SessionID = session.ID;
+
+            return View(onlineSessionVM);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditOnlineGroup(EditOnlineSessionVM sessionVM)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userID == null)
+            {
+                // Error Page Here
+            }
+            var teacher = await _sessionService.GetTeacherByUserId(userID!);
+            var result = await _sessionService.EditOnlineSessionVM(sessionVM, teacher.ID);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> EditOfflineLocalGroup(int id)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                // Access Denied here
+                Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+            var session = await _sessionService.GetSessionDetailsById(id, teacherId);
+            return View(session);
+        }
+
+        public async Task<IActionResult> EditOfflineInACenter(int id)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                // Access Denied here
+                Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+            var session = await _sessionService.GetSessionDetailsById(id, teacherId);
+            return View(session);
+        }
+    
+       
     }
 }

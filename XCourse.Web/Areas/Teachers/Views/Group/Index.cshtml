@@ -200,7 +200,7 @@
             margin-top: 15px;
         }
 
-        .btn-attendance {
+        .btn-all-sessions {
             background-color: var(--clr-secondary);
             color: var(--clr-text-on-secondary);
             border: none;
@@ -215,7 +215,7 @@
             transition: background-color 0.2s ease;
         }
 
-            .btn-attendance:hover {
+            .btn-all-sessions:hover {
                 background-color: #a3634c;
                 color: var(--clr-text-on-secondary);
             }
@@ -642,9 +642,9 @@
                             </div>
 
                             <div class="card-actions">
-                                <a href="#" class="btn-attendance">
+                                <a asp-controller="Sessions" asp-route-id="@groupVM.GroupID" asp-action="GroupSessions" class="btn-all-sessions">
                                     <i class="fas fa-clipboard-list"></i>
-                                    Attendance
+                                    Sessions
                                 </a>
                                 <a asp-action="Details" asp-route-id="@groupVM.GroupID" class="btn-details">
                                     <i class="fas fa-info-circle"></i>
