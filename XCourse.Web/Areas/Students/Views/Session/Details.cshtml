@@ -2,7 +2,6 @@
 @model XCourse.Core.ViewModels.StudentsViewModels.SessionDetailsViewModel
 
 @{
-
     ViewData["Title"] = "Session Details";
 
     bool sessionPassed = DateTime.Now > Model.Session.EndDateTime;
@@ -11,23 +10,188 @@
     bool hasExamMark = hasAttended && Model.Attendances.ClassWorkGrade != null;
     bool hasHomeMark = hasAttended && Model.Attendances.HomeWorkGrade != null;
     bool isOnline = Model.Session.Group.IsOnline;
+    bool hasPaid = Model.Attendances != null && Model.Attendances.HasPaid;
     var startTime = Model.Session.StartDateTime.ToString("yyyy-MM-ddTHH:mm:ss");
 }
 
 @section Styles {
-<link rel="stylesheet" href="~/css/Students/SessionDetails.css">
-}
+    <link rel="stylesheet" href="~/css/Students/SessionDetails.css">
 
+    <style>
+        .btn {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+            .btn:hover {
+                background-color: var(--clr-secondary);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--clr-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+            .modal-overlay.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        .modal {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--clr-text-on-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--clr-text-on-primary);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+            .modal-close:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--clr-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+        .btn-accent {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--clr-surface);
+            color: var(--clr-text-primary);
+            border: 1px solid var(--clr-border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .theme-toggle:hover {
+                background-color: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+            }
+
+        .wallet-info {
+            margin-bottom: 16px;
+        }
+
+        .payment-info {
+            margin-bottom: 24px;
+        }
+
+        .payment-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--clr-border);
+        }
+
+            .payment-info-item:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+            }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 8px;
+            display: none;
+        }
+
+            .error-message.visible {
+                display: block;
+            }
+    </style>
+}
 <div class="session">
     <!-- 1. Profile Section - Improved positioning -->
     <section class="session__profile">
         <div class="session__profile__container"
-        style="background-image : url('@(Model.Session.Group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session.Group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))');">
+             style="background-image : url('@(Model.Session.Group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session.Group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))');">
             <div class="session__profile__overlay"></div>
             <div class="session__profile__header">
                 <img src="@(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture) : Url.Content("~/images/default_profile.png"))"
-                alt="Student Profile"
-                class="session__profile__image">
+                     alt="Student Profile"
+                     class="session__profile__image">
 
                 <div class="session__profile__details">
                     <h2 class="session__profile__name">@Model.Session?.Group?.Teacher?.AppUser?.FirstName @Model.Session?.Group?.Teacher?.AppUser?.LastName</h2>
@@ -56,28 +220,42 @@
                     <div class="session__info-item session__info-counter">
                         <span id="sessionCounter" class="session__info-counter-value">00:00:00</span>
                     </div>
-                    @if (isOnline)
-                    {
-
-                        <div class="session__info-item" id="session-url"
-                        data-start="@Model.Session.StartDateTime.ToString("o")"
-                        data-end="@Model.Session.EndDateTime.ToString("o")">
-                            <a href="@Model.Session.URL" class="session__info-link">
-                                Join Session <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            </a>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="session__info-item session__info-location">
-                            @Model.Session.Address.Street St, @Model.Session.Address.City City, @Model.Session.Address.Governorate
-                        </div>
-                    }
+                    <div class="session__info-item" id="session-url"
+                         data-start="@Model.Session.StartDateTime.ToString("o")"
+                         data-end="@Model.Session.EndDateTime.ToString("o")"
+                         data-has-paid="@hasPaid.ToString().ToLower()"
+                         data-session-id="@Model.Session.ID"
+                         data-price="@Model.Session.Group.PricePerSession"
+                         data-is-online="@isOnline.ToString().ToLower()"
+                         data-url="@Model.Session.URL"
+                         data-address="@(Model.Session.Address?.Street ?? ""), @(Model.Session.Address?.City ?? ""), @(Model.Session.Address?.Governorate ?? "")">
+                        @if (hasPaid)
+                        {
+                            @if (isOnline)
+                            {
+                                <a href="@Model.Session.URL" class="session__info-link">
+                                    Join Session <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <div class="session__info-location">
+                                    @(Model.Session.Address?.Street ?? "") St, @(Model.Session.Address?.City ?? "") City, @(Model.Session.Address?.Governorate ?? "")
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <button id="openPaymentModalBtn" class="btn session__info-link">
+                                Pay & Join Session <i class="fa-solid fa-credit-card"></i>
+                            </button>
+                        }
+                    </div>
                 </div>
 
-                @if (!isOnline)
+                @if (!isOnline && hasPaid)
                 {
-                    <div class="col-md-4 d-flex justify-content-center align-items-center">
+                    <div class="col-md-4 d-flex justify-content-center align-items-center" id="map-container">
                         <div class="session__info-map">
                             @if (Model.Session.Location != null)
                             {
@@ -94,176 +272,507 @@
         </div>
     </section>
 
-    @if (DateTime.Now > Model.Session.StartDateTime)
-    {
-        <!-- 3. Details Section - Changed to vertical table -->
-        <section class="session__details">
-            @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue )
-            {
-                <table class="session__details-table">
-                    <tbody>
-                        <tr>
-                            <th>Class Work Mark</th>
-                            @if (Model.Attendances.ClassWorkGrade > 0)
-                            {
-                                <td>@Model.Attendances.ClassWorkGrade/100</td>
-                            }
-                            else
-                            {
-                                <td>N/A</td>
-                            }
-                        </tr>
-                        <tr>
-                            <th>Attendance</th>
-                            <td>
-                                @if (hasAttended)
+    <div id="post-payment-sections" class="@(!hasPaid ? "d-none" : "")">
+        @if (DateTime.Now > Model.Session.StartDateTime)
+        {
+            <!-- 3. Details Section - Changed to vertical table -->
+            <section class="session__details">
+                @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue)
+                {
+                    <table class="session__details-table">
+                        <tbody>
+                            <tr>
+                                <th>Class Work Mark</th>
+                                @if (Model.Attendances.ClassWorkGrade > 0)
                                 {
-                                    <div class="session__details-checkbox checked"></div>
+                                    <td>@Model.Attendances.ClassWorkGrade/100</td>
                                 }
                                 else
                                 {
-                                    <div class="session__details-checkbox"></div>
+                                    <td>N/A</td>
                                 }
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Home Mark Grade</th>
-                            @if (Model.Attendances.HomeWorkGrade > 0)
+                            </tr>
+                            <tr>
+                                <th>Attendance</th>
+                                <td>
+                                    @if (hasAttended)
+                                    {
+                                        <div class="session__details-checkbox checked"></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="session__details-checkbox"></div>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Home Mark Grade</th>
+                                @if (Model.Attendances.HomeWorkGrade > 0)
+                                {
+                                    <td>@Model.Attendances.HomeWorkGrade/100</td>
+                                }
+                                else
+                                {
+                                    <td>N/A</td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-info">You are absent.</div>
+                }
+            </section>
+
+            <!-- 4. Feedback Section - Added star rating -->
+            <section class="session__feedback">
+                <div class="session__feedback-header">
+                    <h2 class="session__feedback-title">Feedback</h2>
+                    <div id="feedback-btn-cont">
+                        @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue)
+                        {
+                            @if (hasFeedback)
                             {
-                                <td>@Model.Attendances.HomeWorkGrade/100</td>
+                                <button class="session__feedback-add" onclick="openEditFeedbackModal(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit Feedback
+                                </button>
                             }
                             else
                             {
-                                <td>N/A</td>
-                            }
-                        </tr>
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <div class="alert alert-info">You are absent.</div>
-            }
-        </section>
-
-        <!-- 4. Feedback Section - Added star rating -->
-        <section class="session__feedback">
-            <div class="session__feedback-header">
-                <h2 class="session__feedback-title">Feedback</h2>
-                <div id="feedback-btn-cont">
-                @if (Model.Attendances != null && Model.Attendances.HasAttended.HasValue)
-                {
-                    @if (hasFeedback)
-                    {
-                        <button class="session__feedback-add" onclick="openEditFeedbackModal(this)">
-                            <i class="fa-solid fa-pen-to-square"></i> Edit Feedback
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="session__feedback-add" onclick="openAddFeedbackModal()">
-                            <i class="fa-solid fa-plus"></i> Add Feedback
-                        </button>
-                    }
-                }
-                </div>
-            </div>
-
-            <div class="session__feedback-list" id="feedback-container">
-                <!-- Feedback Item 1 -->
-                <div class="session__feedback-item">
-                    @if (hasFeedback)
-                    {
-                        <div class="session__feedback-rating">
-                            <div class="session__feedback-stars">
-                                @for (int i = 0; i < (Model.Attendances?.Rating ?? 0); i++)
-                                {
-                                    <i class="fa-solid fa-star"></i>
-                                }
-                                @for (int i = (int)(Model.Attendances.Rating ?? 0); i < 5; i++)
-                                {
-                                    <i class="fa-regular fa-star"></i>
-                                }
-                            </div>
-                        </div>
-                        <div class="session__feedback-text">
-                            @Model.Attendances.Feedback
-                        </div>
-                        <div class="session__feedback-meta">
-                            <div class="session__feedback-date"></div>
-                            <div class="session__feedback-actions">
-                                <button class="session__feedback-delete" onclick="openDeleteFeedbackModal()">
-                                    <i class="fa-solid fa-trash"></i>
+                                <button class="session__feedback-add" onclick="openAddFeedbackModal()">
+                                    <i class="fa-solid fa-plus"></i> Add Feedback
                                 </button>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div>No Feedback Yet</div>
-                    }
-                </div>
-            </div>
-        </section>
-
-        <!-- Add/Edit Feedback Modal - Added star rating -->
-        <div class="session__modal" id="feedbackModal">
-            <div class="session__modal-content">
-                <h3 class="session__modal-title">Add Feedback</h3>
-                <button class="session__modal-close" onclick="closeModal('feedbackModal')">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-                <div class="error-message-container d-none" id="error-message-container">
-                    <i class="fa-solid fa-xmark"></i>
-                    <span id="error-message" class="error-message">Something went wrong </span>
-                </div>
-                <div class="session__modal-rating">
-                    <div class="session__modal-stars" id="session-rating">
-                        <i class="fa-solid fa-star session__modal-star" data-rating="1" onclick="setRating(1)"></i>
-                        <i class="fa-solid fa-star session__modal-star" data-rating="2" onclick="setRating(2)"></i>
-                        <i class="fa-solid fa-star session__modal-star" data-rating="3" onclick="setRating(3)"></i>
-                        <i class="fa-solid fa-star session__modal-star" data-rating="4" onclick="setRating(4)"></i>
-                        <i class="fa-solid fa-star session__modal-star" data-rating="5" onclick="setRating(5)"></i>
+                            }
+                        }
                     </div>
                 </div>
 
-                <textarea class="session__modal-textarea" placeholder="Enter your feedback here..." id="feedback-textarea"></textarea>
-                <div class="session__modal-actions">
-                    <button class="session__modal-cancel" onclick="closeModal('feedbackModal')">Cancel</button>
-                    <button class="session__modal-save" id="save-feedback-btn" onclick="saveFeedback()">Save</button>
+                <div class="session__feedback-list" id="feedback-container">
+                    <!-- Feedback Item 1 -->
+                    <div class="session__feedback-item">
+                        @if (hasFeedback)
+                        {
+                            <div class="session__feedback-rating">
+                                <div class="session__feedback-stars">
+                                    @for (int i = 0; i < (Model.Attendances?.Rating ?? 0); i++)
+                                    {
+                                        <i class="fa-solid fa-star"></i>
+                                    }
+                                    @for (int i = (int)(Model.Attendances.Rating ?? 0); i < 5; i++)
+                                    {
+                                        <i class="fa-regular fa-star"></i>
+                                    }
+                                </div>
+                            </div>
+                            <div class="session__feedback-text">
+                                @Model.Attendances.Feedback
+                            </div>
+                            <div class="session__feedback-meta">
+                                <div class="session__feedback-date"></div>
+                                <div class="session__feedback-actions">
+                                    <button class="session__feedback-delete" onclick="openDeleteFeedbackModal()">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div>No Feedback Yet</div>
+                        }
+                    </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- Delete Confirmation Modal -->
-        <div class="session__modal" id="deleteModal">
-            <div class="session__modal-content">
-                <h3 class="session__modal-title">Delete Feedback</h3>
-                <button class="session__modal-close" onclick="closeModal('deleteModal')">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-                <div class="session__modal-message">
-                    Are you sure you want to delete this feedback?
-                </div>
-                <div class="session__modal-actions">
-                    <button class="session__modal-cancel-delete" onclick="closeModal('deleteModal')">Cancel</button>
-                    <button class="session__modal-confirm" id="delete-feedback-btn" onclick="deleteFeedback()">Delete</button>
+            <!-- Add/Edit Feedback Modal - Added star rating -->
+            <div class="session__modal" id="feedbackModal">
+                <div class="session__modal-content">
+                    <h3 class="session__modal-title">Add Feedback</h3>
+                    <button class="session__modal-close" onclick="closeModal('feedbackModal')">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                    <div class="error-message-container d-none" id="error-message-container">
+                        <i class="fa-solid fa-xmark"></i>
+                        <span id="error-message" class="error-message">Something went wrong </span>
+                    </div>
+                    <div class="session__modal-rating">
+                        <div class="session__modal-stars" id="session-rating">
+                            <i class="fa-solid fa-star session__modal-star" data-rating="1" onclick="setRating(1)"></i>
+                            <i class="fa-solid fa-star session__modal-star" data-rating="2" onclick="setRating(2)"></i>
+                            <i class="fa-solid fa-star session__modal-star" data-rating="3" onclick="setRating(3)"></i>
+                            <i class="fa-solid fa-star session__modal-star" data-rating="4" onclick="setRating(4)"></i>
+                            <i class="fa-solid fa-star session__modal-star" data-rating="5" onclick="setRating(5)"></i>
+                        </div>
+                    </div>
+
+                    <textarea class="session__modal-textarea" placeholder="Enter your feedback here..." id="feedback-textarea"></textarea>
+                    <div class="session__modal-actions">
+                        <button class="session__modal-cancel" onclick="closeModal('feedbackModal')">Cancel</button>
+                        <button class="session__modal-save" id="save-feedback-btn" onclick="saveFeedback()">Save</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <section class="session__details">
-            <div class="alert alert-info">This session has not started yet.</div>
-		</section>
-    }
+
+            <!-- Delete Confirmation Modal -->
+            <div class="session__modal" id="deleteModal">
+                <div class="session__modal-content">
+                    <h3 class="session__modal-title">Delete Feedback</h3>
+                    <button class="session__modal-close" onclick="closeModal('deleteModal')">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                    <div class="session__modal-message">
+                        Are you sure you want to delete this feedback?
+                    </div>
+                    <div class="session__modal-actions">
+                        <button class="session__modal-cancel-delete" onclick="closeModal('deleteModal')">Cancel</button>
+                        <button class="session__modal-confirm" id="delete-feedback-btn" onclick="deleteFeedback()">Delete</button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <section class="session__details">
+                <div class="alert alert-info">This session has not started yet.</div>
+            </section>
+        }
+    </div>
 </div>
 
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Session Payment</h2>
+            <button class="modal-close" id="closePaymentModal">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="wallet-info">
+                <h4>Your Wallet</h4>
+                <div class="payment-info-item">
+                    <span>Current Balance:</span>
+                    <span id="walletBalance">@Model.WalletBalance</span>
+                </div>
+            </div>
+
+            <div class="payment-info">
+                <h4>Payment Details</h4>
+                <div class="payment-info-item">
+                    <span>Session Price:</span>
+                    <span id="sessionPrice">@Model.Session.Group.PricePerSession.ToString("C")</span>
+                </div>
+                <div class="payment-info-item">
+                    <span>Balance After Payment:</span>
+                    <span id="balanceAfter">@((Model.WalletBalance - Model.Session.Group.PricePerSession))</span>
+                </div>
+            </div>
+
+            <div class="error-message" id="paymentErrorMessage">
+                Insufficient funds in your wallet. Please add more funds.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="cancelPaymentBtn">
+                Cancel
+            </button>
+            <button class="btn btn-accent" id="confirmPaymentBtn">
+                Pay & Join
+            </button>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script>
-        const sessionId = @Model.Session.ID;
-        const studentId = @(Model.Attendances != null ? Model.Attendances.StudentID : 0);
+        // DOM Elements
+        let paymentModalOverlay;
+        let closePaymentModalBtn;
+        let cancelPaymentBtn;
+        let confirmPaymentBtn;
+        let openPaymentModalBtn;
+        let paymentErrorMessage;
+        let sessionId;
+        let studentId;
+        let walletBalance;
+        let sessionPrice;
+
+        // Initialize variables and event listeners when DOM is loaded
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get DOM elements
+            paymentModalOverlay = document.getElementById('paymentModalOverlay');
+            closePaymentModalBtn = document.getElementById('closePaymentModal');
+            cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+            confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+            openPaymentModalBtn = document.getElementById('openPaymentModalBtn');
+            paymentErrorMessage = document.getElementById('paymentErrorMessage');
+
+            // Get session data from the DOM
+            const sessionElement = document.getElementById("session-url");
+            if (sessionElement) {
+                sessionId = parseInt(sessionElement.getAttribute('data-session-id'), 10);
+                sessionPrice = parseFloat(sessionElement.getAttribute('data-price'), 10);
+
+                const walletBalanceElement = document.getElementById('walletBalance');
+                if (walletBalanceElement) {
+                    walletBalance = parseFloat(walletBalanceElement.textContent);
+                }
+
+                const hasPaid = sessionElement.getAttribute('data-has-paid') === 'true';
+                const isOnline = sessionElement.getAttribute('data-is-online') === 'true';
+
+                // For online sessions with a link
+                if (isOnline && hasPaid) {
+                    const link = sessionElement.querySelector("a");
+                    if (link) {
+                        const start = new Date(sessionElement.dataset.start);
+                        const end = new Date(sessionElement.dataset.end);
+                        updateLinkState(link, start, end);
+
+                        // Check every second to enable/disable the link based on session time
+                        setInterval(() => {
+                            updateLinkState(link, start, end);
+                        }, 1000);
+                    }
+                }
+
+                // Get studentId if available
+                if (document.getElementById('feedback-btn-cont')) {
+                    studentId = @(Model.Attendances != null ? Model.Attendances.StudentID : 0);
+                }
+            }
+
+            // Setup event listeners
+            setupEventListeners();
+
+            // Start the countdown
+            const startTimeElement = '@startTime';
+            if (startTimeElement) {
+                startCountdown(startTimeElement);
+            }
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Show payment modal
+            if (openPaymentModalBtn) {
+                openPaymentModalBtn.addEventListener('click', () => {
+                    // Check if payment is possible
+                    const isPaymentPossible = walletBalance >= sessionPrice;
+
+                    // Show/hide error message based on wallet balance
+                    if (!isPaymentPossible) {
+                        paymentErrorMessage.style.display = 'block';
+                        confirmPaymentBtn.disabled = true;
+                    } else {
+                        paymentErrorMessage.style.display = 'none';
+                        confirmPaymentBtn.disabled = false;
+                    }
+
+                    paymentModalOverlay.classList.add('active');
+                });
+            }
+
+            // Close payment modal
+            if (closePaymentModalBtn) {
+                closePaymentModalBtn.addEventListener('click', closePaymentModal);
+            }
+
+            if (cancelPaymentBtn) {
+                cancelPaymentBtn.addEventListener('click', closePaymentModal);
+            }
+
+            // Handle payment confirmation
+            if (confirmPaymentBtn) {
+                confirmPaymentBtn.addEventListener('click', processPayment);
+            }
+
+            // Close modal when clicking on overlay
+            if (paymentModalOverlay) {
+                paymentModalOverlay.addEventListener('click', (e) => {
+                    if (e.target === paymentModalOverlay) {
+                        closePaymentModal();
+                    }
+                });
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && paymentModalOverlay && paymentModalOverlay.classList.contains('active')) {
+                    closePaymentModal();
+                }
+            });
+        }
+
+        // Close payment modal
+        function closePaymentModal() {
+            if (paymentModalOverlay) {
+                paymentModalOverlay.classList.remove('active');
+            }
+        }
+
+        // Process payment
+        async function processPayment() {
+            // Disable button to prevent multiple clicks
+            confirmPaymentBtn.disabled = true;
+            confirmPaymentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                const response = await fetch('/Students/Session/PayForSession', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ SessionId: sessionId })
+                });
+
+                const result = await response.json();
+
+                if (result.isValid) {
+                    // Payment successful
+                    if (typeof showSuccessToast === 'function') {
+                        showSuccessToast("Success", "Payment successful! You can now join the session.", 3);
+                    }
+
+                    // Update UI instead of reloading the page
+                    updateUIAfterPayment();
+
+                    // Close the payment modal
+                    closePaymentModal();
+                } else {
+                    // Payment failed
+                    if (typeof showErrorToast === 'function') {
+                        showErrorToast("Error", result.message || "Payment failed. Please try again.", 3);
+                    }
+
+                    confirmPaymentBtn.disabled = false;
+                    confirmPaymentBtn.innerHTML = 'Pay & Join';
+                }
+            } catch (error) {
+                console.error("Payment error:", error);
+
+                if (typeof showErrorToast === 'function') {
+                    showErrorToast("Error", "An unexpected error occurred. Please try again later.", 3);
+                }
+
+                confirmPaymentBtn.disabled = false;
+                confirmPaymentBtn.innerHTML = 'Pay & Join';
+            }
+        }
+
+        // Update UI elements after successful payment
+        function updateUIAfterPayment() {
+            const sessionUrlContainer = document.getElementById('session-url');
+            if (!sessionUrlContainer) return;
+
+            // Get data attributes
+            const isOnline = sessionUrlContainer.getAttribute('data-is-online') === 'true';
+            const sessionUrl = sessionUrlContainer.getAttribute('data-url') || '';
+            const addressData = sessionUrlContainer.getAttribute('data-address') || '';
+
+            // Update the session URL container based on whether it's online or offline
+            if (isOnline) {
+                sessionUrlContainer.innerHTML = `
+                    <a href="${sessionUrl}" class="session__info-link">
+                        Join Session <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                `;
+
+                // Get the newly created link for enabling/disabling based on session time
+                const link = sessionUrlContainer.querySelector("a");
+                if (link) {
+                    const start = new Date(sessionUrlContainer.dataset.start);
+                    const end = new Date(sessionUrlContainer.dataset.end);
+                    updateLinkState(link, start, end);
+                }
+            } else {
+                // For offline sessions, show the address
+                sessionUrlContainer.innerHTML = `
+                    <div class="session__info-location">
+                        ${addressData}
+                    </div>
+                `;
+
+                // Show map for offline session
+                addMapForOfflineSession();
+            }
+
+            // Mark the session as paid in the data attribute
+            sessionUrlContainer.setAttribute('data-has-paid', 'true');
+
+            // Update wallet balance display
+            const walletBalanceElement = document.getElementById('walletBalance');
+            const balanceAfterElement = document.getElementById('balanceAfter');
+            const sessionPrice = parseFloat(sessionUrlContainer.getAttribute('data-price')) || 0;
+
+            if (walletBalanceElement && balanceAfterElement) {
+                const newBalance = parseFloat(walletBalanceElement.textContent) - sessionPrice;
+                walletBalanceElement.textContent = newBalance.toFixed(2);
+                balanceAfterElement.textContent = "0.00";
+            }
+
+            // Show the post-payment sections
+            const postPaymentSections = document.getElementById('post-payment-sections');
+            if (postPaymentSections) {
+                postPaymentSections.classList.remove('d-none');
+            }
+        }
+
+        // Add map for offline session after payment
+        function addMapForOfflineSession() {
+            const mapContainer = document.getElementById('map-container');
+            const sessionUrlContainer = document.getElementById('session-url');
+
+            if (!mapContainer || !sessionUrlContainer) return;
+
+            const isOnline = sessionUrlContainer.getAttribute('data-is-online') === 'true';
+
+            if (!isOnline) {
+                // Create map container if it doesn't exist
+                const rowContainer = sessionUrlContainer.closest('.row');
+
+                if (!rowContainer.querySelector('#map-container')) {
+                    // Create map div
+                    const mapDiv = document.createElement('div');
+                    mapDiv.id = 'map-container';
+                    mapDiv.className = 'col-md-4 d-flex justify-content-center align-items-center';
+                    mapDiv.innerHTML = `
+                        <div class="session__info-map">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                    `;
+
+                    rowContainer.appendChild(mapDiv);
+                }
+            }
+        }
+
+        // Enable/disable link based on session time
+        function updateLinkState(link, start, end) {
+            if (!link) return;
+
+            const now = new Date();
+            if (now >= start && now <= end) {
+                enableLink(link);
+            } else {
+                disableLink(link);
+            }
+        }
+
+        // Disable link
+        function disableLink(link) {
+            link.classList.add("disabled-link");
+            link.style.pointerEvents = "none";
+            link.style.opacity = "0.5";
+            link.setAttribute("aria-disabled", "true");
+        }
+
+        // Enable link
+        function enableLink(link) {
+            link.classList.remove("disabled-link");
+            link.style.pointerEvents = "auto";
+            link.style.opacity = "1";
+            link.removeAttribute("aria-disabled");
+        };
 
         // utils functions
         async function sendAsyncRequest(url, method, requestBody) {
@@ -294,8 +803,7 @@
         async function submitFeedback(request) {
             freezeButton("save-feedback-btn");
 
-            let btnContainer =document.getElementById("feedback-btn-cont");
-            
+            let btnContainer = document.getElementById("feedback-btn-cont");
 
             try {
                 let response = await sendAsyncRequest("https://localhost:7054/Students/Session/SaveFeedBack", "POST", request);
@@ -303,11 +811,11 @@
                     if (typeof showSuccessToast === 'function') {
                         showSuccessToast("OK", "Feedback Saved Successfully", 3);
                     }
-					// 1. Change the button to Edit Feedback
-					btnContainer.innerHTML=`
+                    // 1. Change the button to Edit Feedback
+                    btnContainer.innerHTML=`
                             <button class="session__feedback-add" onclick="openEditFeedbackModal(this)">
-							<i class="fa-solid fa-pen-to-square"></i> Edit Feedback
-						    </button>`
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Feedback
+                            </button>`
 
                     freeButton("save-feedback-btn");
                     // 2. Append to the added feedback
@@ -491,7 +999,7 @@
         }
 
         async function deleteFeedback() {
-			let btnContainer =document.getElementById("feedback-btn-cont");
+            let btnContainer = document.getElementById("feedback-btn-cont");
 
             let request = {
                 studentId: studentId,
@@ -510,7 +1018,7 @@
                         <button class="session__feedback-add" onclick="openAddFeedbackModal()">
                             <i class="fa-solid fa-plus"></i> Add Feedback
                         </button>
-                        
+
                     `
                     // remove the element from the DOM
                     let feedbackContainer = document.getElementById("feedback-container");
@@ -537,7 +1045,7 @@
             }
         }
 
-   
+
         document.addEventListener("DOMContentLoaded", function () {
             const sessionElement = document.getElementById("session-url");
             const link = sessionElement?.querySelector("a");
@@ -565,7 +1073,7 @@
         });
 
         function disableLink(link) {
-            link.classList.add("disabled-link"); 
+            link.classList.add("disabled-link");
             link.style.pointerEvents = "none";
             link.style.opacity = "0.5";
             link.setAttribute("aria-disabled", "true");

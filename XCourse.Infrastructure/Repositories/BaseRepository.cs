@@ -22,51 +22,68 @@ namespace XCourse.Infrastructure.Repositories
         {
             return await context.Set<T>().FindAsync(id);
         }
-        public IEnumerable<T> GetAll(string[]? includes = null, int? skip = null, int? take = null, Expression<Func<T, object>>? order = null, Order direction = Order.ASC)
+        public IEnumerable<T> GetAll(
+            string[]? includes = null,
+            int? skip = null,
+            int? take = null,
+            Expression<Func<T, object>>? order = null,
+            Order direction = Order.ASC)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
+            {
                 foreach (var include in includes)
+                {
                     query = query.Include(include);
+                }
+            }
+
+            if (order != null)
+            {
+                query = direction == Order.ASC
+                    ? query.OrderBy(order)
+                    : query.OrderByDescending(order);
+            }
 
             if (skip.HasValue)
                 query = query.Skip(skip.Value);
 
             if (take.HasValue)
                 query = query.Take(take.Value);
-
-            if (order != null)
-            {
-                if (direction == Order.ASC)
-                    query = query.OrderBy(order);
-                else
-                    query = query.OrderByDescending(order);
-            }
 
             return query.ToList();
         }
-        public async Task<IEnumerable<T>> GetAllAsync(string[]? includes = null, int? skip = null, int? take = null, Expression<Func<T, object>>? order = null, Order direction = Order.ASC)
+
+        public async Task<IEnumerable<T>> GetAllAsync(
+            string[]? includes = null,
+            int? skip = null,
+            int? take = null,
+            Expression<Func<T, object>>? order = null,
+            Order direction = Order.ASC)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
+            {
                 foreach (var include in includes)
+                {
                     query = query.Include(include);
+                }
+            }
+
+            if (order != null)
+            {
+                query = direction == Order.ASC
+                    ? query.OrderBy(order)
+                    : query.OrderByDescending(order);
+            }
 
             if (skip.HasValue)
                 query = query.Skip(skip.Value);
 
             if (take.HasValue)
                 query = query.Take(take.Value);
-
-            if (order != null)
-            {
-                if (direction == Order.ASC)
-                    query = query.OrderBy(order);
-                else
-                    query = query.OrderByDescending(order);
-            }
 
             return await query.ToListAsync();
         }
@@ -107,13 +124,29 @@ namespace XCourse.Infrastructure.Repositories
 
             return await query.SingleOrDefaultAsync(expression);
         }
-        public IEnumerable<T> FindAll(Expression<Func<T, bool>> expression, string[]? includes = null, int? skip = null, int? take = null, Expression<Func<T, object>>? order = null, Order direction = Order.ASC)
+        public IEnumerable<T> FindAll(
+            Expression<Func<T, bool>> expression,
+            string[]? includes = null,
+            int? skip = null,
+            int? take = null,
+            Expression<Func<T, object>>? order = null,
+            Order direction = Order.ASC)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
+            {
                 foreach (var include in includes)
+                {
                     query = query.Include(include);
+                }
+            }
+            query = query.Where(expression);
+
+            if (order != null)
+            {
+                query = direction == Order.ASC ? query.OrderBy(order) : query.OrderByDescending(order);
+            }
 
             if (skip.HasValue)
                 query = query.Skip(skip.Value);
@@ -121,23 +154,29 @@ namespace XCourse.Infrastructure.Repositories
             if (take.HasValue)
                 query = query.Take(take.Value);
 
-            if (order != null)
-            {
-                if (direction == Order.ASC)
-                    query = query.OrderBy(order);
-                else
-                    query = query.OrderByDescending(order);
-            }
-
-            return query.Where(expression).ToList();
+            return query.ToList();
         }
-        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression, string[]? includes = null, int? skip = null, int? take = null, Expression<Func<T, object>>? order = null, Order direction = Order.ASC)
+
+        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression,string[]? includes = null,int? skip = null, int? take = null,Expression<Func<T, object>>? order = null,Order direction = Order.ASC)
         {
             IQueryable<T> query = context.Set<T>();
 
             if (includes != null)
+            {
                 foreach (var include in includes)
+                {
                     query = query.Include(include);
+                }
+            }
+
+            query = query.Where(expression);
+
+            if (order != null)
+            {
+                query = direction == Order.ASC
+                    ? query.OrderBy(order)
+                    : query.OrderByDescending(order);
+            }
 
             if (skip.HasValue)
                 query = query.Skip(skip.Value);
@@ -145,15 +184,7 @@ namespace XCourse.Infrastructure.Repositories
             if (take.HasValue)
                 query = query.Take(take.Value);
 
-            if (order != null)
-            {
-                if (direction == Order.ASC)
-                    query = query.OrderBy(order);
-                else
-                    query = query.OrderByDescending(order);
-            }
-
-            return await query.Where(expression).ToListAsync();
+            return await query.ToListAsync();
         }
 
         public T Add(T entity)
