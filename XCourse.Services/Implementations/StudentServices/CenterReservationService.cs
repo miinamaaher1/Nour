@@ -102,6 +102,7 @@ namespace XCourse.Services.Implementations.StudentServices
             RequestStatusDTO status = new RequestStatusDTO();
             try
             {
+
                 var auser = await _userManager.GetUserAsync(user);
                 var room = _unitOfWork.Rooms.Find(r=>r.ID==roomId, ["Center"]);
 
@@ -143,6 +144,7 @@ namespace XCourse.Services.Implementations.StudentServices
                     status.Errors = ["Payment failed"];
                     return status;
                 }
+
 
 
                 _unitOfWork.RoomReservations.Add(rr);

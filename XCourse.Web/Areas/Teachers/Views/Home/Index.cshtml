@@ -1,5 +1,5 @@
 ﻿@using XCourse.Core.ViewModels.TeachersViewModels
-@model TeacherHomeVM 
+@model TeacherHomeVM
 @{
     ViewData["Title"] = "Home";
 }
@@ -24,27 +24,25 @@
                     @foreach (var session in Model.WeekSessions)
                     {
                         <div class="group-carousel__slide">
-                            <a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Teachers" asp-route-Id="@session.ID">
+                            <a style="text-decoration:none;" asp-action="Details" asp-controller="Sessions" asp-area="Teachers" asp-route-Id="@session.ID">
                                 <div class="session-card">
                                     <div class="session-card__header">
                                         @if (session.IsOnline)
                                         {
                                             <div class="session-card__status session-card__status--online">
-                                                <i class="fas fa-circle"></i>
-                                                Online
+                                                <i class="fa-solid fa-globe"></i> &nbsp; Online
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="session-card__status session-card__status--offline">
-                                                <i class="fas fa-circle"></i>
-                                                Offline
+                                                <i class="fa-solid fa-globe"></i> &nbsp; Offline
                                             </div>
                                         }
 
                                         <div class="session-card__duration">
-                                            <i class="fa-solid fa-hourglass-half"></i>
-                                            @session.Duration!.Value.ToString(@"hh\:mm")
+                                            <i class="fa-solid fa-hourglass-half"></i> <span>&nbsp;</span>
+                                            @session.Duration!.Value.ToString(@"hh\:mm")h
                                         </div>
                                     </div>
                                     <div class="session-card__date">@session.StartDateTime.ToString("MMMM dd, yyyy - HH:mm")</div>
@@ -54,13 +52,97 @@
                                         {
                                             <div class="session-card__location">
                                                 <i class="fas fa-map-marker-alt"></i>
+                                                <span>&nbsp;</span>
                                                 @session.CenterName - @session.RoomName
                                             </div>
                                         }
+                                        else if (session.IsOnline)
+                                        {
+                                            <div class="session-card__location">
+                                                <i class="fa-solid fa-video"></i>
+                                                <span>&nbsp;</span>
+                                                Online session
+                                            </div>
+                                        }
                                         <div class="session-card__academic-info">
-                                            <span class="session-card__badge">@session.Major</span>
-                                            <span class="session-card__badge">Year @session.Year</span>
-                                            <span class="session-card__badge">Semester @session.Semester</span>
+                                            <span class="session-card__badge">
+                                                @switch ((int)session.Major)
+                                                {
+                                                    case 0:
+                                                        <span>General</span>
+                                                        break;
+                                                    case 1:
+                                                        <span>Science</span>
+                                                        break;
+                                                    case 2:
+                                                        <span>Math</span>
+                                                        break;
+                                                    case 3:
+                                                        <span>Literature</span>
+                                                        break;
+                                                }
+                                            </span>
+                                            <span class="session-card__badge">
+                                                @switch ((int)session.Year)
+                                                {
+                                                    case 0:
+                                                        <span>Primary One</span>
+                                                        break;
+                                                    case 1:
+                                                        <span>Primary Two</span>
+                                                        break;
+                                                    case 2:
+                                                        <span>Primary Three</span>
+                                                        break;
+                                                    case 3:
+                                                        <span>Primary Four</span>
+                                                        break;
+                                                    case 4:
+                                                        <span>Primary Five</span>
+                                                        break;
+                                                    case 5:
+                                                        <span>Primary Six</span>
+                                                        break;
+                                                    case 6:
+                                                        <span>Preparatory One</span>
+                                                        break;
+                                                    case 7:
+                                                        <span>Preparatory Two</span>
+                                                        break;
+                                                    case 8:
+                                                        <span>Preparatory Three</span>
+                                                        break;
+                                                    case 9:
+                                                        <span>Secondary One</span>
+                                                        break;
+                                                    case 10:
+                                                        <span>Secondary Two</span>
+                                                        break;
+                                                    case 11:
+                                                        <span>Secondary Three</span>
+                                                        break;
+                                                    default:
+                                                        <span>Unknown</span>
+                                                        break;
+                                                }
+                                            </span>
+                                            <span class="session-card__badge">
+                                                @switch ((int)session.Semester)
+                                                {
+                                                    case 1:
+                                                        <span>First Semester</span>
+                                                        break;
+                                                    case 2:
+                                                        <span>Second Semester</span>
+                                                        break;
+                                                    case 3:
+                                                        <span>Full Year</span>
+                                                        break;
+                                                    default:
+                                                        <span>Unknown</span>
+                                                        break;
+                                                }
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -101,55 +183,133 @@
                             @foreach (var group in Model.TeacherGroups)
                             {
                                 <div class="group-carousel__slide">
-                                    <a class="group-card" style="text-decoration:none;" asp-action="Details" asp-controller="Group" asp-area="Teachers" asp-route-Id="@group.ID">
+                                    <a style="text-decoration:none;" asp-action="Details" asp-controller="Group" asp-area="Teachers" asp-route-Id="@group.ID">
                                         <div class="group-card">
                                             <div class="group-card__image">
                                                 <img src="@(group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))"
-                                                alt="@group.Subject Group">
+                                                     alt="@group.Subject Group">
                                             </div>
                                             <div class="group-card__content">
                                                 <div class="group-card__title">@group.Subject</div>
                                                 <div class="group-card__academic">
-                                                    <span>@group.Major</span> |
-                                                    <span>Year @group.Year</span> |
-                                                    <span>Semester @group.Semester</span>
+                                                    <span>
+                                                        @switch ((int)group.Major)
+                                                        {
+                                                            case 0:
+                                                                <span>General</span>
+                                                                break;
+                                                            case 1:
+                                                                <span>Science</span>
+                                                                break;
+                                                            case 2:
+                                                                <span>Math</span>
+                                                                break;
+                                                            case 3:
+                                                                <span>Literature</span>
+                                                                break;
+                                                        }
+                                                    </span> |
+                                                    <span>
+                                                        @switch ((int)group.Year)
+                                                        {
+                                                            case 0:
+                                                                <span>Primary One</span>
+                                                                break;
+                                                            case 1:
+                                                                <span>Primary Two</span>
+                                                                break;
+                                                            case 2:
+                                                                <span>Primary Three</span>
+                                                                break;
+                                                            case 3:
+                                                                <span>Primary Four</span>
+                                                                break;
+                                                            case 4:
+                                                                <span>Primary Five</span>
+                                                                break;
+                                                            case 5:
+                                                                <span>Primary Six</span>
+                                                                break;
+                                                            case 6:
+                                                                <span>Preparatory One</span>
+                                                                break;
+                                                            case 7:
+                                                                <span>Preparatory Two</span>
+                                                                break;
+                                                            case 8:
+                                                                <span>Preparatory Three</span>
+                                                                break;
+                                                            case 9:
+                                                                <span>Secondary One</span>
+                                                                break;
+                                                            case 10:
+                                                                <span>Secondary Two</span>
+                                                                break;
+                                                            case 11:
+                                                                <span>Secondary Three</span>
+                                                                break;
+                                                            default:
+                                                                <span>Unknown</span>
+                                                                break;
+                                                        }
+                                                    </span> |
+                                                    <span>
+                                                        @switch ((int)group.Semester)
+                                                        {
+                                                            case 1:
+                                                                <span>First Semester</span>
+                                                                break;
+                                                            case 2:
+                                                                <span>Second Semester</span>
+                                                                break;
+                                                            case 3:
+                                                                <span>Full Year</span>
+                                                                break;
+                                                            default:
+                                                                <span>Unknown</span>
+                                                                break;
+                                                        }
+                                                    </span>
                                                 </div>
                                                 <div class="group-card__features">
                                                     @if (group.IsOnline)
                                                     {
                                                         <span class="group-card__feature">
-                                                            <i class="fas fa-laptop"></i> Online
+                                                            <i class="fa-solid fa-globe"></i> &nbsp; Online
                                                         </span>
                                                     }
                                                     else
                                                     {
                                                         <span class="group-card__feature">
-                                                            <i class="fas fa-building"></i> Offline
+                                                            <i class="fas fa-building"></i> &nbsp; Offline
                                                         </span>
                                                     }
                                                     @if (group.IsGirlsOnly)
                                                     {
                                                         <span class="group-card__feature">
-                                                            <i class="fas fa-female"></i> Girls Only
+                                                            <i class="fas fa-female"></i> &nbsp; Girls Only
                                                         </span>
                                                     }
                                                     @if (group.IsPrivate)
                                                     {
                                                         <span class="group-card__feature">
-                                                            <i class="fas fa-lock"></i> Private
+                                                            <i class="fas fa-lock"></i> &nbsp; Private
                                                         </span>
                                                     }
                                                 </div>
                                                 <div class="group-card__location">
                                                     @if (!group.IsOnline && !string.IsNullOrEmpty(group.CenterName))
                                                     {
-                                                    <i class="fas fa-map-marker-alt"></i>
-														@group.CenterName @group.RoomName;
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                        <span>&nbsp;</span>
+                                                        @group.CenterName @group.RoomName
+                                                        ;
                                                     }
                                                 </div>
                                                 <div class="group-card__footer">
                                                     <div class="group-card__capacity">
                                                         <i class="fas fa-users"></i>
+                                                        <span>&nbsp;</span>
                                                         @group.CurrentStudents/@group.MaxStudents
                                                     </div>
                                                 </div>
@@ -163,9 +323,11 @@
 
                     <div class="group-carousel__controls">
                         <button class="group-carousel__button" id="prevButton">
+                            <span>&nbsp;</span>
                             <i class="fas fa-chevron-left"></i>
                         </button>
                         <button class="group-carousel__button" id="nextButton">
+                            <span>&nbsp;</span>
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>

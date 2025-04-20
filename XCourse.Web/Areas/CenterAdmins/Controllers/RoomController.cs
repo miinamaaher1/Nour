@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs.CenterAdmins;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
+using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.CenterAdminServices;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
@@ -186,9 +187,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                         return RedirectToAction("Index", new { id = room.CenterId });
                     }
                     else
-                    {
-
-                        return View(room);
+                {
+                    
+                        return RedirectToAction("TransfomReservations", new { RoomId=room.RoomId,  CenterId=room.CenterId });
 
                     }
                 }
@@ -201,5 +202,49 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
            
 
         }
+
+
+       
+        public ActionResult TransfomReservations(int RoomId, int CenterId)
+        {
+
+            var Avalible = _centerAdminService.transfomReservations(RoomId,CenterId);
+
+
+            return View (Avalible);
+
+
+
+        }
+
+        [HttpPost]
+        public ActionResult TransfomReservations(transfomReservations transfom)
+        {
+            try
+            {
+                int t = _centerAdminService.ConfirmTransformRoom(transfom);
+
+                if(t == 1)
+                {
+                    return RedirectToAction("Index", new { id = transfom.CenterId });
+                }
+
+                else
+                {
+                    return View(transfom);
+
+                }
+            }
+
+            catch
+            {
+                return View(transfom);
+            }
+
+
+
+
+        }
+
     }
 }
