@@ -19,5 +19,9 @@ namespace XCourse.Services.Interfaces.CenterAdminServices
         public int UpdateReservtion(EditRoomReservation editRoom);
         public List<RoomsViewModel> getAllRooms(int CenterId);
         public int DeleteRoom(RoomDto room);
+        public transfomReservations transfomReservations(int RoomId, int CenterId);
+        public int ConfirmTransformRoom(transfomReservations transfom);
+
+
     }
 }
