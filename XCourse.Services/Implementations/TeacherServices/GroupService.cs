@@ -11,6 +11,7 @@ using XCourse.Core.DTOs.Teachers;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
+using XCourse.Services.Interfaces.PaymentService;
 using XCourse.Services.Interfaces.Teachers;
 
 namespace XCourse.Services.Implementations.TeacherServices
@@ -19,9 +20,11 @@ namespace XCourse.Services.Implementations.TeacherServices
     {
         private static readonly GeometryFactory _geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         private readonly IUnitOfWork _unitOfWork;
-        public GroupService(IUnitOfWork unitOfWork)
+        private readonly ITransactionService _transactionService;
+        public GroupService(IUnitOfWork unitOfWork, ITransactionService transactionService)
         {
             _unitOfWork = unitOfWork;
+            _transactionService = transactionService;
         }
 
         // Adding Announcement Method
@@ -264,7 +267,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             if (!validationResult.IsValid)
                 return validationResult;
 
-            var center = await _unitOfWork.Centers.FindAsync(c => c.ID == request.CenterId, ["Address"]);
+            var center = await _unitOfWork.Centers.FindAsync(c => c.ID == request.CenterId, ["Address", "CenterAdmin"]);
 
             var groupInCenter = new Group
             {
@@ -282,9 +285,16 @@ namespace XCourse.Services.Implementations.TeacherServices
                 GroupDefaults = new List<GroupDefaults>()
             };
 
+            double totalPrice = 0;
             foreach (var session in request.Sessions)
             {
                 var room = await _unitOfWork.Rooms.FindAsync(r => r.ID == session.RoomId);
+                var pricePerHour = (double)room.PricePerHour;
+                var duration = (session.EndTime - session.StartTime).TotalMinutes;
+                double pricePerSession = pricePerHour * (duration / 60);
+
+
+
                 if (room == null)
                 {
                     return new ReserveGroupResponseDTO
@@ -332,6 +342,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                         }
                     };
 
+                    totalPrice += pricePerSession;
                     var reservation = new RoomReservation
                     {
                         ReservationStatus = ReservationStatus.Pending,
@@ -345,12 +356,23 @@ namespace XCourse.Services.Implementations.TeacherServices
                         WeekDay = session.DayId
                     };
 
+
                     groupInCenter.Sessions.Add(newSession);
                     _unitOfWork.Sessions.Add(newSession);
                     _unitOfWork.RoomReservations.Add(reservation);
 
                     current = current.AddDays(7);
                 }
+            }
+
+            bool transactionResult = await _transactionService.MakeTransactionAsync(teacher.AppUserID, center.CenterAdmin!.AppUserID, (decimal)totalPrice, TransactionType.Payment);
+            if (transactionResult == false)
+            {
+                return new ReserveGroupResponseDTO
+                {
+                    IsValid = false,
+                    Errors = [$"Payment Failed! Check first that you have enough balance"]
+                };
             }
 
             try

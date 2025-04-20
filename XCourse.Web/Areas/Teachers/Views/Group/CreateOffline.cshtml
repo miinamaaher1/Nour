@@ -791,7 +791,8 @@
 
 
         class CreateGroupForm {
-            constructor() {
+    constructor() {
+        this.roomPricesById = {}; // Map roomId -> pricePerHour
                 this.governoratesList = [
                     "Alexandria", "Aswan", "Asyut", "Beheira", "Beni Suef", "Cairo",
                     "Dakahlia", "Damietta", "Faiyum", "Gharbia", "Giza", "Ismailia",
@@ -1366,6 +1367,8 @@
                     if (!Array.isArray(rooms)) { allFetchesOK = false; return { idx, html: `<div class="form-group border rounded p-3 mb-3 session-room-block"><h5>Room Session ${idx} (${session.dayName}...)</h5><p class="text-danger">Invalid room data.</p></div>` }; }
                     if (rooms.length === 0) { allRoomsFound = false; return { idx, html: `<div class="form-group border rounded p-3 mb-3 session-room-block"><h5>Room Session ${idx} (${session.dayName}...)</h5><p class="text-warning">No rooms available.</p><input type="hidden" id="Session-${idx}-Room" value=""></div>` }; }
 
+                    // Store prices for each room in this.roomPricesById
+                    rooms.forEach(r => { this.roomPricesById[r.id] = r.pricePerHour; });
                     const roomItems = rooms.map(r => `<option value="${r.id}" ${String(session.roomId) === String(r.id) ? "selected" : ""}>${r.name} (Cap: ${r.capacity}, Price: ${r.pricePerHour})</option>`).join('');
                     return { idx, html: `<div class="form-group border rounded p-3 mb-3 session-room-block"><h5>Room Session ${idx} (${session.dayName} ${session.startTime}-${session.endTime})</h5><label for="Session-${idx}-Room">Available:</label><select id="Session-${idx}-Room" name="sessionRoom${idx}"><option value="" disabled ${!session.roomId ? 'selected' : ''}>-- Select room --</option>${roomItems}</select></div>` };
                 });
@@ -1399,7 +1402,13 @@
                     const selRoomId = roomSel.value;
                     roomSel.style.border = '';
                     if (!selRoomId || selRoomId === "") { status.errors.push(`Session ${idx} (${this.groupData.sessions[i].dayName}): Select a room.`); status.isValid = false; if (block) block.style.border = '1px solid red'; roomSel.style.border = '1px solid red'; }
-                    else { this.groupData.sessions[i].roomId = selRoomId; const roomTxt = roomSel.options[roomSel.selectedIndex]?.text || ""; this.groupData.sessions[i].roomName = roomTxt.split(' (')[0] || `Room ${selRoomId}`; }
+                    else {
+                        this.groupData.sessions[i].roomId = selRoomId;
+                        const roomTxt = roomSel.options[roomSel.selectedIndex]?.text || "";
+                        this.groupData.sessions[i].roomName = roomTxt.split(' (')[0] || `Room ${selRoomId}`;
+                        // Save pricePerHour for this session
+                        this.groupData.sessions[i].pricePerHour = this.roomPricesById[selRoomId] || 0;
+                    }
                 }
                 return status;
             }
@@ -1427,59 +1436,183 @@
                     return;
                 }
 
+                // Add custom CSS for confirmation cards if not already present
+                if (!document.getElementById('confirm-cards-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'confirm-cards-style';
+                    style.innerHTML = `
+.confirm-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+    margin: 0 0 32px 0;
+}
+.confirm-card {
+    background: var(--clr-surface);
+    border: 2px solid var(--clr-border);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px var(--clr-overlay);
+    padding: 32px 36px;
+    min-width: 320px;
+    max-width: 420px;
+    flex: 1 1 340px;
+    text-align: left;
+    color: var(--clr-text-primary);
+    margin-bottom: 0;
+}
+.confirm-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--clr-primary);
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
+}
+.confirm-card .total-amount {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--clr-accent);
+    margin-bottom: 8px;
+}
+.confirm-card .total-label {
+    font-size: 1.1rem;
+    color: var(--clr-secondary);
+    margin-bottom: 4px;
+}
+.confirm-card .card-section {
+    margin-bottom: 12px;
+}
+.confirm-card .session-table-wrapper {
+    margin-top: 12px;
+}
+.confirm-card .session-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--clr-background);
+    color: var(--clr-text-primary);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.confirm-card .session-summary-table th, .confirm-card .session-summary-table td {
+    border: 1px solid var(--clr-border);
+    padding: 8px 12px;
+    text-align: center;
+}
+.confirm-card .session-summary-table th {
+    background: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    font-weight: 600;
+}
+.confirm-card .session-summary-table td {
+    background: var(--clr-surface);
+}
+.vertical-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--clr-surface);
+    color: var(--clr-text-primary);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.vertical-summary-table th, .vertical-summary-table td {
+    border: 1px solid var(--clr-border);
+    padding: 10px 14px;
+}
+.vertical-summary-table th {
+    text-align: left;
+    width: 40%;
+    color: var(--clr-secondary);
+    font-weight: 600;
+}
+                    `;
+                    document.head.appendChild(style);
+                }
                 let summaryHtml = `
-                    <h3 class="form-header">Confirm Group Details</h3>
-                    <div class="summary-section" style="margin-bottom: 15px;">
-                        <h4>Basic Information</h4>
-                        <p><strong>Governorate:</strong> ${this.groupData.governorateName}</p>
-                        <p><strong>Grade:</strong> ${this.groupData.yearName}</p>
-                        <p><strong>Semester:</strong> ${this.groupData.semesterName}</p>
-                        <p><strong>Center:</strong> ${this.groupData.centerName}</p>
-                        <p><strong>Subject:</strong> ${this.groupData.subjectName}</p>
-                        <p><strong>Max Students:</strong> ${this.groupData.capacity}</p>
-                        <p><strong>Price per Session:</strong> EGP ${Number(this.groupData.pricePerSession).toFixed(2)}</p>
-                        <p><strong>Private Group:</strong> ${this.groupData.isPrivate ? 'Yes' : 'No'}</p>
-                        <p><strong>Girls Only:</strong> ${this.groupData.isGirlsOnly ? 'Yes' : 'No'}</p>
-                    </div>
-                    <hr/>
-                    <div class="summary-section">
-                        <h4>Session Schedule (${this.groupData.sessions.length} per week)</h4>
-                        <div class="session-table-wrapper">
-                            <table class="session-summary-table">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Day</th>
-                                        <th>Time</th>
-                                        <th>Dates</th>
-                                        <th>Room</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
+                <h3 class="form-header" style="color:var(--clr-primary);text-align:center;margin-bottom:24px;">Confirm Group Details</h3>
+                <div class="confirm-card" style="margin:auto;max-width:600px;">
+                    <table class="vertical-summary-table" style="width:100%;margin-bottom:28px;border-collapse:collapse;background:var(--clr-surface);color:var(--clr-text-primary);border-radius:10px;overflow:hidden;">
+                        <tbody>
+                            <tr><th style="text-align:left;padding:10px 14px;">Governorate</th><td style="padding:10px 14px;">${this.groupData.governorateName}</td></tr>
+                            <tr><th style="text-align:left;padding:10px 14px;">Grade</th><td style="padding:10px 14px;">${this.groupData.yearName}</td></tr>
+                            <tr><th style="text-align:left;padding:10px 14px;">Semester</th><td style="padding:10px 14px;">${this.groupData.semesterName}</td></tr>
+                            <tr><th style="text-align:left;padding:10px 14px;">Center</th><td style="padding:10px 14px;">${this.groupData.centerName}</td></tr>
+                            <tr><th style="text-align:left;padding:10px 14px;">Subject</th><td style="padding:10px 14px;">${this.groupData.subjectName}</td></tr>
+                            <tr><th style="text-align:left;padding:10px 14px;">Capacity</th><td style="padding:10px 14px;">${this.groupData.capacity}</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="session-table-wrapper">
+                        <table class="session-summary-table" style="width:100%;border-collapse:collapse;background:var(--clr-background);color:var(--clr-text-primary);border-radius:10px;overflow:hidden;">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Dates</th>
+                                    <th>Room</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
 
+                // --- Calculate Total Price ---
+                let totalPrice = 0;
+                this.groupData.sessions.forEach(session => {
+                    function countSessions(startDateStr, endDateStr, weekday) {
+                        if (!startDateStr || !endDateStr || !weekday) return 0;
+                        let start = new Date(startDateStr);
+                        let end = new Date(endDateStr);
+                        let wd = Number(weekday);
+                        let jsDay = [0,1,2,3,4,5,6].find(d => (1<<d) === wd);
+                        if (jsDay === undefined) return 0;
+                        let current = new Date(start);
+                        while(current.getDay() !== jsDay && current <= end) {
+                            current.setDate(current.getDate() + 1);
+                        }
+                        let count = 0;
+                        while(current <= end) {
+                            count++;
+                            current.setDate(current.getDate() + 7);
+                        }
+                        return count;
+                    }
+                    function getDuration(start, end) {
+                        if (!start || !end) return 0;
+                        const [sh, sm] = start.split(":").map(Number);
+                        const [eh, em] = end.split(":").map(Number);
+                        return ((eh*60+em)-(sh*60+sm))/60;
+                    }
+                    const numSess = countSessions(session.startDate, session.endDate, session.dayId);
+                    const duration = getDuration(session.startTime, session.endTime);
+                    const price = session.pricePerHour || 0;
+                    totalPrice += numSess * duration * price;
+                });
+
+                
                 this.groupData.sessions.forEach((session, i) => {
                     summaryHtml += `
                         <tr>
-                            <td>${i + 1}</td>
                             <td>${session.dayName || 'N/A'}</td>
                             <td>${session.startTime || 'N/A'} - ${session.endTime || 'N/A'}</td>
                             <td>${session.startDate || 'N/A'} to ${session.endDate || 'N/A'}</td>
                             <td>${session.roomName || 'N/A'} <span style="font-size: 0.85em;">(ID: ${session.roomId || 'N/A'})</span></td>
                         </tr>`;
                 });
-
                 summaryHtml += `
-                                </tbody>
-                            </table>
+                        </tbody>
+                    </table>
+                </div>`;
+                summaryHtml += `
+                    <div style="display:flex;justify-content:center;margin:32px 0 24px 0;">
+                        <div style="background:#fff7e6;border:2px solid #fbbf24;border-radius:18px;box-shadow:0 4px 24px #fbbf2422;padding:32px 48px;min-width:340px;text-align:center;">
+                            <div style="font-size:1.5rem;font-weight:bold;color:#333;margin-bottom:10px;letter-spacing:0.5px;">Total Amount to Pay</div>
+                            <div style="font-size:2.8rem;font-weight:900;color:#eab308;line-height:1.1;letter-spacing:1px;">EGP ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+                            <div style="font-size:1.1rem;color:#6b7280;margin-top:8px;">This amount will be deducted from your wallet</div>
                         </div>
-                    </div>`;
+                    </div>
+                </div>`;
 
                 this.modalParts.modalBody.innerHTML = summaryHtml;
                 this.stepNumber = 5;
                 this.StopButtonLoadingAnimation();
             }
-
-
 
             async SubmitFinal() {
                 this.RenderButtonLoadingAnimation(true);
@@ -1532,9 +1665,9 @@
 
                             // Redirect here
                             setTimeout(() => {
-                                window.location.href = "https://example.com";
-                            }, 3000);
-                            showSuccessToast("Success", "Group Created Successfuly", 3000);
+                                window.location.href = "/Teachers/Group/Index";
+                            }, 2000);
+                            showSuccessToast("Success", "Group Created Successfuly!", 3000);
 
                         } else {
                             this.RenderError("ERROR WHILE SAVING");
