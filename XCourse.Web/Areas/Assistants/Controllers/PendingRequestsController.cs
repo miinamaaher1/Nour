@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using XCourse.Infrastructure.Repositories.Interfaces;
-using XCourse.Services.Implementations.AssistantServices;
 using XCourse.Services.Interfaces.AssistantServices;
 
 namespace XCourse.Web.Areas.Assistants.Controllers
@@ -10,7 +8,7 @@ namespace XCourse.Web.Areas.Assistants.Controllers
     {
         private readonly IPendingRequestService _pendingRequestService;
         private readonly IUnitOfWork _unitOfWork;
-        public PendingRequestsController(IPendingRequestService pendingRequestService,IUnitOfWork unitOfWork)
+        public PendingRequestsController(IPendingRequestService pendingRequestService, IUnitOfWork unitOfWork)
         {
             _pendingRequestService = pendingRequestService;
             _unitOfWork = unitOfWork;
