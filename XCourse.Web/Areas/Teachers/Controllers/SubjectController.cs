@@ -31,13 +31,6 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return View(subjects);
         }
 
-        // GET: SubjectController/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            var subject = await _subjectService.GetSubjectByIdAsync(id);
-            return View(subject);
-        }
-
         // GET: SubjectController/Create
         public async Task<IActionResult> Create()
         {
@@ -94,12 +87,14 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 }
                 // Assign the existing subject to the teacher
                 await _subjectService.AddSubjectAsync(existingSubject, teacher.ID);
-                return RedirectToAction("Details", new { id = existingSubject.ID });
+                //return RedirectToAction("Details", new { id = existingSubject.ID });
+                return RedirectToAction(nameof(Index));
+
             }
         }
 
 
-
+        [HttpGet]
         // GET: SubjectController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
@@ -108,9 +103,9 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         }
 
         // POST: SubjectController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, IFormCollection collection)
+        [HttpGet]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {

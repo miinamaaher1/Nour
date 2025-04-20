@@ -1,34 +1,76 @@
 ﻿@model IEnumerable<XCourse.Core.ViewModels.AssistantViewModels.PendingRequestVM>
 
-<h2>Pending Requests</h2>
 
-<table class="table">
-    <tbody>
-        @if(Model == null || !Model.Any())
-        {
-            <tr>
-                <td>No pending requests.</td>
-            </tr>
-        }
-        else
-        {
-            @foreach (var request in Model)
-            {
-                <tr>
-                    <td>Status : @request.Status</td>
-				    <td>---Teacher Name: @request.TeacherName</td>
-				    <td>---Group Description: @request.GroupDescription</td>
-				    <td>---Subject : @request.SubjectName</td>
-				    <td>---Major : @request.Major</td>
-				    <td>---Year : @request.Year</td>
-				    <td>---Semester : @request.Semester</td>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Assistants/PendingRequestsMain.css" />
+}
+<div class="container mt-5">
+    <!-- Table ****  -->
+    <div class="container">
+        <div class="header-section">
+            <h2>Pending Requests</h2>
+    
+        </div>
+     </div>
+    <div class="data-table">
+        <div class="data-table__container">
+            <table class="data-table__table">
+                <thead>
+                    <tr>
+                        <th>Teacher Name</th>
+                        <th>Subject</th>
+                        <th>Major</th>
+                        <th>Year</th>
+                        <th>Semester</th>
 
-                    <td>
-                        <a asp-action="Accept" asp-route-id="@request.InvitationID" class="btn btn-warning">---Accept</a>
-                        <a asp-action="Reject" asp-route-id="@request.InvitationID" class="btn btn-primary">---Reject</a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
+                        <th colspan="3"
+                            style="text-align: center !important">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td>No pending requests.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var request in Model)
+                        {
+                            <tr>
+                                <td>@request.TeacherName</td>
+                                <td>@request.SubjectName</td>
+                                <td>@request.Major</td>
+                                <td>@request.Year</td>
+                                <td>@request.Semester</td>
+                                <td class="data-table__actions">
+                                    <a asp-action="Accept" asp-route-id="@request.InvitationID"
+                                            class="data-table__btn data-table__btn--accept"
+                                            style="display: inline-block; text-decoration: none;">
+                                        <i class="fas fa-check me-1"></i> 
+                                        Accept
+                                    </a>
+                                </td>
+
+                                <td class="data-table__actions">
+                                    <a asp-action="Reject" asp-route-id="@request.InvitationID"
+                                       class="data-table__btn data-table__btn--delete"
+                                       style="display: inline-block; text-decoration: none;">
+                                        <i class="fas fa-xmark me-1"></i>
+                                        Reject
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

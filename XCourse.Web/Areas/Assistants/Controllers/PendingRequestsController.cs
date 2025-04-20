@@ -28,6 +28,13 @@ namespace XCourse.Web.Areas.Assistants.Controllers
         [HttpGet]
         public async Task<IActionResult> Accept(int id)
         {
+            var pendingRequest = await _pendingRequestService.FindInvitationRequestByID(id);
+            return View(pendingRequest);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AcceptConfirmed(int id)
+        {
             var Result = await _pendingRequestService.AcceptInvitationRequest(id);
             return RedirectToAction(nameof(Index));
         }
@@ -45,6 +52,5 @@ namespace XCourse.Web.Areas.Assistants.Controllers
             var Result = await _pendingRequestService.RejectInvitationRequest(id);
             return RedirectToAction(nameof(Index));
         }
-
     }
 }
