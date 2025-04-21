@@ -1,12 +1,53 @@
-@model XCourse.Core.ViewModels.TeachersViewModels.Sessions.EditOfflineLocalSessionVM
+@model XCourse.Core.ViewModels.TeachersViewModels.Sessions.AddOfflineLocalSessionVM
 
 @{
-    ViewData["Title"] = "Edit Session";
+    ViewData["Title"] = "Add Session";
 }
 
 @section Styles {
     <link href="~/css/form.css" rel="stylesheet" />
     <style>
+        .dimmed-field {
+            background: #f5f5f5 !important;
+            color: #888 !important;
+            pointer-events: none;
+        }
+        .form-validation-summary {
+            color: #dc3545;
+            font-size: 1rem;
+            margin-bottom: 1em;
+            font-weight: 600;
+            border-left: 4px solid #dc3545;
+            padding-left: 0.75em;
+            margin-top: 1em;
+            display: flex;
+            align-items: flex-start;
+        }
+        .form-validation-summary .error-icon {
+            margin-right: 0.5em;
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+        .field-error-message {
+            display: block;
+            color: #dc3545;
+            font-size: 0.98rem;
+            margin-top: 0.5em;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            border-left: 4px solid #dc3545;
+            padding-left: 0.5em;
+            background: none;
+            border-radius: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .error-icon {
+            color: #dc3545;
+            margin-right: 0.5em;
+            font-size: 1em;
+            vertical-align: middle;
+        }
         .address-map-row {
             display: flex;
             gap: 2rem;
@@ -22,12 +63,24 @@
             flex: 1;
             min-width: 250px;
             min-height: 250px;
+            max-width: 100%;
+            max-height: 350px;
             background: #f5f5f5;
             border-radius: 10px;
             border: 1px solid #ccc;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        #session-location-map {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            border: none;
+            overflow: hidden;
         }
         @@media (max-width: 768px) {
             .address-map-row {
@@ -42,39 +95,40 @@
 }
 
 <div class="form-container">
-    @if (!ViewData.ModelState.IsValid)
+    <h1 class="form-header">Add Offline Local Session</h1>
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
     {
-        <div class="text-danger mb-3">
+        <div class="form-validation-summary">
+            <i class="fas fa-exclamation-circle error-icon" aria-hidden="true"></i>
             @Html.ValidationSummary(false, "Please fix the following errors:")
         </div>
     }
-    <h1 class="form-header">Edit Offline Local Session</h1>
-    <form asp-action="EditOfflineLocalSession" asp-area="Teachers" asp-controller="Sessions" method="post" enctype="multipart/form-data">
-        <input asp-for="SessionID" type="hidden" />
+    <form asp-action="AddOfflineLocalSession" asp-area="Teachers" asp-controller="Sessions" method="post" enctype="multipart/form-data">
+        <input asp-for="GroupID" type="hidden" />
         <div class="address-map-row">
             <div class="address-fields">
                 <div class="form-group">
                     <label asp-for="Address.Street"></label>
                     <input asp-for="Address.Street" class="form-control" />
-                    <span asp-validation-for="Address.Street" class="text-danger"></span>
+                    <span asp-validation-for="Address.Street" class="field-error-message"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Address.Neighborhood"></label>
                     <input asp-for="Address.Neighborhood" class="form-control" />
-                    <span asp-validation-for="Address.Neighborhood" class="text-danger"></span>
+                    <span asp-validation-for="Address.Neighborhood" class="field-error-message"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Address.City"></label>
                     <input asp-for="Address.City" class="form-control" />
-                    <span asp-validation-for="Address.City" class="text-danger"></span>
+                    <span asp-validation-for="Address.City" class="field-error-message"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Address.Governorate"></label>
                     <input asp-for="Address.Governorate" class="form-control" />
-                    <span asp-validation-for="Address.Governorate" class="text-danger"></span>
+                    <span asp-validation-for="Address.Governorate" class="field-error-message"></span>
                 </div>
             </div>
-            <div class="map-square">
+            <div class="map-square" style="flex-direction:column; align-items:stretch;">
                 <input type="hidden" id="lat" asp-for="Location.OriginY" />
                 <input type="hidden" id="lng" asp-for="Location.OriginX" />
                 <input type="hidden" asp-for="Location.Key" />
@@ -82,32 +136,39 @@
                 <div id="googleMap" style="border-radius: 10px; width: 100%; height: 100%;"></div>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="Date"></label>
-            <input asp-for="Date" type="date" class="form-control" />
-            <span asp-validation-for="Date" class="text-danger"></span>
+
+        <div class="form-group row">
+            <div class="col-lg-6 col-md-12">
+                <label asp-for="Date"></label>
+                <input asp-for="Date" type="date" class="form-control" />
+                <span asp-validation-for="Date" class="field-error-message"></span>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <label asp-for="Description"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="field-error-message"></span>
+            </div>
         </div>
         <div class="form-group row">
             <div class="col-lg-6 col-md-12">
                 <label asp-for="StartTime"></label>
                 <input asp-for="StartTime" type="time" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
+                <span asp-validation-for="StartTime" class="field-error-message"></span>
             </div>
             <div class="col-lg-6 col-md-12">
                 <label asp-for="EndTime"></label>
                 <input asp-for="EndTime" type="time" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
+                <span asp-validation-for="EndTime" class="field-error-message"></span>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="Description"></label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
+        <div class="form-navigation">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check icon"></i>
+                Submit
+            </button>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
     </form>
 </div>
-
 @section Scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <partial name="_ValidationScriptsPartial" />

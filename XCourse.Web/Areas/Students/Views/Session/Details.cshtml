@@ -186,10 +186,10 @@
     <!-- 1. Profile Section - Improved positioning -->
     <section class="session__profile">
         <div class="session__profile__container"
-             style="background-image : url('@(Model.Session.Group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session.Group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))');">
+             style="background-image : url('@(Model.Session.Group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session.Group.CoverPicture) : Url.Content("~/images/default_group.svg"))');">
             <div class="session__profile__overlay"></div>
             <div class="session__profile__header">
-                <img src="@(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                <img src="@(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.Session?.Group?.Teacher?.AppUser?.ProfilePicture) : Url.Content("~/images/default_user.svg"))"
                      alt="Student Profile"
                      class="session__profile__image">
 
@@ -233,9 +233,7 @@
                         {
                             @if (isOnline)
                             {
-                                <a href="@Model.Session.URL" class="session__info-link">
-                                    Join Session <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                </a>
+                                <iframe width="560" height="315" src="@Model.Session.URL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                             }
                             else
                             {

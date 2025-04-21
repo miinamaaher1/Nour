@@ -1,9 +1,4 @@
-﻿@using XCourse.Core.DTOs.StudentDTOs
-@model XCourse.Core.Entities.Session
-
-@{
-    ViewData["Title"] = "Session Details";
-}
+﻿@model XCourse.Core.Entities.Session
 
 @section Styles {
     <style>
@@ -314,34 +309,6 @@
             }
         }
     </style>
-
-    <style>
-        .edit-button {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background-color: var(--clr-primary);
-            color: var(--clr-text-on-primary);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            border: none;
-            transition: transform 0.2s, background-color 0.2s;
-            z-index: 1000;
-            text-decoration: none;
-        }
-
-            .edit-button:hover {
-                background-color: color-mix(in srgb, var(--clr-primary) 85%, black);
-                transform: translateY(-5px);
-            }
-    </style>
 }
 
 <div class="container">
@@ -356,7 +323,7 @@
             }
             else
             {
-                <img alt="profile" src="~/images/default_group.svg" />
+                <img alt="profile" src="~/images/default_cover.png" />
             }
         </div>
 
@@ -428,14 +395,7 @@
             <div class="card">
                 <h3>Session Location</h3>
                 <div class="map-container">
-                    @if (Model.Location != null)
-                    {
-                        <partial name="_MapPartialView" model="new MapInfoDTO() { Key=ViewBag.Key, OriginX=Model.Location.X, OriginY=Model.Location.Y }" style="width:100%; height:100%" />
-                    }
-                    else
-                    {
-                        <i class="fa-solid fa-map-location-dot"></i>
-                    }
+                    <i class="fa-solid fa-map-location-dot"></i>
                 </div>
             </div>
         </div>
@@ -476,9 +436,7 @@
             </tbody>
         </table>
     </section>
-    <a class="edit-button" asp-action="Edit" asp-route-id="@Model.ID">
-        <i class="fa-solid fa-edit"></i>
-    </a>
+
 </div>
 
 
@@ -488,7 +446,7 @@
 
                      let sessionAttendanceRequest = {
             sessionId: @Model?.ID,
-            teacherId: 1,
+            assistantId: 0,
             sessionDayAttendances: []
         }
 
@@ -513,16 +471,16 @@
         }
 
         async function GetAttendance() {
-            let url = "/Teachers/Attendance/GetSessionAttendance"
+            let url = "/Assistants/Attendance/GetSessionAttendance"
             let requstBody = {
                 "sessionId": 3,
-                "teacherId": 1
+                "assistantId": 1
             }
             let errorResponse = {
                 isValid: true,
                 errors: ["Soething went wrong! contact the server owner"],
                 sessionId: 3,
-                teacherId: 1,
+                assistantId: 1,
                 sessionDayAttendances: []
             }
             try {
@@ -652,7 +610,7 @@
         }
 
         async function submitSessionAttendance() {
-            let url = "/Teachers/Attendance/SubmitSessionAttendance"
+            let url = "/Assistants/Attendance/SubmitSessionAttendance"
             try {
                 res = await sendAsyncRequest(url, "POST", sessionAttendanceRequest)
                 if (res.isValid == true) {
