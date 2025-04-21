@@ -18,35 +18,25 @@ namespace XCourse.Web.Areas.Assistants.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: PendingRequestsController
         public async Task<IActionResult> Index()
         {
             var pendingRequests = await _pendingRequestService.GetPendingRequestsAsync(User);
             return View(pendingRequests);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Accept(int id)
-        {
-            var pendingRequest = await _pendingRequestService.FindInvitationRequestByID(id);
-            return View(pendingRequest);
-        }
-
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcceptConfirmed(int id)
         {
+            
             var Result = await _pendingRequestService.AcceptInvitationRequest(id);
+            TempData["ToastMessage"] = "Invitation Confirmed Successfully";
+            TempData["ToastType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Reject(int id)
-        {
-            var pendingRequest = await _pendingRequestService.FindInvitationRequestByID(id);
-            return View(pendingRequest);
-        }
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RejectConfirmed(int id)
         {
             var Result = await _pendingRequestService.RejectInvitationRequest(id);
