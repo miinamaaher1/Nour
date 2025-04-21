@@ -8,6 +8,7 @@ using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels;
 using XCourse.Core.ViewModels.TeachersViewModels.Sessions;
 using XCourse.Infrastructure.Repositories.Interfaces;
+using XCourse.Services.Implementations.VideoServices;
 using XCourse.Services.Interfaces.TeacherServices;
 
 namespace XCourse.Services.Implementations.TeacherServices
@@ -15,10 +16,12 @@ namespace XCourse.Services.Implementations.TeacherServices
     public class SessionService : ISessionService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IYouTubeUploaderService _youTubeUploaderService;
 
-        public SessionService(IUnitOfWork unitOfWork)
+        public SessionService(IUnitOfWork unitOfWork, IYouTubeUploaderService youTubeUploaderService)
         {
             this._unitOfWork = unitOfWork;
+            _youTubeUploaderService = youTubeUploaderService;
         }
 
         public async Task<Teacher> GetTeacherByUserId(string userId)
@@ -307,9 +310,24 @@ namespace XCourse.Services.Implementations.TeacherServices
             session.EndDateTime = endDateTime;
             session.Description = sessionVM.Description;
 
-            // file 
-            // here is the file => use your service
-            //session.URL = sessionVM.URL;
+            var thisSession = _unitOfWork.Sessions.Find(s => s.ID == sessionVM.SessionID, ["Group.Teacher.AppUser", "Group.Subject"]);
+            var title = thisSession.Group.Teacher.AppUser.FirstName
+                        + " " + thisSession.Group.Teacher.AppUser.LastName
+                        + " " + thisSession.Group.Subject.Topic
+                        + " " + Guid.NewGuid();
+
+            var url = await _youTubeUploaderService.UploadVideoAsync(sessionVM.Video.OpenReadStream(), title, sessionVM.Description);
+            
+            if (url == null)
+            {
+                return new EditSessionResponseDTO
+                {
+                    Status = false,
+                    Errors = new List<string> { "Couldn't upload video." }
+                };
+            }
+
+            session.URL = url;
 
             // Save changes
             try
