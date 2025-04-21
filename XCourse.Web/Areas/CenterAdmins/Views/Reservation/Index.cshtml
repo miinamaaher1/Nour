@@ -22,7 +22,7 @@
         
         <div>
             <button id="openModal" class="openModal">
-                <i class="fa fa-cog"></i>
+                <i class="fa-solid fa-bell"></i>
             </button>
         </div>
         
@@ -102,9 +102,8 @@
                             <th> Equipment </th>
                             <th>TotalPrice</th>
                             <th>Date</th>
-                            <th>WeekDay</th>
-                            <th>StartTime</th>
-                            <th>EndTime</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
                             <th colspan="2"
                                 style="text-align: center !important">
                                 Actions
@@ -134,9 +133,6 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Date)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.WeekDay)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.StartTime)
