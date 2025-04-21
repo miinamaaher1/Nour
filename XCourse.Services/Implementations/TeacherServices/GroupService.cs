@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Session;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,6 @@ namespace XCourse.Services.Implementations.TeacherServices
             _transactionService = transactionService;
         }
 
-        // Adding Announcement Method
         public async Task<bool> PostAnnouncement(int groupId, int teacherId, string body, bool isImportant, string? title)
         {
             // Ensure the group exists and belongs to the teacher
@@ -58,7 +58,7 @@ namespace XCourse.Services.Implementations.TeacherServices
         }
 
 
-        // Reservation Methods 
+         
         async public Task<ReserveGroupResponseDTO> ReserveOnlineGroup(ReserveOnlineGroupRequestDTO request)
         {
             if (request.TeacherId <= 0)
@@ -188,6 +188,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             // Creating the group 
             Group offlineLocalGroup = new Group();
+            offlineLocalGroup.GroupDefaults = new List<GroupDefaults>();
 
             // Assigning properties
             offlineLocalGroup.IsOnline = false;
@@ -213,8 +214,17 @@ namespace XCourse.Services.Implementations.TeacherServices
             offlineLocalGroup.Sessions = new List<Session>();
             foreach (var defaultSession in request.DefaultSessionResrvations!)
             {
-                DateOnly current = request.StartDate;
+                
 
+                DateOnly current = request.StartDate;
+                var groupDefaults = new GroupDefaults
+                {
+                    WeekDay = defaultSession.WeekDay,
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    StartTime = defaultSession.StartTime,
+                    EndTime = defaultSession.EndTime
+                };
                 while (!MatchesWeekDay(current, defaultSession.WeekDay))
                 {
                     current = current.AddDays(1);
@@ -241,6 +251,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     offlineLocalGroup.Sessions.Add(session);
                     current = current.AddDays(7);
                 }
+                offlineLocalGroup.GroupDefaults.Add(groupDefaults);
             }
 
             try

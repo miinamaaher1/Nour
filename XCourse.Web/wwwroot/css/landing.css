@@ -178,7 +178,7 @@ ul {
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 12px 20px;
+    padding: 12px 0;
     color: var(--clr-text-secondary);
     text-decoration: none;
     transition: all 0.3s ease;
@@ -191,7 +191,8 @@ button.nav-link {
     cursor: pointer;
     display: flex;
     align-items: center;
-    padding: 12px 20px;
+    justify-content: center;
+    padding: 12px 0;
     color: var(--clr-text-secondary);
     text-decoration: none;
     transition: all 0.3s ease;
@@ -215,7 +216,6 @@ button.nav-link {
     min-width: 30px;
     display: flex;
     justify-content: center;
-    margin-right: 15px;
 }
 
 /* Container */

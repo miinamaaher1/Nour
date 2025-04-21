@@ -1,7 +1,5 @@
 ﻿@model XCourse.Core.ViewModels.StudentsViewModels.HomeViewModel
 
-
-
 @{
     ViewData["Title"] = "Home";
 }
@@ -119,7 +117,7 @@
                                 <div class="session-card__subject">@session.SubjectName</div>
                                 <div class="session-card__teacher">
                                     <div class="session-card__teacher-img">
-                                        <img src="@(session.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(session.TeacherProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                                        <img src="@(session.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(session.TeacherProfilePicture) : Url.Content("~/images/default_user.svg"))"
                                              alt="Teacher">
                                     </div>
                                     <div class="session-card__teacher-name">@session.GroupTeacherName</div>
@@ -170,11 +168,11 @@
                                     <div class="group-card">
                                         <div class="group-card__image">
                                             <img 
-                                            src="@(group.GroupPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.GroupPicture) : Url.Content("~/images/default_Group.jpg"))"
+                                            src="@(group.GroupPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.GroupPicture) : Url.Content("~/images/default_group.svg"))"
                                             alt="@group.SubjectName Group">
                                             <div class="group-card__teacher">
                                                 <div class="group-card__teacher-img">
-                                                    <img src="@(group.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.TeacherProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                                                    <img src="@(group.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.TeacherProfilePicture) : Url.Content("~/images/default_user.svg"))"
                                                     alt="@group.GroupTeacherName">
                                                 </div>
                                             </div>

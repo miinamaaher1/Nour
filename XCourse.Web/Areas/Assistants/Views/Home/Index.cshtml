@@ -1,5 +1,726 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using XCourse.Core.ViewModels.AssistantViewModels
+@model HomeDashboardVM
+
 @{
+    ViewData["Title"] = "Assistant Dashboard";
+}
+@section Styles{
+<style>
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+        .header-Assistant {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        }
+
+         .header-Assistant h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+    .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--clr-border);
+        border-radius: 2rem;
+        background: transparent;
+        color: var(--clr-text-primary);
+        cursor: pointer;
+    }
+
+    .welcome-card {
+        padding: 2rem;
+        margin-bottom: 2rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        border-left: 4px solid var(--clr-primary);
+    }
+
+        .welcome-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-card p {
+            color: var(--clr-text-secondary);
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--clr-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: var(--clr-text-secondary);
+        }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--clr-border);
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .badge-accent {
+        background-color: var(--clr-accent);
+        color: var(--clr-text-on-accent);
+    }
+
+    .invitations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .invitation-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        border-left: 4px solid var(--clr-accent);
+    }
+
+    .invitation-info h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .invitation-info p {
+        color: var(--clr-text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .invitation-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+    .btn-secondary {
+        background-color: var(--clr-secondary);
+        color: var(--clr-text-on-secondary);
+    }
+
+    .btn-accent {
+        background-color: var(--clr-accent);
+        color: var(--clr-text-on-accent);
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    thead {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+    th, td {
+        padding: 1rem;
+        text-align: left;
+    }
+
+    tbody tr {
+        border-top: 1px solid var(--clr-border);
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .status-completed {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+    .status-in-progress {
+        background-color: var(--clr-accent);
+        color: var(--clr-text-on-accent);
+    }
+
+    .status-upcoming {
+        background-color: var(--clr-surface);
+        color: var(--clr-text-primary);
+        border: 1px solid var(--clr-border);
+    }
+
+    .grid-2col {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-card {
+        padding: 1.5rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+    }
+
+        .info-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--clr-primary);
+        }
+
+    .info-list {
+        list-style-position: inside;
+        margin-bottom: 1rem;
+    }
+
+        .info-list li {
+            margin-bottom: 0.5rem;
+        }
+
+    @@media (max-width: 768px) {
+        .header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .invitation-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .invitation-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    }
+
+        /* Modal Base Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--clr-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+            .modal-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        .modal-container {
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-container {
+            transform: translateY(0);
+        }
+
+        .modal-content {
+            background-color: var(--clr-surface);
+            border: 1px solid var(--clr-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Modal Header */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close-button {
+            background: none;
+            border: none;
+            color: var(--clr-text-on-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        /* Modal Body */
+        .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        /* Modal Footer */
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 16px 20px;
+            border-top: 1px solid var(--clr-border);
+        }
+
+            .modal-footer form {
+                display: flex;
+                gap: 12px;
+                width: 100%;
+                justify-content: center;
+            }
+
+        /* Button Styles */
+        .btn--accept, .btn--reject {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn--accept {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+        .btn--reject {
+            background-color: #D32F2F; /* Red for deletion/rejection */
+            color: white;
+        }
+
+        .btn--accept:hover {
+            background-color: color-mix(in srgb, var(--clr-secondary) 90%, black);
+        }
+
+        .btn--reject:hover {
+            background-color: #B71C1C; /* Darker red on hover */
+        }
+
+        /* Teacher Card Styles */
+        .teacher-card {
+            background-color: var(--clr-surface);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .teacher-card__header {
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--clr-text-primary);
+            text-align: center;
+            border-bottom: 1px solid var(--clr-border);
+            margin-bottom: 12px;
+        }
+
+        .teacher-card__row {
+            display: flex;
+            padding: 8px 16px;
+        }
+
+        .teacher-card__label {
+            flex: 0 0 140px;
+            font-weight: 600;
+            color: var(--clr-text-secondary);
+        }
+
+        .teacher-card__value {
+            flex: 1;
+            color: var(--clr-text-primary);
+        }
+        a{
+			text-decoration: none;
+        }
+
+</style>
+}
+<div class="container">
+
+    <div class="welcome-card">
+        <h2>Welcome Back, @Model.AssistantName </h2>
+        <p>Here's your activity overview for today, @DateTime.Now.ToString("dddd, MMMM d, yyyy")</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Assigned Groups</h3>
+            <div class="value">@Model.TotalGroups </div>
+            <p>Active groups you're currently managing</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Attendance</h3>
+            <div class="value">@ViewBag.PendingAttendance</div>
+            <p>Groups needing attendance records</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Grades</h3>
+            <div class="value">@ViewBag.PendingGrades</div>
+            <p>Students waiting for grades</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">
+        Pending Invitations
+        <span class="badge badge-accent">@Model.PendingRequests?.Count New</span>
+    </h2>
+    <div class="invitations-list">
+        @if (Model.PendingRequests != null && Model.PendingRequests.Count > 0)
+        {
+            foreach (var invitation in Model.PendingRequests)
+            {
+                <div class="invitation-card">
+                    <div class="invitation-info">
+                        <h3>@invitation.SubjectName </h3>
+                        <p>Invited by: @invitation.TeacherName </p>
+                        <p>@invitation.Year Year • @invitation.Semester</p>
+                    </div>
+                    <div class="invitation-actions">
+                        <form method="post" asp-action="AcceptConfirmed" asp-route-id="@invitation.InvitationID">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary">Accept</button>
+                        </form>
+                        <button class="btn btn-secondary data-table__btn data-table__btn--delete modal-trigger"
+                            style="display: inline-block; text-decoration: none; border: none; cursor: pointer;"
+                            data-modal-target="rejectModal"
+                            data-id="@invitation.InvitationID"
+                            data-teacher="@invitation.TeacherName"
+                            data-subject="@invitation.SubjectName"
+                            data-major="@invitation.Major"
+                            data-year="@invitation.Year"
+                            data-semester="@invitation.Semester">
+                            Decline
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No pending invitations at the moment.</p>
+        }
+
+        <div style="text-align: center; margin-top: 1rem;">
+            <a asp-action="Index" asp-controller="PendingRequests" asp-area="Assistants" class="btn btn-accent">Load More</a>
+        </div>
+    </div>
+
+    <h2 class="section-title">Today's Schedule</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Course</th>
+                    <th>Start Time</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.SessionsToday != null && Model.SessionsToday.Count > 0)
+                {
+                    foreach (var schedule in Model.SessionsToday)
+                    {
+                        <tr>
+                            <td>@schedule.TeacherName</td>
+                            <td>@schedule.SubjectName</td>
+                            <td>@schedule.StartTime.ToString(@"hh\:mm")</td>
+                            <td>@schedule.Duration.ToString(@"hh\:mm")</td>
+                            <td>
+                                @if (schedule.Status == SessionStatus.ended)
+                                {
+                                    <span class="status-badge status-completed">Completed</span>
+                                }
+                                else if (schedule.Status == SessionStatus.ongoing)
+                                {
+                                    <span class="status-badge status-in-progress">In Progress</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge status-upcoming">Upcoming</span>
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-action="Details" asp-controller="Session" asp-area="Assistants" class="btn btn-primary">Details</a>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                else
+                {
+                    <tr>
+                        <td colspan="6">No schedule for today.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <h2 class="section-title">Group Performance Summary</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Course</th>
+                    <th>Average Capacity</th>
+                    <th>Average Attendance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.GroupPerformances != null && Model.GroupPerformances.Count>0)
+                {
+                    foreach (var group in Model.GroupPerformances)
+                    {
+                        <tr>
+                            <td>@group.TeacherName</td>
+                            <td>@group.GroupName</td>
+                            <td>@group.StudentsPercentage%</td>
+                            <td>@group.AttendanceRate%</td>
+                            <td>
+                                <a asp-action="Details" asp-controller="Group" asp-area="Assistants" asp-route-id="@group.GroupID" class="btn btn-primary">Details</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5">No performance data available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Reject Modal Container -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-container">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Rejection</h5>
+                <button type="button" class="modal-close-button" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="teacher-card">
+                    <div class="teacher-card__header">
+                        Are you sure you want to reject this Request?
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Teacher Name:</div>
+                        <div class="teacher-card__value" id="modalTeacherName"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Subject:</div>
+                        <div class="teacher-card__value" id="modalSubject"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Major:</div>
+                        <div class="teacher-card__value" id="modalMajor"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Year:</div>
+                        <div class="teacher-card__value" id="modalYear"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Semester:</div>
+                        <div class="teacher-card__value" id="modalSemester"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="rejectForm" method="post"
+                      asp-area="Assistants"
+                      asp-controller="Home"
+                      asp-action="RejectConfirmed">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="invitationId" name="id" value="" />
+                    <button type="button" class="btn--accept modal-back-btn">
+                        <i class="fas fa-arrow-left"></i> Go Back
+                    </button>
+                    <button type="submit" class="btn--reject">
+                        <i class="fas fa-xmark"></i> Reject
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+                document.addEventListener('DOMContentLoaded', function() {
+            // Select elements
+            const rejectButtons = document.querySelectorAll('.modal-trigger');
+            const modal = document.getElementById('rejectModal');
+            const closeButton = modal.querySelector('.modal-close-button');
+            const backButton = modal.querySelector('.modal-back-btn');
+
+
+
+            @if (TempData["ToastMessage"] != null)
+            {
+                <text>
+                                showSuccessToast("Confirmed", "@TempData["ToastMessage"]", 4);
+                </text>
+            }
+
+
+            // Function to open modal
+            function openModal(event) {
+                const button = event.currentTarget;
+                const id = button.getAttribute('data-id');
+                const teacher = button.getAttribute('data-teacher');
+                const subject = button.getAttribute('data-subject');
+                const major = button.getAttribute('data-major');
+                const year = button.getAttribute('data-year');
+                const semester = button.getAttribute('data-semester');
+
+                // Update modal content
+                document.getElementById('modalTeacherName').textContent = teacher;
+                document.getElementById('modalSubject').textContent = subject;
+                document.getElementById('modalMajor').textContent = major;
+                document.getElementById('modalYear').textContent = year;
+                document.getElementById('modalSemester').textContent = semester;
+
+                // Set the invitation ID for the form submission
+                document.getElementById('invitationId').value = id;
+
+                // Update the form action
+                // document.getElementById('rejectForm').action = '/Assistants/PendingRequests/RejectConfirmed/' + id;
+
+                // Show modal
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Function to close modal
+            function closeModal() {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+
+            // Add event listeners to buttons
+            rejectButtons.forEach(button => {
+                button.addEventListener('click', openModal);
+            });
+
+            closeButton.addEventListener('click', closeModal);
+            backButton.addEventListener('click', closeModal);
+
+            // Close modal if clicking outside of modal content
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Close modal on escape key press
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('show')) {
+                    closeModal();
+                }
+            });
+        });
+
+    </script>
 }

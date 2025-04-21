@@ -29,11 +29,11 @@
             <div class="col-md-3 mb-4 group-card-wrapper">
                 <a class="group-card" asp-action="Details" asp-controller="Group" asp-area="Students" asp-route-Id="@group.GroupId">
                     <div class="group-card__image">
-                        <img src="@(group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))"
+                        <img src="@(group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.CoverPicture) : Url.Content("~/images/default_group.svg"))"
                              alt="@group.Subject Group">
                         <div class="group-card__teacher">
                             <div class="group-card__teacher-img">
-                                <img src="@(group.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.ProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                                <img src="@(group.ProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.ProfilePicture) : Url.Content("~/images/default_user.svg"))"
                                      alt="@group.TeacherName">
                             </div>
                         </div>

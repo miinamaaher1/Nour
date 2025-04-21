@@ -32,16 +32,6 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return View(rooms);
         }
 
-        // GET: RoomController/Details/5
-        public ActionResult Details(int id)
-        {
-            var room = _centerAdminService.GetRoom(id);
-
-
-          
-            return View(room);
-        }
-
         // GET: RoomController/Create
         public ActionResult Create(int id)
         {
@@ -50,8 +40,6 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 CenterId= id
             };
 
-
-                
                 return View(room);
         }
 

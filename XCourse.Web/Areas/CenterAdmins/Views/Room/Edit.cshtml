@@ -41,7 +41,7 @@
                     else
                     {
                         <img id="PreviewPicture" alt="profile" style="border-radius: 10px; width: 100%; height: 250px; object-fit: cover;"
-                             src="~/images/default_room.png" />
+                             src="~/images/default_room.svg" />
                     }
                     <div class="custom-file mt-2">
                         <input type="file"
@@ -64,7 +64,7 @@
                     <span asp-validation-for="Capacity" class="text-danger"></span>
                 </div>
 
-                <div class="form-group" id="">
+                <div class="form-group" id="equipmentField">
                     <label asp-for="Equipment" class="control-label"></label>
                     <select asp-for="SelectedEquipments"
                             class="form-select form-select-sm"
@@ -102,6 +102,7 @@
                     <p class="text-danger">
                         Warning! This action can't be undone.
                     </p>
+
                 </div>
             </form>
         </div>

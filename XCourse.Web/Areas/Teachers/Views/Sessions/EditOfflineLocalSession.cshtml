@@ -1,5 +1,9 @@
 @model XCourse.Core.ViewModels.TeachersViewModels.Sessions.EditOfflineLocalSessionVM
 
+@{
+    ViewData["Title"] = "Edit Session";
+}
+
 @section Styles {
     <link href="~/css/form.css" rel="stylesheet" />
     <style>
@@ -71,14 +75,12 @@
                 </div>
             </div>
             <div class="map-square">
-                @* TODO: Insert map component or static map preview here. If you have a map partial, render it here. *@
-                <span>Map Preview</span>
+                <input type="hidden" id="lat" asp-for="Location.OriginY" />
+                <input type="hidden" id="lng" asp-for="Location.OriginX" />
+                <input type="hidden" asp-for="Location.Key" />
+
+                <div id="googleMap" style="border-radius: 10px; width: 100%; height: 100%;"></div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Location"></label>
-            <input asp-for="Location" class="form-control" />
-            <span asp-validation-for="Location" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Date"></label>
@@ -105,3 +107,52 @@
         <button type="submit" class="btn btn-primary w-100">Save Changes</button>
     </form>
 </div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function initMap() {
+            var lat = @Model.Location.OriginY;
+            var lng = @Model.Location.OriginX;
+
+            if (lat == 0 || lng == 0) {
+                lat = 30.0444;
+                lng = 31.2357;
+            }
+
+            var myCenter = new google.maps.LatLng(lat, lng);
+
+            var mapProp = {
+                center: myCenter,
+                zoom: 12,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+            var marker = new google.maps.Marker({
+                position: myCenter,
+                map: map,
+                draggable: true
+            });
+
+            google.maps.event.addListener(map, "click", function (event) {
+                marker.setPosition(event.latLng);
+                updateLatLngInputs(event.latLng);
+            });
+
+            marker.addListener("dragend", function () {
+                updateLatLngInputs(marker.getPosition());
+            });
+
+            function updateLatLngInputs(location) {
+                document.getElementById("lat").value = location.lat();
+                document.getElementById("lng").value = location.lng();
+            }
+        }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.Location.Key&callback=initMap" defer></script>
+}

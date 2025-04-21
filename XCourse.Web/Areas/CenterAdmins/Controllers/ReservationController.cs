@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
@@ -37,9 +38,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return RedirectToAction("Index", new { id = t });
         }
 
-        public ActionResult RejectReservation(int id)
+        public async Task<ActionResult> RejectReservation(int id)
         {
-            int t = _centerAdminService.RejectReservation(id);
+            int t = await _centerAdminService.RejectReservation(id);
             if (t == 0)
             {
                 return NotFound();
@@ -47,14 +48,6 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return RedirectToAction("Index", new { id = t });
         }
 
-        // GET: ReservationController/Details/5
-        public ActionResult Details(int id)
-        {
-            var model = _centerAdminService.DetailsReservation(id);
-            if (model == null) return NotFound();
-            return View(model);
-        }
-    
         // GET: ReservationController/Edit/5
         public ActionResult Edit(int id)
         {
@@ -90,5 +83,43 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 return View(Rooms);
             }
         }
+
+
+        public ActionResult Delete(int id)
+        {
+            var Result = _centerAdminService.DetailsReservation(id);
+            if (Result == null)
+                return NotFound();
+            return View(Result);
+        }
+        [HttpPost]
+        public async Task<ActionResult> Delete(DetailsReservationViewModel details)
+        {
+            var deleteReservation = await _centerAdminService.DeleteReservation(details);
+
+            try
+            {
+                if (deleteReservation == null)
+                    return NotFound();
+               if(deleteReservation==0)
+                {
+                    return View(details);
+                }
+                return RedirectToAction("Index", new { id = deleteReservation });
+
+            }
+
+
+            catch
+            {
+                return View(details);
+            }
+
+
+           
+        }
+
+
+
     }
 }
