@@ -310,24 +310,27 @@ namespace XCourse.Services.Implementations.TeacherServices
             session.EndDateTime = endDateTime;
             session.Description = sessionVM.Description;
 
-            var thisSession = _unitOfWork.Sessions.Find(s => s.ID == sessionVM.SessionID, ["Group.Teacher.AppUser", "Group.Subject"]);
-            var title = thisSession.Group.Teacher.AppUser.FirstName
-                        + " " + thisSession.Group.Teacher.AppUser.LastName
-                        + " " + thisSession.Group.Subject.Topic
-                        + " " + Guid.NewGuid();
-
-            var url = await _youTubeUploaderService.UploadVideoAsync(sessionVM.Video.OpenReadStream(), title, sessionVM.Description);
-            
-            if (url == null)
+            if (sessionVM.Video != null)
             {
-                return new EditSessionResponseDTO
-                {
-                    Status = false,
-                    Errors = new List<string> { "Couldn't upload video." }
-                };
-            }
+                var thisSession = _unitOfWork.Sessions.Find(s => s.ID == sessionVM.SessionID, ["Group.Teacher.AppUser", "Group.Subject"]);
+                var title = thisSession.Group.Teacher.AppUser.FirstName
+                            + " " + thisSession.Group.Teacher.AppUser.LastName
+                            + " " + thisSession.Group.Subject.Topic
+                            + " " + Guid.NewGuid();
 
-            session.URL = url;
+                var url = await _youTubeUploaderService.UploadVideoAsync(sessionVM.Video.OpenReadStream(), title, sessionVM.Description);
+
+                if (url == null)
+                {
+                    return new EditSessionResponseDTO
+                    {
+                        Status = false,
+                        Errors = new List<string> { "Couldn't upload video." }
+                    };
+                }
+
+                session.URL = url;
+            }                                     
 
             // Save changes
             try
