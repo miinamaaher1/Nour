@@ -17,5 +17,6 @@ namespace XCourse.Services.Interfaces.TeacherServices
         public Task<int> GetGroupTypeFromSession(int sessionId, int TeacherId);
         public Task<ICollection<Session>> GetSessionsInGroup(int groupId, int teacherId);
         public Task<EditSessionResponseDTO> EditOnlineSessionVM(EditOnlineSessionVM sessionVM, int teacherId);
+        public Task<EditSessionResponseDTO> EditOfflineLocalSession(EditOfflineLocalSessionVM sessionVM, int teacherId);
     }
 }
