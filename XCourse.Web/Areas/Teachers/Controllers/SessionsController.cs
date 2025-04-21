@@ -134,7 +134,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 EndTime = TimeOnly.FromDateTime(session.EndDateTime),
                 Date = DateOnly.FromDateTime(session.StartDateTime),
                 Description = session.Description,
-                Location = new MapInfoDTO { OriginX = session.Location.X, OriginY = session.Location.Y, Key = _configuration["GoogleMaps:ApiKey"] },
+                Location = new MapInfoDTO { OriginX = session.Location?.X?? 0, OriginY = session.Location?.Y?? 0, Key = _configuration["GoogleMaps:ApiKey"] },
                 Address = new Core.Entities.Address
                 {
                     Governorate = session.Address?.Governorate,

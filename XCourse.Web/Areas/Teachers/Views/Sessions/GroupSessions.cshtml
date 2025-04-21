@@ -2,6 +2,12 @@
 
 @{
     ViewData["Title"] = "Sessions";
+    int groupID = 0;
+    foreach (var session in Model)
+    {
+        groupID = session.GroupID;
+        break;
+    }
 }
 
 <div class="container my-4">
@@ -101,9 +107,39 @@
             </div>
         }
     </div>
+    <a class="add-button" asp-action="AddSession" asp-route-id="@groupID">
+        <i class="fa-solid fa-add"></i>
+    </a>
 </div>
 
 @section Styles {
+    <style>
+        .add-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+            .add-button:hover {
+                background-color: color-mix(in srgb, var(--clr-primary) 85%, black);
+                transform: translateY(-5px);
+            }
+    </style>
     <style>
         .session-location-box {
             background: var(--clr-surface);
