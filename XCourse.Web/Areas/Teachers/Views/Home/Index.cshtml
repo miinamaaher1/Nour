@@ -186,7 +186,7 @@
                                     <a style="text-decoration:none;" asp-action="Details" asp-controller="Group" asp-area="Teachers" asp-route-Id="@group.ID">
                                         <div class="group-card">
                                             <div class="group-card__image">
-                                                <img src="@(group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.CoverPicture) : Url.Content("~/images/default_Group.jpg"))"
+                                                <img src="@(group.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(group.CoverPicture) : Url.Content("~/images/default_group.svg"))"
                                                      alt="@group.Subject Group">
                                             </div>
                                             <div class="group-card__content">

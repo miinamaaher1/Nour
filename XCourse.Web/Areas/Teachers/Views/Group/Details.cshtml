@@ -402,7 +402,9 @@
     <div class=" container">
         <div class="group-card">
             <div class="group-image">
-                <img src="~/images/default_cover.png" alt="Group Cover Image">
+                <img src="@(Model.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.CoverPicture) : Url.Content("~/images/default_group.svg"))"
+                     alt="Student Profile"
+                     class="session__profile__image">
                 <div class="group-overlay">
                     <div class="center-name">@Model?.Subject?.Topic (@Model.Subject?.Major)</div>
                     <div class="subject-name">
