@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
+using XCourse.Core.DTOs;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels.Sessions;
 using XCourse.Services.Interfaces.TeacherServices;
@@ -83,7 +84,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
                 teacherId = teacher.ID;
             }
-            var session = await  _sessionService.GetSessionDetailsById(id, teacherId);
+            var session = await _sessionService.GetSessionDetailsById(id, teacherId);
             // Mapping here 
             var onlineSessionVM = new EditOnlineSessionVM();
             onlineSessionVM.StartTime = TimeOnly.FromDateTime(session.StartDateTime);
@@ -105,7 +106,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             }
             var teacher = await _sessionService.GetTeacherByUserId(userID!);
             var result = await _sessionService.EditOnlineSessionVM(sessionVM, teacher.ID);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new {id = sessionVM.SessionID});
         }
 
         public async Task<IActionResult> EditOfflineLocalSession(int id)
@@ -139,7 +140,6 @@ namespace XCourse.Web.Areas.Teachers.Controllers
 
             return View(offlineLocalSession);
         }
-
         [HttpPost]
         public async Task<IActionResult> EditOfflineLocalSession(EditOfflineLocalSessionVM sessionVM)
         {
@@ -152,6 +152,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             var result = await _sessionService.EditOfflineLocalSession(sessionVM, teacher.ID);
             return RedirectToAction(nameof(Index));
         }
+
         public async Task<IActionResult> EditOfflineInACenter(int id)
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -165,7 +166,120 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             var session = await _sessionService.GetSessionDetailsById(id, teacherId);
             return View(session);
         }
-    
-       
+
+
+         
+        public async Task<IActionResult> AddSession(int id)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                // Access Page
+                Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+
+            int groupType = await _sessionService.GetGroupTypeById(id, teacherId);
+            switch (groupType)
+            {
+                case 1:
+                    return RedirectToAction(nameof(AddOnlineSession), new { id = id });
+                default:
+                    return null;
+            }
+        }
+        
+        // Adding Online session
+        public async Task<IActionResult> AddOnlineSession(int id)
+        {
+            AddOnlineSessionVM sessionVM = new AddOnlineSessionVM();
+            sessionVM.GroupID = id;
+            return View(sessionVM);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddOnlineSession(AddOnlineSessionVM sessionVM)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(sessionVM);
+            }
+            var response = await _sessionService.AddOnlineSession(sessionVM, teacherId);
+            if (response.Status == true)
+            {
+                return RedirectToAction(nameof(GroupSessions), new {id = sessionVM.GroupID});
+            }
+            else
+            {
+                foreach (var err in response.Errors!)
+                {
+                    ModelState.AddModelError(string.Empty, err);
+                };
+                return View(sessionVM);
+            }
+        }
+
+
+        // Adding Local offline local session
+        public async Task<IActionResult> AddOfflineLocalSession(int id)
+        {
+            AddOfflineLocalSessionVM sessionVM = new AddOfflineLocalSessionVM();
+            sessionVM.GroupID = id;
+            sessionVM.Location = new NetTopologySuite.Geometries.Point(10, 20) { SRID = 4326 };
+            var now = DateTime.Now;
+            sessionVM.StartTime = new TimeOnly(now.Hour, now.Minute);
+            sessionVM.EndTime = sessionVM.StartTime.AddHours(1);
+            sessionVM.Date = DateOnly.FromDateTime(now.AddDays(1));
+            return View(sessionVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddOfflineLocalSession(AddOfflineLocalSessionVM sessionVM)
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+            if (sessionVM.Latitude.HasValue && sessionVM.Longitude.HasValue)
+            {
+                sessionVM.Location = new NetTopologySuite.Geometries.Point(sessionVM.Latitude.Value, sessionVM.Longitude.Value) { SRID = 4326 };
+            }
+            else
+            {
+                sessionVM.Location = null;
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(sessionVM);
+            }
+            var response = await _sessionService.AddOfflineLocalSession(sessionVM, teacherId);
+            if (response.Status == true)
+            {
+                return RedirectToAction(nameof(GroupSessions), new { id = sessionVM.GroupID });
+            }
+            else
+            {
+                foreach (var err in response.Errors!)
+                {
+                    ModelState.AddModelError(string.Empty, err);
+                }
+                ;
+                return View(sessionVM);
+            }
+
+        }
+
+
+
     }
 }

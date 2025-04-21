@@ -227,8 +227,208 @@ namespace XCourse.Services.Implementations.TeacherServices
             };
         }
 
+        async public Task<int> GetGroupTypeById(int groupId, int teacherId)
+        {
+            if (groupId <= 0 || teacherId <= 0)
+            {
+                return 0;
+            }
+            var group = await _unitOfWork.Groups.FindAsync(g => g.ID == groupId, ["GroupDefaults"]);
+            if (group.TeacherID != teacherId)
+            {
+                return 0;
+            }
+            if (group.IsOnline == true)
+            {
+                return 1;
+            }
+            if (group.GroupDefaults!.Any(gd => gd.RoomID == 0) == true)
+            {
+                return 2;
+            }
+            return 3;
+        }
+
+        async public Task<EditSessionResponseDTO> AddOnlineSession(AddOnlineSessionVM sessionVM, int teacherId)
+        {
+            int groupType = await GetGroupTypeById(sessionVM.GroupID, teacherId);
+            if (groupType == 0)
+            {
+                return new EditSessionResponseDTO()
+                {
+                    Status = false,
+                    Errors = new List<string>(["Invalid group id or invalid teacherId make sure you have provided themand you have access to this group"])
+                };
+            }
+
+            List<string> errors = new List<string>();
+
+            if (sessionVM == null)
+                errors.Add("Session data is missing.");
+
+            if (sessionVM!.Description!.Trim() == "")
+                errors.Add("session description can't be empty!");
 
 
+            if (sessionVM!.StartTime >= sessionVM!.EndTime)
+                errors.Add("Start time must be before end time.");
+
+            if (sessionVM.Date < DateOnly.FromDateTime(DateTime.Now))
+                errors.Add("Session date can't be a date in the past");
+
+            if ((sessionVM.EndTime! - sessionVM.StartTime!).Value.TotalMinutes < 30)
+                errors.Add("Session must be at least 30 minutes long.");
+
+            if (errors.Any())
+            {
+                return new EditSessionResponseDTO
+                {
+                    Status = false,
+                    Errors = errors
+                };
+            }
+
+            // Mapping 
+            var group = await _unitOfWork.Groups.FindAsync(g => g.ID == sessionVM.GroupID);
+            Session newSession = new Session();
+            newSession.Duration = sessionVM.StartTime - sessionVM.EndTime;
+            newSession.GroupID = sessionVM.GroupID;
+            newSession.Description = sessionVM.Description;
+            
+            // Video service here 
+
+            newSession.StartDateTime = new DateTime(
+            sessionVM.Date!.Value.Year,
+            sessionVM.Date.Value.Month,
+            sessionVM.Date.Value.Day,
+            sessionVM.StartTime!.Value.Hour,
+            sessionVM.StartTime.Value.Minute,
+            sessionVM.StartTime.Value.Second);
+
+            newSession.EndDateTime = new DateTime(
+            sessionVM.Date!.Value.Year,
+            sessionVM.Date.Value.Month,
+            sessionVM.Date.Value.Day,
+            sessionVM.EndTime!.Value.Hour,
+            sessionVM.EndTime.Value.Minute,
+            sessionVM.EndTime.Value.Second);
+            
+            try
+            {
+                _unitOfWork.Sessions.Add(newSession);
+                await _unitOfWork.SaveAsync();
+            }
+            catch
+            {
+                return new EditSessionResponseDTO()
+                {
+                    Status = false,
+                    Errors = new List<string>(["Somethinw went wrong while saving the session to the Database"])
+                };
+            }
+
+            return new EditSessionResponseDTO()
+            {
+                Status = true,
+                Errors = new List<string>()
+            };
+
+        }
+
+        async public Task<EditSessionResponseDTO> AddOfflineLocalSession(AddOfflineLocalSessionVM sessionVM, int teacherId)
+        {
+            int groupType = await GetGroupTypeById(sessionVM.GroupID, teacherId);
+            if (groupType == 0)
+            {
+                return new EditSessionResponseDTO()
+                {
+                    Status = false,
+                    Errors = new List<string>(["Invalid group id or invalid teacherId make sure you have provided themand you have access to this group"])
+                };
+            }
+
+            List<string> errors = new List<string>();
+
+            if (sessionVM == null)
+                errors.Add("Session data is missing.");
+
+            if (sessionVM!.Description!.Trim() == "")
+                errors.Add("session description can't be empty!");
+
+
+            if (sessionVM!.StartTime >= sessionVM!.EndTime)
+                errors.Add("Start time must be before end time.");
+
+            if (sessionVM.Date < DateOnly.FromDateTime(DateTime.Now))
+                errors.Add("Session date can't be a date in the past");
+
+            if ((sessionVM.EndTime! - sessionVM.StartTime!).TotalMinutes < 30)
+                errors.Add("Session must be at least 30 minutes long.");
+
+            if (errors.Any())
+            {
+                return new EditSessionResponseDTO
+                {
+                    Status = false,
+                    Errors = errors
+                };
+            }
+
+            // Mapping 
+            var group = await _unitOfWork.Groups.FindAsync(g => g.ID == sessionVM.GroupID);
+            Session newSession = new Session();
+            newSession.Duration = sessionVM.StartTime - sessionVM.EndTime;
+            newSession.GroupID = sessionVM.GroupID;
+            newSession.Description = sessionVM.Description;
+            
+            // Video service here 
+
+            newSession.StartDateTime = new DateTime(
+            sessionVM.Date!.Year,
+            sessionVM.Date.Month,
+            sessionVM.Date.Day,
+            sessionVM.StartTime!.Hour,
+            sessionVM.StartTime.Minute,
+            sessionVM.StartTime.Second);
+
+            newSession.EndDateTime = new DateTime(
+            sessionVM.Date!.Year,
+            sessionVM.Date.Month,
+            sessionVM.Date.Day,
+            sessionVM.EndTime!.Hour,
+            sessionVM.EndTime.Minute,
+            sessionVM.EndTime.Second);
+
+            //update session location
+            newSession.Location = sessionVM.Location;
+
+            // update session Address
+            newSession.Address = new Address();
+            newSession.Address.Governorate = sessionVM.Address!.Governorate;
+            newSession.Address.City = sessionVM.Address.City;
+            newSession.Address.Neighborhood = sessionVM.Address.Neighborhood;
+            newSession.Address.Street = sessionVM.Address!.Street;
+
+            try
+            {
+                _unitOfWork.Sessions.Add(newSession);
+                await _unitOfWork.SaveAsync();
+            }
+            catch
+            {
+                return new EditSessionResponseDTO()
+                {
+                    Status = false,
+                    Errors = new List<string>(["Somethinw went wrong while saving the session to the Database"])
+                };
+            }
+
+            return new EditSessionResponseDTO()
+            {
+                Status = true,
+                Errors = new List<string>()
+            };
+        }
 
 
 

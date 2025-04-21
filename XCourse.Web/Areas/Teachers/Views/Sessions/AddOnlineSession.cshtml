@@ -1,0 +1,173 @@
+@model XCourse.Core.ViewModels.TeachersViewModels.Sessions.AddOnlineSessionVM
+
+@section Styles {
+    <link href="~/css/form.css" rel="stylesheet" />
+    <style>
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader {
+            border: 8px solid #eee;
+            border-top: 8px solid #7c3aed;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+}
+
+<div class="form-container">
+    <h1 class="form-header">Add Online Session</h1>
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+    {
+        <div class="form-validation-summary">
+            <i class="fas fa-exclamation-circle error-icon" aria-hidden="true"></i>
+            @Html.ValidationSummary(false, "Please fix the following errors:")
+        </div>
+    }
+    <form id="addOnlineSessionForm" asp-action="AddOnlineSession" asp-area="Teachers" asp-controller="Sessions" method="post" enctype="multipart/form-data" onsubmit="showLoader()">
+        <input asp-for="GroupID" type="hidden" />
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="field-error-message"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Video"></label>
+            <input asp-for="Video" type="file" accept=".mp4,.mov,.avi,.wmv,.flv,.mpeg,.mpg,.webm,.3gp" class="form-control" id="VideoInput" />
+            <span asp-validation-for="Video" class="field-error-message"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Date"></label>
+            <input asp-for="Date" type="date" class="form-control" />
+            <span asp-validation-for="Date" class="field-error-message"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-6 col-md-12">
+                <label asp-for="StartTime"></label>
+                <input asp-for="StartTime" type="time" class="form-control" />
+                <span asp-validation-for="StartTime" class="field-error-message"></span>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <label asp-for="EndTime"></label>
+                <input asp-for="EndTime" type="time" class="form-control" />
+                <span asp-validation-for="EndTime" class="field-error-message"></span>
+            </div>
+        </div>
+        <div class="form-navigation">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-check icon"></i>
+                Submit
+            </button>
+        </div>
+    </form>
+    <div id="loader-overlay" style="display:none;">
+        <div class="loader"></div>
+    </div>
+</div>
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+    <script>
+        function showLoader() {
+            document.getElementById('loader-overlay').style.display = 'flex';
+        }
+        // Hide validation message as soon as user edits the input
+        $(document).ready(function () {
+            // For all inputs/selects/textareas in the form
+            $('#addOnlineSessionForm').on('input change', 'input, select, textarea', function () {
+                var fieldName = $(this).attr('name');
+                if (fieldName) {
+                    var $errorSpan = $(this).siblings('span[data-valmsg-for="' + fieldName + '"]');
+                    $errorSpan.text("").removeClass('field-validation-error').addClass('field-validation-valid').hide();
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            // Add icon only when there is an error
+            function updateErrorMessages() {
+                $('span.field-error-message').each(function () {
+                    var $span = $(this);
+                    var msg = $span.text().trim();
+                    if (msg.length > 0) {
+                        if ($span.find('.error-icon').length === 0) {
+                            $span.prepend('<i class="fas fa-exclamation-circle error-icon" aria-hidden="true"></i> ');
+                        }
+                        $span.show();
+                    } else {
+                        $span.find('.error-icon').remove();
+                        $span.hide();
+                    }
+                });
+            }
+            // Initial update
+            updateErrorMessages();
+            // Update after validation
+            $(document).on('DOMSubtreeModified', 'span.field-error-message', function () {
+                updateErrorMessages();
+            });
+        });
+    </script>
+    <style>
+        .form-validation-summary {
+            color: #dc3545;
+            font-size: 1rem;
+            margin-bottom: 1em;
+            font-weight: 600;
+            border-left: 4px solid #dc3545;
+            padding-left: 0.75em;
+            margin-top: 1em;
+            display: flex;
+            align-items: flex-start;
+        }
+        .form-validation-summary .error-icon {
+            margin-right: 0.5em;
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+        .field-error-message {
+            display: block;
+            color: #dc3545;
+            font-size: 0.98rem;
+            margin-top: 0.5em; /* more top spacing */
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            border-left: 4px solid #dc3545;
+            padding-left: 0.5em;
+            background: none;
+            border-radius: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .error-icon {
+            color: #dc3545;
+            margin-right: 0.5em;
+            font-size: 1em;
+            vertical-align: middle;
+        }
+    </style>
+}
+
