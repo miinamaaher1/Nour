@@ -1,15 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using XCourse.Services.Interfaces.AssistantServices;
 
 namespace XCourse.Web.Areas.Assistants.Controllers
 {
     [Area("Assistants")]
     public class HomeController : Controller
     {
-        // GET: HomeController
-        public ActionResult Index()
+        private readonly IHomeService _homeService;
+        public HomeController(IHomeService homeService)
         {
-            return View();
+            _homeService = homeService;
+        }
+        // GET: HomeController
+        public async Task<ActionResult> Index()
+        {
+            var homeVm = await _homeService.DashboardService(User);
+
+            return View(homeVm);
         }
 
         // GET: HomeController/Details/5

@@ -153,7 +153,7 @@ namespace XCourse.Infrastructure.Repositories
 
             if (take.HasValue)
                 query = query.Take(take.Value);
-
+            
             return query.ToList();
         }
 
