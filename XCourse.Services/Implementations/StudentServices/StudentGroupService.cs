@@ -30,6 +30,8 @@ namespace XCourse.Services.Implementations.StudentServices
                 return new GroupDetails();
             }
 
+
+
             GroupDetails details = new GroupDetails()
             {
                 Id = group.ID,
@@ -46,6 +48,8 @@ namespace XCourse.Services.Implementations.StudentServices
                 PricePerSession = group.PricePerSession,
                 Defaults = new List<DefaultTimeVM>()
             };
+
+            
 
             foreach (var def in group.GroupDefaults)
             {
@@ -110,7 +114,7 @@ namespace XCourse.Services.Implementations.StudentServices
                      g.IsPrivate == false &&
                      g.MaxStudents > g.CurrentStudents &&
                      !(g.IsGirlsOnly == true && student.AppUser.Gender == Gender.Male) &&
-                     g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower() &&
+                     (g.IsOnline ==true || g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower())&&
                      !g.Students.Any(st => st.ID == student.ID),
                         ["Subject", "Students", "Teacher.AppUser"]
             );

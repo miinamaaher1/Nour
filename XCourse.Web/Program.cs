@@ -12,6 +12,7 @@ using XCourse.Infrastructure.Repositories;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
 using XCourse.Web.ServicesCollections;
+using XCourse.Web.Middleware;
 namespace XCourse.Web
 {
     public class Program
@@ -80,6 +81,8 @@ namespace XCourse.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            //app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseStaticFiles();
 

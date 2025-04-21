@@ -29,5 +29,8 @@ namespace XCourse.Core.ViewModels.StudentsViewModels
         public Major Major { get; set; }
         public int StudentID { get; set; }
         public Gender StudentGender { get; set; }
+
+        public decimal? WalletBalance { get; set; }
+
     }
 }

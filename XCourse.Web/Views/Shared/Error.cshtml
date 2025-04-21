@@ -1,25 +1,238 @@
-﻿@model ErrorViewModel
+﻿@using XCourse.Core.DTOs
+@model ErrorStatusDTO
 @{
     ViewData["Title"] = "Error";
+    Layout = null;
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error - @ViewData["Title"]</title>
+    <style>
+        :root, [data-theme="light"] {
+            --clr-background: #FAF6F0;
+            --clr-surface: #F5EDE1;
+            --clr-primary: #5D2A66;
+            --clr-secondary: #B57256;
+            --clr-accent: #E0A96D;
+            --clr-text-primary: #210F37;
+            --clr-text-secondary: #8A5640;
+            --clr-text-on-primary: #FFFFFF;
+            --clr-text-on-secondary: #FFFFFF;
+            --clr-text-on-accent: #210F37;
+            --clr-border: #D1C5B8;
+            --clr-overlay: rgba(33, 15, 55, 0.5);
+        }
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+        [data-theme="dark"] {
+            --clr-background: #1E1E1E;
+            --clr-surface: #2E2E2E;
+            --clr-primary: #B39DDB;
+            --clr-secondary: #7986CB;
+            --clr-accent: #F08080;
+            --clr-text-primary: #F5F5F5;
+            --clr-text-secondary: #AFAFAF;
+            --clr-text-on-primary: #2E2E2E;
+            --clr-text-on-secondary: #F5F5F5;
+            --clr-text-on-accent: #1E1E1E;
+            --clr-border: #424242;
+            --clr-overlay: rgba(0, 0, 0, 0.7);
+        }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+        body {
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            place-items: center;
+        }
+
+        .error-container {
+            padding: 2rem;
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px var(--clr-overlay);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: var(--clr-primary);
+            margin: 0;
+            line-height: 1;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .error-message {
+            font-size: 2rem;
+            color: var(--clr-text-secondary);
+            margin-bottom: 2rem;
+            animation: slideIn 0.8s ease-out 0.2s backwards;
+        }
+
+        .error-details {
+            color: var(--clr-text-secondary);
+            margin-bottom: 2rem;
+            animation: slideIn 0.8s ease-out 0.4s backwards;
+        }
+
+        .home-button {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.8s ease-out 0.6s backwards;
+        }
+
+            .home-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px var(--clr-overlay);
+                background-color: var(--clr-secondary);
+                color: var(--clr-text-on-secondary);
+            }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideIn {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--clr-surface);
+            border: 2px solid var(--clr-border);
+            color: var(--clr-text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .theme-toggle:hover {
+                background: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+            }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--clr-surface);
+            border: 2px solid var(--clr-border);
+            color: var(--clr-text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .theme-toggle:hover {
+                background: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+            }
+
+        .error-container {
+            width: 90%;
+            max-width: 600px;
+            display: grid;
+            gap: 1.5rem;
+            justify-items: center;
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px var(--clr-overlay);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @@media (max-width: 480px) {
+            .error-code {
+                font-size: 6rem;
+            }
+
+            .error-message {
+                font-size: 1.5rem;
+            }
+
+            .error-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-container text-center mt-5">
+            <h1 class="error-code display-1">
+                @(Model.statusCode.HasValue ? Model.statusCode.ToString() : "404")
+            </h1>
+            <h2 class="error-message display-4">
+                Oops! @(string.IsNullOrEmpty(Model.Title) ? "Page Not Found" : Model.Title)
+            </h2>
+            <p class="error-details">
+                @(!string.IsNullOrEmpty(Model.message)
+                    ? Model.message
+                    : "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.")
+            </p>
+            <a asp-action="index" asp-controller="Home" class="home-button">
+                Return Home
+            </a>
+        </div>
+    </div>
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        });
+
+        function toggleTheme() {
+            const body = document.documentElement;
+            const currentTheme = body.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+    </script>
+</body>
+</html>
