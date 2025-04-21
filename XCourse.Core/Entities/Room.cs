@@ -37,5 +37,9 @@ namespace XCourse.Core.Entities
         public virtual Center? Center { get; set; }
         public virtual ICollection<RoomReservation>? RoomReservations { get; set; }
         public virtual ICollection<Group>? Groups { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeleteDate { get; set; }
+
+
     }
 }

@@ -12,8 +12,6 @@ using XCourse.Infrastructure.Repositories;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.EmailServices;
 using XCourse.Web.ServicesCollections;
-using XCourse.Services.Implementations.SubjectServices;
-using XCourse.Services.Interfaces.SubjectServices;
 namespace XCourse.Web
 {
     public class Program
@@ -35,7 +33,7 @@ namespace XCourse.Web
             builder.Services.AddTeacherServices();
             builder.Services.AddIntegratedServices();
             builder.Services.AddCenterAdminServices();
-
+            builder.Services.AddAssistantServices();
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -75,8 +73,7 @@ namespace XCourse.Web
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
-            builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
-            builder.Services.AddScoped<ISubjectService, SubjectService>();
+            //builder.Services.AddScoped<ISubjectService, SubjectService>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())

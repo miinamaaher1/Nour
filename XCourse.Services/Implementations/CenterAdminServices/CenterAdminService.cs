@@ -353,6 +353,7 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
             var Reservation = _unitOfWork.RoomReservations.Find(r => r.ID == ReservationID, new string[] { "Room", "Room.RoomReservations" });
 
+
             if (Reservation == null)
                 return new EditRoomReservation();
 
@@ -365,8 +366,14 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
             var correctRooms = Center.Rooms
                 .Where(r => r.Equipment == Reservation.Room.Equipment &&
-                            r.Capacity >= Reservation.Room.Capacity)
-                .ToList();
+                            r.Capacity >= Reservation.Room.Capacity);
+                
+
+
+
+
+
+
 
             var availableRoomsList = correctRooms
        .Where(room =>
@@ -418,69 +425,170 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
         }
 
-        public int DeleteRoom(RoomDto room)
-        {
-            var Room = _unitOfWork.Rooms.Find(r => r.ID == room.RoomId, new string[] { "RoomReservations" });
-            if (Room == null) return 0;
 
-            var Center = _unitOfWork.Centers.Find(c => c.ID == room.CenterId, new string[] { "Rooms", "Rooms.RoomReservations" });
+
+        public transfomReservations transfomReservations(int RoomId, int CenterId)
+        {
+            var Center = _unitOfWork.Centers.Find(c => c.ID == CenterId, new string[] { "Rooms", "Rooms.RoomReservations" });
+            var Room = _unitOfWork.Rooms.Find(r => r.ID == RoomId, new string[] { "RoomReservations" });
 
             var correctRooms = Center.Rooms
-                .Where(r => r.ID != Room.ID &&
-                            r.Capacity >= room.Capacity &&
-                            (r.Equipment & room.Equipment) == room.Equipment).ToList();
-                
+                .Where(r => r.ID != RoomId &&
+                            r.Capacity >= Room.Capacity &&
+                            (r.Equipment & Room.Equipment) == Room.Equipment);
 
-            if (Room.RoomReservations == null || !Room.RoomReservations.Any())
+
+            List<TransformReservationItem> AvalibleRoom = new();
+            foreach (var item in Room.RoomReservations)
             {
+                var availableRoom = correctRooms
+                    .Where(r => r.RoomReservations
+                        .Where(res => res.WeekDay == item.WeekDay &&res.ID != item.ID)
+                        .All(res =>
+                            res.EndTime <= item.StartTime ||
+                            res.StartTime >= item.EndTime)).ToList();
+
+                AvalibleRoom.Add(new TransformReservationItem
+                {
+                    ReservationId = item.ID,
+                    AvailableRooms = availableRoom.Select(room => new NewRoomDto
+                    {
+                        NewRoomID = room.ID,
+                        RoomName = room.Name,
+                        Capacity=room.Capacity,
+                        Equipment=room.Equipment
+                        
+                    }).ToList(),
+                    ReservationDate=item.Date,
+                    WeekDay=item.WeekDay,
+                   
+                    
+
+                   
+                });
+
+
+            }
+
+            var RoomList = new transfomReservations()
+            {
+                RoomID=Room.ID,
+                RoomName=Room.Name,
+                Capacity=Room.Capacity,
+                Equipment=Room.Equipment,
+                ApproveReservations=AvalibleRoom,
+                CenterId=Room.CenterID,
+            };
+
+            return RoomList;
+
+        }
+
+        public int ConfirmTransformRoom(transfomReservations transfom)
+        {
+
+            var Room = _unitOfWork.Rooms.Find(r => r.ID == transfom.RoomID, new string[] { "RoomReservations" });
+            var pendingreservations = Room.RoomReservations.Where(r => r.ReservationStatus == ReservationStatus.Declined || r.ReservationStatus == ReservationStatus.Pending || (r.ReservationStatus == ReservationStatus.Approved && r.Date < DateOnly.FromDateTime(DateTime.Now))).ToList();
+
+            _unitOfWork.RoomReservations.DeleteRange(pendingreservations);
+
+            var FuturePendingReservations = Room.RoomReservations.Where(r => (r.ReservationStatus == ReservationStatus.Pending || r.ReservationStatus == ReservationStatus.Declined) && r.Date < DateOnly.FromDateTime(DateTime.Now)).ToList();
+            _unitOfWork.RoomReservations.DeleteRange(FuturePendingReservations);
+           
+            if (transfom.ApproveReservations.Any())
+            {
+                foreach (var item in transfom.ApproveReservations)
+                {
+                    var r = _unitOfWork.RoomReservations.Find(res => res.ID == item.ReservationId, new string[] { "Room" });
+
+                    r.RoomID = item.SelectedNewRoomId;
+                    var newroom = _unitOfWork.Rooms.Get(item.SelectedNewRoomId);
+                    r.Room = newroom;
+
+                }
+
+                _unitOfWork.Save();
                 _unitOfWork.Rooms.Delete(Room);
                 _unitOfWork.Save();
                 return 1;
             }
 
-            var unmovableReservations = new List<RoomReservation>();
+            else return 0;
 
-            foreach (var item in Room.RoomReservations)
-            {
-                var availableRoom = correctRooms
-                    .Where(r => r.RoomReservations
-                        .Where(res => res.WeekDay == item.WeekDay )
-                        .All(res =>
-                            res.EndTime <= item.StartTime ||
-                            res.StartTime >= item.EndTime))
-                    .FirstOrDefault();
-
-                if (availableRoom != null)
-                {
-                    item.RoomID = availableRoom.ID;
-                    var r = _unitOfWork.Rooms.Find(r => r.ID == item.RoomID);
-                    item.Room = r;
-                    _unitOfWork.RoomReservations.Update(item);
-                }
-                else
-                {
-                    unmovableReservations.Add(item);
-                }
-            }
-
-            if (unmovableReservations.Any())
-            {
-                Room newroom = new Room
-                {
-                    Capacity = Room.Capacity,
-                    Equipment = Room.Equipment,
-                    CenterID = Room.CenterID,
-                    RoomReservations = unmovableReservations
-                };
-
-                _unitOfWork.Rooms.Add(newroom);
-            }
-
-            _unitOfWork.Rooms.Delete(Room);
-            _unitOfWork.Save();
-
-            return 1;
         }
+
+        public int DeleteRoom(RoomDto room)
+        {
+            var Room = _unitOfWork.Rooms.Find(r => r.ID == room.RoomId, new string[] { "RoomReservations" });
+            if (Room == null) return 0;
+          
+            var reservationsToDelete = Room.RoomReservations
+          .Where(r =>
+         r.ReservationStatus == ReservationStatus.Declined ||
+         r.ReservationStatus == ReservationStatus.Pending ||
+         (r.ReservationStatus == ReservationStatus.Approved && r.Date < DateOnly.FromDateTime(DateTime.Now)))
+         .Distinct()
+         .ToList();
+
+            _unitOfWork.RoomReservations.DeleteRange(reservationsToDelete);
+
+            
+
+            var FuturePendingReservations = Room.RoomReservations.Where(r => (r.ReservationStatus == ReservationStatus.Pending || r.ReservationStatus == ReservationStatus.Declined) && r.Date < DateOnly.FromDateTime(DateTime.Now)).ToList();
+            _unitOfWork.RoomReservations.DeleteRange(FuturePendingReservations);
+
+
+
+
+
+            var approveReservations = Room.RoomReservations
+             .Where(r =>
+            r.ReservationStatus == ReservationStatus.Approved &&
+                 r.Date >= DateOnly.FromDateTime(DateTime.Now))
+                 .ToList();
+            if (!approveReservations.Any())
+            {
+                _unitOfWork.Save();
+                _unitOfWork.Rooms.Delete(Room);
+                _unitOfWork.Save();
+                return 1;
+
+
+            }
+            return 0;
+            
+
+           
+        }
+
+        public int DeleteCenter(CreateCenterViewModel center)
+        {
+            if (center == null)
+            {
+                return 0;
+            }
+
+            var Center = _unitOfWork.Centers.Find(c => c.ID == center.CenterID, new string[] { "Rooms" });
+
+            if (!Center.Rooms.Any())
+            {
+              
+                _unitOfWork.Centers.Delete(Center);
+                _unitOfWork.Save();
+                return 1;
+
+            }
+
+            
+
+                return 0;
+
+
+        }
+
+
+
+
 
     }
 }
