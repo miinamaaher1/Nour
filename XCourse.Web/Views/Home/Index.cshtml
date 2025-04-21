@@ -1,15 +1,400 @@
 @{
-    ViewData["Title"] = "Home Page";
+    Layout = null;
+    ViewData["Title"] = "Home";
 }
 
 
-@{
-    // Layout = null;
-}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A platform connecting teachers, students, center admins and teacher assistants">
+    <title>Nour - @ViewData["Title"]</title>
+    <script type="importmap"></script>
+    <script>
+        (function () {
+          try {
+            const mode = localStorage.getItem('mode');
+            let theme = localStorage.getItem('theme');
 
-<div class="col-12">
-    <div class="text-center">
-        <h1 class="display-4">Welcome</h1>
-        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+            if (mode === 'system') {
+              theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            if (theme === 'dark') {
+              document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+              document.documentElement.setAttribute('data-theme', 'light');
+            }
+          } catch (e) {
+            // fallback
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+        })();
+    </script>
+    <link id="favicon" rel="icon" type="image/svg+xml" href="~/favicons/favicon-light.svg">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/landing.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="page">
+        <!-- Navigation -->
+        <nav class="navbar hidden" id="navbar">
+            <div class="navbar__container">
+                <!-- Logo -->
+                <a href="#" class="navbar__logo">
+                    <img id="logo-text" src="branding/logo-en-light.svg" width="120">
+                </a>
+
+                <!-- Navigation Links -->
+                <div class="navbar__links">
+                    <a href="#" class="navbar__link">Home</a>
+                    <a href="#about" class="navbar__link">About</a>
+                    <a href="#testimonials" class="navbar__link">Testimonials</a>
+                    <a href="#contact" class="navbar__link">Contact</a>
+                </div>
+
+                <!-- Auth buttons -->
+                <div class="navbar__buttons">
+                    <a asp-area="Identity" asp-page="/Account/SelectAccountType" class="button button--primary">Sign Up</a>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="button button--outline">Sign In</a>
+                </div>
+
+                <!-- Mobile menu toggle -->
+                <button class="navbar__toggle" aria-label="Toggle menu">
+                    <span class="navbar__toggle-bar"></span>
+                    <span class="navbar__toggle-bar"></span>
+                    <span class="navbar__toggle-bar"></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <div class="hero__container">
+                <div class="hero__content">
+                    <img id="logo-text-ar" src="branding/logo-ar-light.svg" style="max-width: 500px;">
+                    <h1 class="hero__title">Transform Education with Our Innovative Platform</h1>
+                    <div class="hero__buttons">
+                        <a asp-area="Identity" asp-page="/Account/SelectAccountType" class="button button--primary button--lg">Sign Up</a>
+                        <a asp-area="Identity" asp-page="/Account/Login" class="button button--outline button--lg">Sign In</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Carousel Section -->
+        <section class="features">
+            <div class="features__container">
+                <div class="hero__showcase">
+                    <!-- Role showcase with animation - will be controlled by JS -->
+                    <div class="role-card role-card--active" data-role="teacher">
+                        <div class="role-card__image-container">
+                            <img class="role-card__image" src="~/images/accountTypes/teacherAccount.svg" alt="teacher" />
+                        </div>
+                        <div class="role-card__info">
+                            <h3 class="role-card__title">Teacher</h3>
+                            <p class="role-card__description">Empower your teaching journey with comprehensive tools and resources</p>
+                            <ul class="role-card__benefits">
+                                <li class="role-card__benefit-item">Create engaging lesson plans</li>
+                                <li class="role-card__benefit-item">Connect with students efficiently</li>
+                                <li class="role-card__benefit-item">Track progress and performance</li>
+                                <li class="role-card__benefit-item">Access professional development resources</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="role-card" data-role="student">
+                        <div class="role-card__image-container">
+                            <img class="role-card__image" src="~/images/accountTypes/studentAccount.svg" alt="student" />
+                        </div>
+                        <div class="role-card__info">
+                            <h3 class="role-card__title">Student</h3>
+                            <p class="role-card__description">Enhance your learning experience with interactive content and personalized support</p>
+                            <ul class="role-card__benefits">
+                                <li class="role-card__benefit-item">Access quality educational materials anytime</li>
+                                <li class="role-card__benefit-item">Learn at your own pace</li>
+                                <li class="role-card__benefit-item">Connect with teachers and peers</li>
+                                <li class="role-card__benefit-item">Track your academic progress</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="role-card" data-role="admin">
+                        <div class="role-card__image-container">
+                            <img class="role-card__image" src="~/images/accountTypes/adminAccount.svg" alt="admin" />
+                        </div>
+                        <div class="role-card__info">
+                            <h3 class="role-card__title">Center Admin</h3>
+                            <p class="role-card__description">Efficiently manage your educational center with powerful administrative tools</p>
+                            <ul class="role-card__benefits">
+                                <li class="role-card__benefit-item">Streamline session scheduling</li>
+                                <li class="role-card__benefit-item">Manage facility resources effectively</li>
+                                <li class="role-card__benefit-item">Generate comprehensive reports</li>
+                                <li class="role-card__benefit-item">Facilitate teacher-student communication</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="role-card" data-role="assistant">
+                        <div class="role-card__image-container">
+                            <img class="role-card__image" src="~/images/accountTypes/assistantAccount.svg" alt="assistant" />
+                        </div>
+                        <div class="role-card__info">
+                            <h3 class="role-card__title">Assistant</h3>
+                            <p class="role-card__description">Support teaching excellence with specialized tools for teaching assistants</p>
+                            <ul class="role-card__benefits">
+                                <li class="role-card__benefit-item">Coordinate with lead teachers seamlessly</li>
+                                <li class="role-card__benefit-item">Manage student groups effectively</li>
+                                <li class="role-card__benefit-item">Track attendance and participation</li>
+                                <li class="role-card__benefit-item">Assist with learning material preparation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials" id="testimonials">
+            <div class="testimonials__container">
+                <div class="testimonials__header">
+                    <h2 class="testimonials__title">What Our Users Say</h2>
+                    <p class="testimonials__description">Discover how <strong>XCourse</strong> is transforming education for teachers, students, administrators, and teaching assistants.</p>
+                </div>
+
+                <div class="testimonials__grid">
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="testimonial-card__header">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Sarah Johnson" class="testimonial-card__avatar">
+                            <div class="testimonial-card__user">
+                                <h4 class="testimonial-card__name">Sarah Johnson</h4>
+                                <p class="testimonial-card__role">Math Teacher</p>
+                            </div>
+                        </div>
+                        <p class="testimonial-card__content">"XCourse has completely transformed how I interact with my students. The built-in tools simplify lesson planning, and student engagement has skyrocketed!"</p>
+                    </div>
+
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="testimonial-card__header">
+                            <img src="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Michael Chen" class="testimonial-card__avatar">
+                            <div class="testimonial-card__user">
+                                <h4 class="testimonial-card__name">Michael Chen</h4>
+                                <p class="testimonial-card__role">Student</p>
+                            </div>
+                        </div>
+                        <p class="testimonial-card__content">"I’ve used several platforms before, but XCourse feels different. The smart dashboard and real-time feedback from my teachers have made learning more personalized."</p>
+                    </div>
+
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="testimonial-card__header">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Amanda Rodriguez" class="testimonial-card__avatar">
+                            <div class="testimonial-card__user">
+                                <h4 class="testimonial-card__name">Amanda Rodriguez</h4>
+                                <p class="testimonial-card__role">Center Administrator</p>
+                            </div>
+                        </div>
+                        <p class="testimonial-card__content">"With XCourse, managing our entire educational center has become streamlined. Scheduling classes, tracking attendance, and generating reports are just a few clicks away."</p>
+                    </div>
+
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="testimonial-card__header">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="David Wilson" class="testimonial-card__avatar">
+                            <div class="testimonial-card__user">
+                                <h4 class="testimonial-card__name">David Wilson</h4>
+                                <p class="testimonial-card__role">Teaching Assistant</p>
+                            </div>
+                        </div>
+                        <p class="testimonial-card__content">"XCourse lets me collaborate with lead instructors in real time. I can help students more effectively, and grading assignments has never been easier."</p>
+                    </div>
+
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="500">
+                        <div class="testimonial-card__header">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Elena Gomez" class="testimonial-card__avatar">
+                            <div class="testimonial-card__user">
+                                <h4 class="testimonial-card__name">Elena Gomez</h4>
+                                <p class="testimonial-card__role">Science Teacher</p>
+                            </div>
+                        </div>
+                        <p class="testimonial-card__content">"The interactive tools in XCourse let me bring science lessons to life. I can create visual experiments and quizzes that keep students curious and excited to learn."</p>
+                    </div>
+
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="600">
+                        <div class="testimonial-card__header">
+                            <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Jordan Taylor" class="testimonial-card__avatar">
+                            <div class="testimonial-card__user">
+                                <h4 class="testimonial-card__name">Jordan Taylor</h4>
+                                <p class="testimonial-card__role">Student</p>
+                            </div>
+                        </div>
+                        <p class="testimonial-card__content">"XCourse makes learning fun and flexible. I can review recorded sessions, take interactive quizzes, and keep up with assignments even on busy days."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- About Section -->
+        <section class="about" id="about">
+            <div class="about__container">
+                <div class="about__content">
+                    <h2 class="about__title">About Our Platform</h2>
+                    <p class="about__description">
+                        Our educational platform bridges the gap between teachers, students, center administrators, and teaching assistants. We're dedicated to creating a seamless educational ecosystem that enhances learning experiences and teaching capabilities.
+                    </p>
+                    <p class="about__description">
+                        Founded in 2023, we've been working tirelessly to revolutionize educational connectivity through technology. Our team of educators and developers understand the challenges facing modern education, and we're committed to solving them through innovative solutions.
+                    </p>
+                </div>
+
+                <div class="team">
+                    <h3 class="team__title">Our Team</h3>
+                    <div class="team__grid">
+                        <div class="team-member">
+                            <div class="team-member__avatar">
+                                <span class="team-member__initials">AR</span>
+                            </div>
+                            <h4 class="team-member__name">Abul Rahman Ramadan</h4>
+                        </div>
+
+                        <div class="team-member">
+                            <div class="team-member__avatar">
+                                <span class="team-member__initials">AY</span>
+                            </div>
+                            <h4 class="team-member__name">Ahmed Yasser</h4>
+                        </div>
+
+                        <div class="team-member">
+                            <div class="team-member__avatar">
+                                <span class="team-member__initials">SZ</span>
+                            </div>
+                            <h4 class="team-member__name">Shorouk Zaghloul</h4>
+                        </div>
+
+                        <div class="team-member">
+                            <div class="team-member__avatar">
+                                <span class="team-member__initials">MR</span>
+                            </div>
+                            <h4 class="team-member__name">Mahmoud Reda</h4>
+                        </div>
+
+                        <div class="team-member">
+                            <div class="team-member__avatar">
+                                <span class="team-member__initials">MM</span>
+                            </div>
+                            <h4 class="team-member__name">Mina Maher</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer" id="contact">
+            <div class="footer__container">
+                <div class="footer__grid">
+                    <!-- Logo and description -->
+                    <div class="footer__brand">
+                        <div class="footer__logo">
+                            <img id="logo-text-foot" src="branding/logo-en-light.svg" width="120">
+                        </div>
+                        <p class="footer__description">
+                            Providing quality education and connections for teachers, students, and administrators.
+                        </p>
+                        <div class="footer__social">
+                            <a href="#" aria-label="Facebook" class="footer__social-link">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="#" aria-label="Twitter" class="footer__social-link">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" aria-label="Instagram" class="footer__social-link">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" aria-label="LinkedIn" class="footer__social-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="footer__links">
+                        <h3 class="footer__heading">Quick Links</h3>
+                        <ul class="footer__list">
+                            <li class="footer__item">
+                                <a href="#" class="footer__link">Home</a>
+                            </li>
+                            <li class="footer__item">
+                                <a href="#about" class="footer__link">About</a>
+                            </li>
+                            <li class="footer__item">
+                                <a href="#testimonials" class="footer__link">Testimonials</a>
+                            </li>
+                            <li class="footer__item">
+                                <a href="#contact" class="footer__link">Contact</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="footer__contact">
+                        <h3 class="footer__heading">Contact Us</h3>
+                        <ul class="footer__list">
+                            <li class="footer__contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <a href="mailto:xcourse.platform@gmail.com" class="footer__link">contact@example.com</a>
+                            </li>
+                            <li class="footer__contact-item">
+                                <i class="fas fa-phone"></i>
+                                <a href="tel:+1202656751" class="footer__link">+12 0265 6751</a>
+                            </li>
+                            <li class="footer__contact-item footer__address">
+                                <p>ITI, Smart Village<br>Giza, Egypt</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer__bottom">
+                    <p class="footer__copyright">
+                        &copy; <span id="copyright-year"></span> Your Education Platform. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </footer>
     </div>
-</div>
+    <button class="mode-button" id="mode-button">
+        <i class="fa-solid fa-sun"></i>
+    </button>
+    <div class="mode-bar d-none" id="mode-bar">
+        <!-- Navigation Menu -->
+        <ul class="nav-menu">
+            </li>
+            <!-- Theme Toggle -->
+            <li class="nav-item">
+                <button class="nav-link" id="theme-light">
+                    <i class="fa-solid fa-sun nav-icon"></i>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="theme-dark">
+                    <i class="fa-solid fa-moon nav-icon"></i>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="theme-system">
+                    <i class="fa-solid fa-laptop nav-icon"></i>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <!-- JavaScript -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/font-awesome/js/all.min.js" asp-append-version="true"></script>
+    <script src="/js/landing.js" asp-append-version="true"></script>
+</body>
+</html>
+

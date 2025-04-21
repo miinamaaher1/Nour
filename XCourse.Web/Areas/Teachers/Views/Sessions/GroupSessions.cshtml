@@ -1,0 +1,351 @@
+@model List<XCourse.Core.Entities.Session>;
+
+<div class="container my-4">
+    <div class="row g-4 session-cards-row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var session in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="session-card">
+                        <div class="session-card-body">
+                            <h5 class="session-card-title">
+                                <i class="fas fa-chalkboard-teacher icon-spaced"></i>
+                                @if (session.Description != null)
+                                {
+                                    @session.Description
+                                }                                          
+                                else
+                                {
+                                    <span class="session-muted">No Description</span>
+                                }
+                            </h5>
+                            <ul class="session-list">
+                                <li>
+                                    <strong>Duration:</strong>
+                                    @(session.Duration?.ToString() ?? "N/A")
+                                </li>
+                                <li>
+                                    @if (session.StartDateTime.Date == session.EndDateTime.Date)
+                                    {
+                                        <span class="session-date">@session.StartDateTime.ToString("yyyy-MM-dd")</span>
+                                        <span class="session-fromto">
+                                            from <span class="session-time-bold">@session.StartDateTime.ToString("hh:mm tt")</span>
+                                            to <span class="session-time-bold">@session.EndDateTime.ToString("hh:mm tt")</span>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="session-date">@session.StartDateTime.ToString("yyyy-MM-dd")</span>
+                                        <span class="session-time-bold">@session.StartDateTime.ToString("hh:mm tt")</span>
+                                        <span class="session-to">to</span>
+                                        <span class="session-date">@session.EndDateTime.ToString("yyyy-MM-dd")</span>
+                                        <span class="session-time-bold">@session.EndDateTime.ToString("hh:mm tt")</span>
+                                    }
+                                </li>
+                                <li>
+                                    @if (session.IsOnline)
+                                    {
+                                        <strong>Location:</strong>
+                                        <span class="session-badge-primary">Online</span>
+                                        @if (!string.IsNullOrWhiteSpace(session.URL))
+                                        {
+                                            <a href="@session.URL" target="_blank" class="session-link"><i class="fas fa-external-link-alt"></i> Link</a>
+                                        }
+                                    }
+                                    else if (session.Address != null)
+                                    {
+                                        var addressParts = new List<string>();
+                                        if (!string.IsNullOrWhiteSpace(session.Address.Street)) addressParts.Add(session.Address.Street);
+                                        if (!string.IsNullOrWhiteSpace(session.Address.Neighborhood)) addressParts.Add(session.Address.Neighborhood);
+                                        if (!string.IsNullOrWhiteSpace(session.Address.City)) addressParts.Add(session.Address.City);
+                                        if (!string.IsNullOrWhiteSpace(session.Address.Governorate)) addressParts.Add(session.Address.Governorate);
+                                        <div class="session-location-box">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>@string.Join(", ", addressParts)</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="session-muted">N/A</span>
+                                    }
+                                </li>
+                            </ul>
+                            <div class="session-card-actions">
+                                <a asp-area="Teachers" asp-action="Details" asp-route-id="@session.ID" asp-controller="Sessions" class="session-btn-accent" title="Details">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </a>
+                                <a asp-area="Teachers" asp-action="Edit" asp-route-id="@session.ID" asp-controller="Sessions" class="session-btn-accent" title="Edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                @if (session.Group != null)
+                                {
+                                    <a asp-area="Teachers" asp-action="Details" asp-route-id="@session.GroupID" asp-controller="Group" class="session-btn-accent" title="Group">
+                                        <i class="fas fa-users"></i> Group
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="session-alert-info">No sessions available.</div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .session-location-box {
+            background: var(--clr-surface);
+            border: 1px solid var(--clr-border);
+            border-radius: 0.6rem;
+            padding: 0.6rem 1rem;
+            margin: 0.5rem 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1rem;
+            color: var(--clr-text-primary);
+            box-shadow: 0 2px 8px rgba(122,60,139,0.06);
+            line-height: 2 !important;
+        }
+        .session-location-box i {
+            color: var(--clr-primary);
+            font-size: 1.2em;
+        }
+        .session-card {
+            background: var(--clr-surface);
+            border: 1px solid var(--clr-border);
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            padding: 1.2rem 1rem;
+            margin-bottom: 2rem;
+            min-height: 340px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: box-shadow 0.2s;
+        }
+        .session-cards-row > .col-md-6, .session-cards-row > .col-lg-4, .session-cards-row > .col-12 {
+            display: flex;
+        }
+        .session-card {
+            width: 100%;
+        }
+        @@media (max-width: 991px) {
+            .session-cards-row > .col-md-6, .session-cards-row > .col-lg-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+        @@media (max-width: 575px) {
+            .session-card {
+                min-height: unset;
+                padding: 1rem 0.5rem;
+            }
+        }
+        .session-card:hover {
+            box-shadow: 0 4px 24px var(--clr-overlay);
+        }
+        .session-card-body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 1.5rem;
+        }
+        .session-card-title {
+            color: var(--clr-primary);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .session-address {
+            font-size: 0.98em;
+            color: var(--clr-text-secondary);
+        }
+
+        .session-date {
+            font-weight: 600;
+            margin-right: 0.3em;
+        }
+
+        .session-time-bold {
+            font-family: monospace;
+            font-size: 0.98em;
+            background: var(--clr-surface);
+            border-radius: 0.3em;
+            padding: 0.1em 0.4em;
+            margin: 0 0.2em;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .session-fromto {
+            margin-left: 0.5em;
+        }
+
+        .session-list {
+            list-style: none;
+            margin: 0 0 1.25rem 0;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+            .session-list li {
+                margin-bottom: 1.25rem;
+                color: var(--clr-text-secondary);
+                font-size: 1rem;
+                padding-bottom: 0.4em;
+                border-bottom: 1px solid var(--clr-border);
+            }
+
+                .session-list li:last-child {
+                    margin-bottom: 0.25rem;
+                    border-bottom: none;
+                }
+
+        .icon-spaced {
+            margin-right: 0.75em;
+            margin-left: 0.1em;
+            color: var(--clr-secondary);
+            font-size: 1.1em;
+            vertical-align: -0.1em;
+        }
+
+        .session-list i.fas {
+            margin-right: 0.7em;
+        }
+
+        .session-list span,
+        .session-list strong {
+            vertical-align: middle;
+        }
+
+        .session-to {
+            margin: 0 0.6em;
+            color: var(--clr-text-secondary);
+            font-size: 0.97em;
+        }
+
+        .session-muted {
+            color: #aaa;
+        }
+
+        .session-badge-primary {
+            background: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border-radius: 0.5em;
+            padding: 0.15em 0.7em;
+            font-size: 0.95em;
+            margin-right: 0.5em;
+        }
+
+        .session-link {
+            color: var(--clr-accent);
+            text-decoration: underline;
+            margin-left: 0.5em;
+        }
+
+            .session-link:hover, .session-link:focus {
+                color: #e7b97a;
+            }
+
+        .session-card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            gap: 0.5em;
+        }
+
+        .session-btn-accent {
+            background: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            border: none;
+            border-radius: 0.5em;
+            padding: 0.8rem;
+            font-size: 0.95em;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+
+        .session-btn-edit {
+            background: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+            border: none;
+            border-radius: 0.5em;
+            padding: 0.8rem;
+            font-size: 0.95em;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+
+            .session-btn-edit:hover, .session-btn-edit:focus {
+                background: #a06a4c;
+                color: var(--clr-text-on-secondary);
+            }
+
+        .session-btn-accent:hover, .session-btn-accent:focus {
+            background: #e7b97a;
+            color: var(--clr-text-on-accent);
+        }
+
+        .session-btn-primary {
+            background: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            border-radius: 0.5em;
+            padding: 0.8rem;
+            font-size: 0.95em;
+            text-decoration: none;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+
+            .session-btn-primary:hover, .session-btn-primary:focus {
+                background: #7a3c8b;
+                color: var(--clr-text-on-primary);
+            }
+
+        .session-btn-secondary {
+            background: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+            border: none;
+            border-radius: 0.5em;
+            padding: 0.4em 1em;
+            font-size: 0.95em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3em;
+        }
+
+        .session-btn-disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .session-alert-info {
+            background: var(--clr-surface);
+            color: var(--clr-text-secondary);
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5em;
+            padding: 1.5em;
+            text-align: center;
+            font-size: 1.1em;
+        }
+    </style>
+}

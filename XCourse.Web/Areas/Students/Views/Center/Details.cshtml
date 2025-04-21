@@ -104,7 +104,7 @@
 										A luxurious executive suite with state-of-the-art presentation equipment and elegant furnishings.
 									</p>
 								</div>
-								<button class="btn rooms__reserve-btn" onclick="openModal(@room.ID)">
+								<button class="btn rooms__reserve-btn" onclick="openModal(@room.ID, @room.PricePerHour)">
 									<i class="fas fa-calendar-check"></i>&nbsp;Reserve Now
 								</button>
 							</div>
@@ -117,12 +117,12 @@
 </div>
 
 <div id="xmodal-container" class="d-none">
-	<div id="xmodal-overlay">
-		<div id="xmodal">
-			<div id="xmodal-header">
+	<div class="xmodal-overlay">
+		<div class="xmodal">
+			<div class="xmodal-header">
 				<h2>Book A Room</h2>
 			</div>
-			<div id="xmodal-body">
+			<div class="xmodal-body">
 				<div class="day-picker">
 					<div class="arrow" id="left-arrow"><i class="fa-solid fa-caret-left"></i></div>
 					<div class="date-display" id="date-display"></div>
@@ -156,12 +156,31 @@
 				</p>
 
 			</div>
-			<div id="xmodal-footer">
+			<div class="xmodal-footer">
 				<div class="form-group">
 					<button id="close-modal" class="btn btn-close">Cancel</button>
 					<button onclick="resetSelection()" class="btn btn-secondary">Reset</button>
 					<button id="am-pm" onclick="toggleAM()" class="btn btn-secondary">AM</button>
 					<button id="submit-request" class="btn btn-primary">Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="ymodal-container" class="d-none">
+	<div class="xmodal-overlay">
+		<div class="xmodal">
+			<div class="xmodal-header">
+				<h2>Confirm Reservation</h2>
+			</div>
+			<div class="xmodal-body" id="confirm-body">
+
+			</div>
+			<div class="xmodal-footer">
+				<div class="form-group">
+					<button id="close-confirm" class="btn btn-close">Cancel</button>
+					<button id="confirm-request" class="btn btn-primary">Confirm</button>
 				</div>
 			</div>
 		</div>
@@ -429,7 +448,16 @@
 			z-index: 1000;
 		}
 
-		#xmodal-overlay {
+		#ymodal-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			z-index: 1000;
+		}
+
+		.xmodal-overlay {
 			position: fixed;
 			top: 0;
 			left: 0;
@@ -441,7 +469,7 @@
 			justify-content: center;
 		}
 
-		#xmodal {
+		.xmodal {
 			background: var(--clr-background);
 			width: 400px;
 			border-radius: 10px;
@@ -449,7 +477,7 @@
 			overflow: hidden;
 		}
 
-		#xmodal-header {
+		.xmodal-header {
 			background: var(--clr-primary);
 			color: var(--clr-background);
 			padding: 15px;
@@ -457,12 +485,12 @@
 			text-align: center;
 		}
 
-		#xmodal-body {
+		.xmodal-body {
 			padding: 20px;
 			text-align: center;
 		}
 
-		#xmodal-footer {
+		.xmodal-footer {
 			background: var(--clr-surface);
 			padding: 15px;
 			text-align: center;
@@ -654,6 +682,7 @@
 		const close_modal = document.getElementById("close-modal")
 		const submit_btn = document.getElementById("submit-request")
 		const modal_container = document.getElementById("xmodal-container")
+		const confirm_container = document.getElementById("ymodal-container")
 		const dateDisplay = document.getElementById('date-display');
 		const leftArrow = document.getElementById('left-arrow');
 		const rightArrow = document.getElementById('right-arrow');
@@ -667,6 +696,9 @@
 		const amBtn = document.getElementById("am-pm")
 		const watchFace = document.getElementById("watch-face")
 		const loading = document.getElementById("loading")
+		const closeConfirmBtn = document.getElementById("close-confirm")
+		const confirmRequestBtn = document.getElementById("confirm-request")
+		const confirmbody = document.getElementById("confirm-body")
 
 		const CENTER = { x: 150, y: 150 };
 		const RADIUS = 150;
@@ -678,9 +710,15 @@
 		let dragging = null;
 		let isAM;
 		let currentRoomId;
+		let currentPrice;
+		let lastTotal;
+		let userBalance = @Model.WalletBalance;
 		let reservedSegments = [];
 
 		async function submitRequest() {
+			confirm_container.classList.add("d-none")
+			modal_container.classList.remove("d-none")
+
 			if (startAngle == null || endAngle == null) {
 				err_msg.innerText = "Invalid Time"
 				err_msg.classList.remove("d-none")
@@ -695,9 +733,12 @@
 				end: formatEndTime24(angleToTime(endAngle))
 			}
 
+			startLoading()
 			let result = await getData(url, "POST", request)
+			endLoading()
 
 			if (result.isValid) {
+				userBalance -= lastTotal;
 				resetSelection()
 				modal_container.classList.add("d-none")
 				showSuccessToast("Ok", 'Reserved Successfully',5);
@@ -706,8 +747,9 @@
 			}
 		}
 
-		async function openModal(id) {
+		async function openModal(id, price) {
 			currentRoomId = id;
+			currentPrice = price;
 			currentDate = new Date();
 			await renderComponent()
 			modal_container.classList.remove("d-none")
@@ -733,6 +775,77 @@
 		function closeModal() {
 			resetSelection()
 			modal_container.classList.add("d-none")
+		}
+
+		function parseTimeToDate(timeStr) {
+			const [hours, minutes] = timeStr.split(':').map(Number);
+			const now = new Date();
+			now.setHours(hours, minutes, 0, 0);
+			return now;
+		}
+
+		function hoursDiff(diff) {
+			return diff / (1000 * 60 * 60)
+		}
+
+		// Example:
+		const time = parseTimeToDate("06:15");
+		console.log(time); // Output: Date object with today’s date at 06:15
+
+		function openConfirm() {
+			let s = parseTimeToDate(formatTime24(angleToTime(startAngle)));
+			let e = parseTimeToDate(formatEndTime24(angleToTime(endAngle)));
+			let d = hoursDiff(e-s);
+			let t = d * currentPrice;
+			lastTotal = t;
+			let b = userBalance;
+
+			confirmbody.innerHTML = `<div>
+										<table style=" margin: auto; text-align: left; ">
+											<tbody>
+												<tr>
+													<td>
+														total time
+													</td>
+													<td>
+														${d} hr
+													</td>
+												</tr>
+												<tr>
+													<td>
+														total ammount
+													</td>
+													<td>
+														L.E. ${t} 
+													</td>
+												</tr>
+												<tr>
+													<td>
+														your balance
+													</td>
+													<td>
+														L.E. ${b}
+													</td>
+												</tr>
+												<tr>
+													<td>
+														remaining
+													</td>
+													<td>
+														L.E. ${b - t}
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>`
+
+			modal_container.classList.add("d-none")
+			confirm_container.classList.remove("d-none")
+		}
+
+		function closeConfirm() {
+			confirm_container.classList.add("d-none")
+			modal_container.classList.remove("d-none")
 		}
 
 		function buildList(list) {
@@ -1017,7 +1130,10 @@
 		}
 
 		close_modal.addEventListener("click", closeModal)
-		submit_btn.addEventListener("click", submitRequest)
+		submit_btn.addEventListener("click", openConfirm)
+
+		closeConfirmBtn.addEventListener("click", closeConfirm)
+		confirmRequestBtn.addEventListener("click", submitRequest)
 
 		svg.addEventListener("mouseup", () => dragging = null);
 		svg.addEventListener("mouseleave", () => dragging = null);

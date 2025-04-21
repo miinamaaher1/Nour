@@ -81,6 +81,28 @@ namespace XCourse.Web.Areas.Teachers.Controllers
 
         // Utils
         [HttpPost]
+        public async Task<IActionResult> Years()
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userID))
+            {
+                return Json(new List<int>());
+            }
+
+            var teacher = await _groupService.GetTeacherByUserId(userID);
+
+            if (teacher == null || teacher.ID == 0)
+            {
+                return Json(new List<int>());
+            }
+
+            var years = await _groupService.GetAllMatchingYears(teacher.ID);
+
+            return Json(years);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Centers([FromBody] RequestCenterDto request)
         {
             var centers = await _groupService.GetAllCentersPerGovernorate(request.Governorate);
@@ -100,10 +122,9 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         [HttpPost]
         public async Task<IActionResult> Subjects([FromBody] RequestSubjectDto request)
         {
-            //var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            //Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
-            //request.TeacherId = teacher.ID;
-            request.TeacherId = 1;
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
+            request.TeacherId = teacher.ID;
             var subjects = await _groupService.GetMatchingSubjects(request);
             return Ok(subjects);
         }
