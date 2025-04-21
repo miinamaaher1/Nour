@@ -156,7 +156,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             }
             var teacher = await _sessionService.GetTeacherByUserId(userID!);
             var result = await _sessionService.EditOfflineLocalSession(sessionVM, teacher.ID);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = sessionVM.SessionID });
         }
 
         public async Task<IActionResult> EditOfflineInACenter(int id)

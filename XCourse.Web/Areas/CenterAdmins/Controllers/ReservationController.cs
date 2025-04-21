@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
@@ -37,9 +38,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return RedirectToAction("Index", new { id = t });
         }
 
-        public ActionResult RejectReservation(int id)
+        public async Task<ActionResult> RejectReservation(int id)
         {
-            int t = _centerAdminService.RejectReservation(id);
+            int t = await _centerAdminService.RejectReservation(id);
             if (t == 0)
             {
                 return NotFound();
@@ -92,9 +93,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return View(Result);
         }
         [HttpPost]
-        public ActionResult Delete(DetailsReservationViewModel details)
+        public async Task<ActionResult> Delete(DetailsReservationViewModel details)
         {
-            var deleteReservation = _centerAdminService.DeleteReservation(details);
+            var deleteReservation = await _centerAdminService.DeleteReservation(details);
 
             try
             {
