@@ -1,0 +1,84 @@
+@model XCourse.Core.ViewModels.TeachersViewModels.Sessions.EditOnlineSessionVM
+
+@section Styles {
+ <link href="~/css/form.css" rel="stylesheet" />
+ <style>
+    #loader-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.7);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .loader {
+        border: 8px solid #eee;
+        border-top: 8px solid #7c3aed;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+    }
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+ </style>
+}
+
+<div class="form-container">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="text-danger mb-3">
+            @Html.ValidationSummary(false, "Please fix the following errors:")
+        </div>
+    }
+    
+    <h1 class="form-header">Hub Form</h1>
+    <form id="hubForm" asp-action="EditOnlineGroup" asp-area="Teachers" asp-controller="Sessions" method="post" enctype="multipart/form-data" onsubmit="showLoader()">
+        <input asp-for="SessionID" type="hidden" />
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+    <label asp-for="Video"></label>
+    <input asp-for="Video" type="file" accept=".mp4,.mov,.avi,.wmv,.flv,.mpeg,.mpg,.webm,.3gp"  class="form-control" />
+    <span asp-validation-for="Video" class="text-danger"></span>
+</div>
+
+        <div class="form-group">
+            <label asp-for="Date"></label>
+            <input asp-for="Date" type="date" class="form-control" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-6 col-md-12">
+                <label asp-for="StartTime"></label>
+                <input asp-for="StartTime" type="time" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <label asp-for="EndTime"></label>
+                <input asp-for="EndTime" type="time" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-navigation">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-check icon"></i>
+                Submit</button>
+        </div>
+    </form>
+    <div id="loader-overlay" style="display:none;">
+        <div class="loader"></div>
+    </div>
+</div>
+<script>
+    function showLoader() {
+        document.getElementById('loader-overlay').style.display = 'flex';
+    }
+</script>
+
+

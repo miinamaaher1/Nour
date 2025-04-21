@@ -7,6 +7,7 @@ using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.StudentsViewModels;
 
 using XCourse.Infrastructure.Repositories.Interfaces;
+using XCourse.Services.Interfaces.PaymentService;
 using XCourse.Services.Interfaces.Student;
 
 namespace XCourse.Services.Implementations.Student
@@ -15,10 +16,12 @@ namespace XCourse.Services.Implementations.Student
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
-        public StudentHomeService(IUnitOfWork unitOfWork, IConfiguration configuration )
+        private readonly ITransactionService _transactionService;
+        public StudentHomeService(IUnitOfWork unitOfWork, IConfiguration configuration, ITransactionService transactionService )
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _transactionService = transactionService;
         }
 
         public async Task<HomeViewModel> IndexService(string guid)
@@ -72,7 +75,7 @@ namespace XCourse.Services.Implementations.Student
             {
                 UpcomingSessions = upcomingSessions.ToList(),
                 RecommendedGroups = groupViewModels,
-                Announcements = announcements.OrderBy(a=>a.DateTime).Take(10).ToList(),
+                Announcements = announcements.ToList(),
                 NumOfAnnouncements = numOfAnnouncements
 
             };
@@ -111,6 +114,7 @@ namespace XCourse.Services.Implementations.Student
                 s => s.ID == sessionId,
                 ["Group", "Group.Subject","Address", "RoomReservation.Room", "Group.Teacher.AppUser"]
             );
+            var wallet = await _unitOfWork.Wallets.FindAsync(w=>w.AppUserID == userId);
 
             if (session == null)
             {
@@ -121,11 +125,66 @@ namespace XCourse.Services.Implementations.Student
             {
                 Session = session,
                 Attendances=sessionAttendance,
+                WalletBalance = wallet != null ? wallet.Balance : 0,
                 MapKey = _configuration["GoogleMaps:ApiKey"],
 
             };
         }
 
+        public async Task<bool> PayForSessionServiceAsync(int sessionId, string userId)
+        {
+            
+            var session = await _unitOfWork.Sessions.FindAsync(
+                s => s.ID == sessionId,
+                ["Group", "Group.Teacher.AppUser"]
+            );
+
+            if (session == null)
+                return false;
+
+            
+            var student = await _unitOfWork.Students.FindAsync(s => s.AppUserID == userId);
+            if (student == null)
+                return false;
+
+            
+            var attendance = await _unitOfWork.Attendances.FindAsync(
+                a => a.SessionID == sessionId && a.StudentID == student.ID
+            );
+
+            string teacherUserId = session.Group.Teacher.AppUserID;
+
+            bool transactionSuccessful = await _transactionService.MakeTransactionAsync(
+                userId,
+                teacherUserId,
+                session.Group.PricePerSession,
+                TransactionType.Payment
+            );
+
+            if (!transactionSuccessful)
+                return false;
+
+            if (attendance == null)
+            {
+                attendance = new Attendance
+                {
+                    SessionID = sessionId,
+                    StudentID = student.ID,
+                    HasPaid = true,
+                    HasAttended = false
+                };
+                await _unitOfWork.Attendances.AddAsync(attendance);
+            }
+            else
+            {
+                attendance.HasPaid = true;
+                _unitOfWork.Attendances.Update(attendance);
+            }
+
+            await _unitOfWork.SaveAsync();
+
+            return true;
+        }
         public async Task<bool> SessionSaveFeedbackService(FeedBackDTO feedBackDTO, string userId)
         {
             if (feedBackDTO == null)
@@ -241,9 +300,11 @@ namespace XCourse.Services.Implementations.Student
                      g.IsPrivate == false &&
                      g.MaxStudents > g.CurrentStudents &&
                      !(g.IsGirlsOnly == true && student.AppUser.Gender == Gender.Male) &&
-                     g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower() &&
+                     (g.IsOnline == true || g.Address.City.ToLower() == student.AppUser.HomeAddress.City.ToLower()) &&
                      !g.Students.Any(st => st.ID == student.ID),
-                        ["Subject", "Students", "Teacher.AppUser"]
+                 ["Subject", "Students", "Teacher.AppUser"],
+                 skip: 0,
+                 take: 10
             );
 
             return await Task.FromResult(groups.ToList());
@@ -258,7 +319,7 @@ namespace XCourse.Services.Implementations.Student
             var groupIds = studentGroups.Select(g => g.ID).ToList();
 
             var announcements = await _unitOfWork.Announcements.FindAllAsync(announcement =>
-                announcement.Groups!.Any(g => groupIds.Contains(g.ID)), ["Groups", "Groups.Subject"]
+                announcement.Groups!.Any(g => groupIds.Contains(g.ID)), ["Groups", "Groups.Subject"],skip: 0, take: 10, order: a => a.DateTime,direction:Order.DESC
             );
 
             var announcementVMs = new List<AnnouncementVM>();

@@ -42,15 +42,15 @@
                 }
             </div>
         </div>
-        @if (Model.IsAvailableForPrivateGroups)
-        {
-            <div class="book-now-btn" id="open-modal" >
-                <button>
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    &nbsp;Request Now
-                </button>
-            </div>
-        }
+        @* @if (Model.IsAvailableForPrivateGroups) *@
+        @* { *@
+        @*     <div class="book-now-btn" id="open-modal" > *@
+        @*         <button> *@
+        @*             <i class="fa-solid fa-arrow-up-right-from-square"></i> *@
+        @*             &nbsp;Request Now *@
+        @*         </button> *@
+        @*     </div> *@
+        @* } *@
     </div>
 </div>
 
@@ -87,7 +87,7 @@
                                 </span>
                             }
                         </div>
-                        <a asp-area="Students" asp-controller="Group" asp-action="Preview" asp-route-id="@group.GroupID" class="group-card__button"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span> Details</span></a>
+                        <a asp-area="Students" asp-controller="Group" asp-action="Preview" asp-route-id="@group.GroupID" class="group-card__button "><i class="fa-solid fa-arrow-up-right-from-square"></i> <span> Details</span></a>
                         <div class="group-card__footer">
                             <div class="group-card__price">
                                 L.E. @group.PricePerSession
@@ -191,19 +191,37 @@
             display: flex;
             flex-direction: column;
         }
-
+  
         .group-card__button {
             font-size: 1rem;
-            font-weight: normal;
-            color: var(--clr-primary);
-            margin-bottom: 10px;
+            font-weight: 500;
+            padding: 10px 15px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
             display: flex;
-            column-gap: 5px;
+            justify-content: center;
+			align-content: center;
+			text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            column-gap: 8px;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
+            .group-card__button:hover {
+                background-color: var(--clr-primary-dark);
+				border: solid 2px var(--clr-primary);
+                transform: translateY(-2px);
+            }
+
+            .group-card__button i {
+                font-size: 1.1rem;
+            }
+
+
         .group-card__button span {
-            text-decoration: underline;
             text-underline-offset: 2px;
         }
 
@@ -521,6 +539,15 @@
 				showErrorToast("Error", result.errors[0], 3)
             }
         }
+
+        document.getElementById("open-modal")?.addEventListener("click", function () {
+            document.getElementById("xmodal-container")?.classList.remove("d-none");
+        });
+
+        document.getElementById("close-modal")?.addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("xmodal-container")?.classList.add("d-none");
+        });
 
         async function openModal() {
             buildList(governorate_select, governorate_list)

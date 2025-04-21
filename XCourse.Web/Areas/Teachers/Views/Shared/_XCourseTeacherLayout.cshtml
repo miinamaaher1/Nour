@@ -10,12 +10,6 @@
 
 @section NavigationMenu {
     <li class="nav-item">
-        <a asp-action="Index" asp-controller="Home" asp-area="Teachers" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">
-            <i class="fa-solid fa-house nav-icon"></i>
-            <span class="nav-text">Home</span>
-        </a>
-    </li>
-    <li class="nav-item">
         <a asp-action="Index" asp-controller="Group" asp-area="Teachers" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "")">
             <i class="fa-solid fa-users nav-icon"></i>
             <span class="nav-text">Groups</span>
@@ -42,6 +36,12 @@
             <span class="nav-text">Subjects</span>
         </a>
     </li>
+	<li class="nav-item">
+		<a asp-action="TopUpWallet" asp-controller="Payment" asp-area="Teachers" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payment" ? "active" : "")">
+			<i class="fa-solid fa-wallet nav-icon"></i>
+			<span class="nav-text">Wallet</span>
+		</a>
+	</li>
 }
 
 @section Scripts {

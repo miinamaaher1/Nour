@@ -6,6 +6,7 @@ using XCourse.Core.DTOs.StudentDTOs;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
+using XCourse.Services.Interfaces.PaymentService;
 using XCourse.Services.Interfaces.StudentServices;
 
 namespace XCourse.Services.Implementations.StudentServices
@@ -15,17 +16,21 @@ namespace XCourse.Services.Implementations.StudentServices
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly ITransactionService _transactionService;
 
-        public CenterReservationService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IConfiguration configuration)
+        public CenterReservationService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IConfiguration configuration,ITransactionService transactionService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _configuration = configuration;
+            _transactionService = transactionService;
         }
 
         public async Task<CenterVM> GetCenterDetailsAsync(int id, ClaimsPrincipal user)
         {
             AppUser auser = await _userManager.GetUserAsync(user);
+
+            var userWallet = await _unitOfWork.Wallets.FindAsync(w => w.AppUserID == auser.Id);
 
             var center = _unitOfWork.Centers.Get(id);
 
@@ -41,6 +46,7 @@ namespace XCourse.Services.Implementations.StudentServices
                 IsGirlsOnly = center.IsGirlsOnly,
                 Location = center.Location,
                 MapKey = _configuration["GoogleMaps:ApiKey"],
+                WalletBalance = userWallet.Balance,
                 AvailbleRooms = new List<RoomVM>()
             };
 
@@ -55,7 +61,7 @@ namespace XCourse.Services.Implementations.StudentServices
 
             if (centerVM.IncompatibleGender) return centerVM;
 
-            var rooms = _unitOfWork.Rooms.FindAll(r => r.CenterID == center.ID && !r.Equipment.HasFlag(Equipment.Lecture));
+            var rooms = _unitOfWork.Rooms.FindAll(r => r.CenterID == center.ID && (r.Equipment.HasFlag(Equipment.Study) || r.Equipment.HasFlag(Equipment.Meeting)));
 
             foreach (var room in rooms)
             {
@@ -94,56 +100,52 @@ namespace XCourse.Services.Implementations.StudentServices
         public async Task<RequestStatusDTO> ReserveRoomAsync(int roomId, DateOnly date, TimeOnly start, TimeOnly end, ClaimsPrincipal user)
         {
             RequestStatusDTO status = new RequestStatusDTO();
-
-            var auser = await _userManager.GetUserAsync(user);
-            var wallet = _unitOfWork.Wallets.Find(w => w.AppUserID == auser.Id);
-            var room = _unitOfWork.Rooms.Get(roomId);
-
-            var total = (decimal)(end - start).TotalHours * room.PricePerHour;
-
-            if (wallet.Balance < total)
-            {
-                status.IsValid = false;
-                status.Errors = ["Insufficient Balance"];
-                return status;
-            }
-
-            var reservations = _unitOfWork.RoomReservations.FindAll(r => r.Date == date && r.RoomID == roomId);
-
-            if (reservations.Any(r => r.StartTime > start && r.StartTime < end || r.EndTime > start && r.EndTime < end))
-            {
-                status.IsValid = false;
-                status.Errors = ["Unavailable Reservation, something went wrong..."];
-                return status;
-            }
-
-            var stud = _unitOfWork.Students.Find(s => s.AppUserID == auser.Id);
-
-            RoomReservation rr = new()
-            {
-                RoomID = roomId,
-                Date = date,
-                StartTime = start,
-                EndTime = end,
-                StudentID = stud.ID,
-                TotalPrice = total,
-                ReservationStatus = ReservationStatus.Pending
-            };
-
-            Transaction transaction = new Transaction()
-            {
-                Amount = total,
-                CreatedAt = DateTime.Now,
-                WalletID = wallet.ID,
-                Type = TransactionType.Deposit,
-                PaymentTransactionID = "xxx"
-            };
-
-            wallet.Balance -= total;
-
             try
             {
-                _unitOfWork.Transactions.Add(transaction);
+
+                var auser = await _userManager.GetUserAsync(user);
+
+                var room = _unitOfWork.Rooms.Find(r=>r.ID==roomId, ["Center"]);
+
+                var centerAdmin= _unitOfWork.CenterAdmins.Find(c=>c.ID == room.Center.CenterAdminID, ["AppUser"]);
+
+                var total = (decimal)(end - start).TotalHours * room.PricePerHour;
+
+
+                var reservations = _unitOfWork.RoomReservations.FindAll(r => r.Date == date && r.RoomID == roomId);
+
+                if (reservations.Any(r => r.StartTime > start && r.StartTime < end || r.EndTime > start && r.EndTime < end))
+                {
+                    status.IsValid = false;
+                    status.Errors = ["Unavailable Reservation, something went wrong..."];
+                    return status;
+                }
+
+                var stud = _unitOfWork.Students.Find(s => s.AppUserID == auser.Id);
+
+                RoomReservation rr = new()
+                {
+                    RoomID = roomId,
+                    Date = date,
+                    StartTime = start,
+                    EndTime = end,
+                    StudentID = stud.ID,
+                    TotalPrice = total,
+                    ReservationStatus = ReservationStatus.Approved
+                };
+
+                var IsPaid= await _transactionService.MakeTransactionAsync (
+                    auser.Id,
+                    centerAdmin.AppUserID,
+                    total,
+                    TransactionType.Payment
+                );
+                if (!IsPaid)
+                {
+                    status.IsValid = false;
+                    status.Errors = ["Payment failed"];
+                    return status;
+                }
                 _unitOfWork.RoomReservations.Add(rr);
                 _unitOfWork.Save();
                 status.IsValid = true;
