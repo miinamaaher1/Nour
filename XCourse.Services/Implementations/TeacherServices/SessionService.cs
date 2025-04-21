@@ -119,7 +119,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 return new List<Session>();
             }
-            var sessions = await _unitOfWork.Sessions.FindAllAsync(s => s.GroupID == groupId, ["Address"]);
+            var sessions = await _unitOfWork.Sessions.FindAllAsync(s => s.GroupID == groupId, ["Address","Group.Subject"]);
             return sessions.ToList();
         }
         async public Task<EditSessionResponseDTO> EditOfflineLocalSession(EditOfflineLocalSessionVM sessionVM, int teacherId)

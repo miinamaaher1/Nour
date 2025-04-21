@@ -473,13 +473,13 @@
         async function GetAttendance() {
             let url = "/Assistants/Attendance/GetSessionAttendance"
             let requstBody = {
-                "sessionId": 3,
+                "sessionId": ,
                 "assistantId": 1
             }
             let errorResponse = {
                 isValid: true,
                 errors: ["Soething went wrong! contact the server owner"],
-                sessionId: 3,
+                sessionId: @Model?.ID,
                 assistantId: 1,
                 sessionDayAttendances: []
             }

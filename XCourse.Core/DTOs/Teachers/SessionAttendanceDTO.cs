@@ -18,5 +18,9 @@ namespace XCourse.Core.DTOs.Teachers
         public bool HasPaid { get; set; }
         public double? ClassWorkGrade { get; set; }
         public double? HomeWorkGrade { get; set; }
+        // Added for full backend/frontend binding
+        public string? Feedback { get; set; }
+        public int? Rating { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
