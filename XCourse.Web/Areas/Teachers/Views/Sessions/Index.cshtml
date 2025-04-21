@@ -554,7 +554,7 @@
                             centerName: '@session.CenterName',
                             roomName: '@session.RoomName',
                             isOnline: @(session.IsOnline ? "true" : "false").toString(),
-                            location: '@(session.IsOnline ? "Online" : session.Address.Street?? session.CenterName)',
+                            location: '@(session.IsOnline ? "Online" : session.Address?.Street?? session.CenterName)',
                             duration: '@(session.Duration?.ToString(@"hh\:mm") ?? "01:00")',
                             year: '@session.Year',
                             semester: '@session.Semester'
