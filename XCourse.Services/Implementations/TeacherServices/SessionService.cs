@@ -294,8 +294,27 @@ namespace XCourse.Services.Implementations.TeacherServices
             newSession.Duration = sessionVM.StartTime - sessionVM.EndTime;
             newSession.GroupID = sessionVM.GroupID;
             newSession.Description = sessionVM.Description;
-            
-            // Video service here 
+
+            if (sessionVM.Video != null)
+            {
+                var title = group.Teacher.AppUser.FirstName
+                            + " " + group.Teacher.AppUser.LastName
+                            + " " + group.Subject.Topic
+                            + " " + Guid.NewGuid();
+
+                var url = await _youTubeUploaderService.UploadVideoAsync(sessionVM.Video.OpenReadStream(), title, sessionVM.Description);
+
+                if (url == null)
+                {
+                    return new EditSessionResponseDTO
+                    {
+                        Status = false,
+                        Errors = new List<string> { "Couldn't upload video." }
+                    };
+                }
+
+                newSession.URL = url;
+            }
 
             newSession.StartDateTime = new DateTime(
             sessionVM.Date!.Value.Year,
