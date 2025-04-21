@@ -8,9 +8,11 @@ namespace XCourse.Web.Areas.Assistants.Controllers
     public class SessionController : Controller
     {
         private readonly ISessionService _sessionService;
-        public SessionController(ISessionService sessionService)
+        private readonly IConfiguration _configuration;
+        public SessionController(ISessionService sessionService, IConfiguration configuration)
         {
-            this._sessionService = sessionService;
+            _sessionService = sessionService;
+            _configuration = configuration;
         }
         public IActionResult Index()
         {
@@ -27,6 +29,7 @@ namespace XCourse.Web.Areas.Assistants.Controllers
                 assistantId = assistant.ID;
             }
             var session = await _sessionService.GetSessionDetailsById(id, assistantId);
+            ViewBag.Key = _configuration["GoogleMaps:ApiKey"];
             return View(session);
         }
     }

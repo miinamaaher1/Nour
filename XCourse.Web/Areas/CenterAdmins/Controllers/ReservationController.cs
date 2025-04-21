@@ -48,14 +48,6 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return RedirectToAction("Index", new { id = t });
         }
 
-        // GET: ReservationController/Details/5
-        public ActionResult Details(int id)
-        {
-            var model = _centerAdminService.DetailsReservation(id);
-            if (model == null) return NotFound();
-            return View(model);
-        }
-    
         // GET: ReservationController/Edit/5
         public ActionResult Edit(int id)
         {
