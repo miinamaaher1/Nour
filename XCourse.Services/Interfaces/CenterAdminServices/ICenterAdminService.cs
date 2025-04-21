@@ -7,7 +7,7 @@ namespace XCourse.Services.Interfaces.CenterAdminServices
         public List<CenterViewModel> GetCenters(string id);
         public List<ReservationViewModel> GetReservations(int id);
         public int ApproveReservation(int id);
-        public int RejectReservation(int id);
+        public Task<int> RejectReservation(int id);
         public DetailsReservationViewModel DetailsReservation(int id);
         public int AddNewCenter(CreateCenterViewModel center);
         public int EditCenter(CreateCenterViewModel Center);
@@ -26,7 +26,7 @@ namespace XCourse.Services.Interfaces.CenterAdminServices
         public int DeleteCenter(CreateCenterViewModel center);
 
 
-        public int DeleteReservation(DetailsReservationViewModel details);
+        public Task<int> DeleteReservation(DetailsReservationViewModel details);
 
 
     }
