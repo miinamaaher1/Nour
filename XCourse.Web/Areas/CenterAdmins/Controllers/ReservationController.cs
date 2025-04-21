@@ -90,5 +90,43 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 return View(Rooms);
             }
         }
+
+
+        public ActionResult Delete(int id)
+        {
+            var Result = _centerAdminService.DetailsReservation(id);
+            if (Result == null)
+                return NotFound();
+            return View(Result);
+        }
+        [HttpPost]
+        public ActionResult Delete(DetailsReservationViewModel details)
+        {
+            var deleteReservation = _centerAdminService.DeleteReservation(details);
+
+            try
+            {
+                if (deleteReservation == null)
+                    return NotFound();
+               if(deleteReservation==0)
+                {
+                    return View(details);
+                }
+                return RedirectToAction("Index", new { id = deleteReservation });
+
+            }
+
+
+            catch
+            {
+                return View(details);
+            }
+
+
+           
+        }
+
+
+
     }
 }
