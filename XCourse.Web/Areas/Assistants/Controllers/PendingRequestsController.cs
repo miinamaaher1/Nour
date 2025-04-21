@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using XCourse.Infrastructure.Repositories.Interfaces;
-using XCourse.Services.Implementations.AssistantServices;
 using XCourse.Services.Interfaces.AssistantServices;
 
 namespace XCourse.Web.Areas.Assistants.Controllers
@@ -12,7 +11,7 @@ namespace XCourse.Web.Areas.Assistants.Controllers
     {
         private readonly IPendingRequestService _pendingRequestService;
         private readonly IUnitOfWork _unitOfWork;
-        public PendingRequestsController(IPendingRequestService pendingRequestService,IUnitOfWork unitOfWork)
+        public PendingRequestsController(IPendingRequestService pendingRequestService, IUnitOfWork unitOfWork)
         {
             _pendingRequestService = pendingRequestService;
             _unitOfWork = unitOfWork;
@@ -23,6 +22,7 @@ namespace XCourse.Web.Areas.Assistants.Controllers
             var pendingRequests = await _pendingRequestService.GetPendingRequestsAsync(User);
             return View(pendingRequests);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

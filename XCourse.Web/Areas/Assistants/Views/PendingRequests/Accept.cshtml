@@ -1,0 +1,47 @@
+﻿@model XCourse.Core.ViewModels.AssistantViewModels.PendingRequestVM
+@section Styles {
+    <link rel="stylesheet" href="~/css/Assistants/Card.css" />
+}
+
+<div class="container">
+    <div class="teacher-card">
+        <div class="teacher-card__header">
+            Are you sure you want to accept this Request?
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Teacher Name:</div>
+            <div class="teacher-card__value">@Model.TeacherName</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Subject:</div>
+            <div class="teacher-card__value">@Model.SubjectName</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Major:</div>
+            <div class="teacher-card__value">@Model.Major</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Year:</div>
+            <div class="teacher-card__value">@Model.Year</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Semester:</div>
+            <div class="teacher-card__value">@Model.Semester</div>
+        </div>
+        <div class="teacher-card__actions" style="justify-content: center;">
+            <a asp-action="AcceptConfirmed" asp-route-id="@Model.InvitationID"
+               class="btn btn--accept"
+               style="display: inline-block; text-decoration: none;">
+                <i class="fas fa-check"></i>
+                Yes, accept!
+            </a>
+            <a asp-action="Index"
+               class="btn btn--accept"
+               style="display: inline-block; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </a>
+
+        </div>
+    </div>
+</div>

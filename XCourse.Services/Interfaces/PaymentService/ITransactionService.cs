@@ -10,7 +10,7 @@ namespace XCourse.Services.Interfaces.PaymentService
 {
     public interface ITransactionService
     {
-        public Task<bool> MakeTransactionAsync(ClaimsPrincipal claimsPrincipal, string appUserReceiverId, decimal amount, TransactionType transactionType);
+        public Task<bool> MakeTransactionAsync(string userIdSender, string appUserReceiverId, decimal amount, TransactionType transactionType);
 
     }
 }

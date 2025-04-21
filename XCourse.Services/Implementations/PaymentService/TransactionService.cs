@@ -15,15 +15,11 @@ namespace XCourse.Services.Implementations.PaymentService
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
-        public async Task<bool> MakeTransactionAsync(ClaimsPrincipal claimsPrincipal, string appUserReceiverId, decimal amount ,TransactionType transactionType)
+        public async Task<bool> MakeTransactionAsync(string userIdSender, string appUserReceiverId, decimal amount, TransactionType transactionType)
         {
             //sender's wallet
-            var sender = await _userManager.GetUserAsync(claimsPrincipal);
-            if (sender == null)
-            {
-                return false;
-            }
-            var senderWallet = await _unitOfWork.Wallets.FindAsync(w => w.AppUserID == sender.Id);
+            var sender = await _userManager.FindByIdAsync(userIdSender);
+            var senderWallet = await _unitOfWork.Wallets.FindAsync(w => w.AppUserID == userIdSender);
             //receiver's wallet
             var receiver = await _userManager.FindByIdAsync(appUserReceiverId);
             if (receiver == null)
@@ -57,7 +53,6 @@ namespace XCourse.Services.Implementations.PaymentService
             await _unitOfWork.SaveAsync();
             return true;
         }
-
 
     }
 }

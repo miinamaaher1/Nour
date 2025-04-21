@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs;
 using XCourse.Core.ViewModels.StudentsViewModels;
@@ -28,6 +29,22 @@ namespace XCourse.Web.Areas.Students.Controllers
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
             var sessionDetailsVM = await _studentHomeService.SessionDetailsService(Id,userId);
             return View(sessionDetailsVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PayForSession([FromBody] PayRequestDTO paymentRequest)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+            bool isSuccess = await _studentHomeService.PayForSessionServiceAsync(paymentRequest.SessionId, userId);
+
+            if (isSuccess)
+            {
+                return Json(new { isValid = true, message = "Payment successful" });
+            }
+            else
+            {
+                return Json(new { isValid = false, message = "Payment failed. Please check your wallet balance." });
+            }
         }
 
 

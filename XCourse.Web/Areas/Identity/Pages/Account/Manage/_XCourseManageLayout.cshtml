@@ -10,12 +10,6 @@
 
 @section NavigationMenu {
     <li class="nav-item">
-        <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">
-            <i class="fa-solid fa-house nav-icon"></i>
-            <span class="nav-text">Home</span>
-        </a>
-    </li>
-    <li class="nav-item">
         <a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">
             <i class="fa-solid fa-user nav-icon"></i>
             <span class="nav-text">Profile</span>

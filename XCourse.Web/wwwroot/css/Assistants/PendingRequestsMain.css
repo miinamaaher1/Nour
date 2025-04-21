@@ -45,6 +45,7 @@
         .data-table__table th:last-child {
             border-top-right-radius: 8px;
         }
+
     .data-table__table tr:last-child td {
         border-bottom: none;
     }

@@ -1,0 +1,48 @@
+﻿@model XCourse.Core.DTOs.CenterAdmins.RoomDto
+@section Styles {
+    <link rel="stylesheet" href="~/css/Assistants/Card.css" />
+}
+
+<div class="container">
+    <div class="teacher-card">
+        <div class="teacher-card__header">
+                Cannot delete the room 
+                because there are no alternative rooms available for the approved reservations
+
+            <br />
+            <br />
+            Please delete the Reservations first before deleting the Room.
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Room Name:</div>
+            <div class="teacher-card__value">@Model.Name</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">
+                @Html.DisplayNameFor(model => model.Capacity)
+                :
+            </div>
+            <div class="teacher-card__value">@Model.Capacity</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">
+                @Html.DisplayNameFor(model => model.Equipment)
+                :
+            </div>
+            <div class="teacher-card__value">@Model.Equipment</div>
+        </div>
+
+        <div class="teacher-card__actions" style="justify-content: center;">
+
+
+            <a asp-action="Index"
+           asp-route-id="@Model.CenterId"
+               class="btn btn--accept"
+               style="display: inline-block; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </a>
+
+        </div>
+    </div>
+</div>

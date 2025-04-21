@@ -11,6 +11,7 @@ namespace XCourse.Web.ServicesCollections
             services.AddScoped<IPendingRequestService, PendingRequestService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IGroupDetailsService, GroupDetailsService>();
+
             return services;
         }
     }
