@@ -1,4 +1,4 @@
-﻿@{
+@{
     var teacherId = ViewBag.TeacherId;
 }
 
@@ -7,472 +7,785 @@
 }
 
 @section Styles {
+    <style>
+        .btn:hover {
+            background-color: var(--clr-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            background-color: var(--clr-border);
+            color: var(--clr-text-secondary);
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+        .btn-accent {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+        /* Action Buttons (Icons) */
+        .btn-action {
+            background: none;
+            border: none;
+            color: inherit;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            padding: 0;
+            /* Remove padding for icon buttons */
+            box-shadow: none;
+            font-size: 18px;
+            vertical-align: middle;
+        }
+
+            .btn-action:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+                /* No need to reset transform/box-shadow as they aren't set on .btn-action */
+            }
+
+        .btn-edit {
+            color: var(--clr-secondary);
+        }
+
+        .btn-delete {
+            color: #e74c3c;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: var(--clr-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .announcement-modal-error-container {
+            background-color: #fdecea;
+            color: #b71c1c;
+            border: 1px solid #f5c2c0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rempx;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            position: relative;
+        }
+
+            .announcement-modal-error-container::before {
+                content: "❌";
+                align-self: center;
+                font-size: 18px;
+                display: inline-block;
+            }
+
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            /* Keep child elements contained */
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            margin: 20px;
+            /* Add some margin in case content pushes it to edge */
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 40px);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--clr-text-on-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--clr-text-on-primary);
+            font-size: 24px;
+            line-height: 1;
+            /* Prevent extra space */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+            padding: 0;
+        }
+
+            .modal-close:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto !important;
+            /* Allow vertical scrolling; !important might be needed */
+            flex-grow: 1;
+            scrollbar-width: thin;
+            scrollbar-color: var(--clr-border) var(--clr-surface);
+        }
+
+
+
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--clr-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-shrink: 0;
+            background-color: var(--clr-surface);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--clr-surface);
+            color: var(--clr-text-primary);
+            border: 1px solid var(--clr-border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 990;
+            /* Below modal, above most content */
+        }
+
+            .theme-toggle:hover {
+                background-color: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+            }
+
+
+        .page-header {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            width: 100%;
+        }
+
+
+        .loading-groups-animation-container {
+            min-height: 80px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Assuming .dot-wave styles are defined elsewhere */
+
+        .loading-announcements-animation-container {
+            padding: 40px 0;
+            text-align: center;
+        }
+
+
+
+        .loading-announcement-btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-announcement-btn {
+            display: inline-flex;
+            /* Use flex */
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            width: 2.2rem;
+            height: 2.2rem;
+            padding: 0;
+            transition: transform 0.3s ease;
+        }
+
+            .loading-announcement-btn:hover {
+                transform: translateY(-3px);
+            }
+
+
+        .announcement-card {
+            background: var(--clr-surface);
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid var(--clr-border);
+            transition: box-shadow 0.2s;
+            padding: 16px 28px;
+            max-width: 800px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @@media (max-width: 900px) {
+            .announcement-card {
+                max-width: 98vw;
+                padding: 12px 5vw;
+            }
+        }
+
+        .announcement-card:hover {
+            box-shadow: 0 2px 12px rgba(0,0,0,0.11);
+        }
+
+        .announcement-header {
+            padding: 0;
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .announcement-title {
+            font-weight: bold;
+            margin: 0;
+            color: var(--clr-text-primary);
+            font-size: 1.1rem;
+        }
+
+        .announcement-body {
+            padding: 10px 0 6px 0;
+            color: var(--clr-text-secondary);
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+            .announcement-body p {
+                margin-bottom: 0;
+            }
+
+        .announcement-footer {
+            padding: 6px 0 0 0;
+            border-top: 1px solid var(--clr-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background: none;
+            font-size: 13px;
+        }
+
+        .announcement-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--clr-accent);
+        }
+
+        .author-info {
+            display: flex;
+            gap: 0.5rem;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-weight: bold;
+            color: var(--clr-text-primary);
+            font-size: 14px;
+        }
+
+        .announcement-date {
+            color: var(--clr-text-secondary);
+            font-size: 12px;
+        }
+
+        .announcement-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+
+        .add-announcement-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50% !important;
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 990;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .add-announcement-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+            }
+
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: var(--clr-text-primary);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--clr-border);
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+            font-family: inherit;
+            font-size: 16px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box;
+        }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--clr-primary);
+                box-shadow: 0 0 0 3px rgba(93, 42, 102, 0.2);
+            }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+            resize: none;
+        }
+
+
+        .group-list {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* Announcement card group-list: flex, no border, no background */
+        .announcement-body .group-list {
+            max-height: none;
+            overflow: visible;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            background: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 8px;
+        }
+        /* Modal group-list: restore original look */
+        .modal .group-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--clr-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            background-color: var(--clr-background);
+            display: block;
+        }
+
+        /* Only for group-list in announcement cards, not modal (no checkboxes inside) */
+        .announcement-body .group-list .group-item {
+            display: flex;
+            align-items: center;
+            padding: 0 2px;
+            border: none;
+            background: none;
+            cursor: default;
+            margin-bottom: 0;
+            position: relative;
+            font-size: 12px;
+            color: var(--clr-text-secondary);
+            font-weight: 400;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        /* Modal group-item: restore original look */
+        .modal .group-list .group-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 4px;
+            border-bottom: 1px solid var(--clr-border);
+            cursor: default;
+            background: none;
+            font-size: 15px;
+            color: var(--clr-text-primary);
+        }
+
+            .modal .group-list .group-item:last-child {
+                border-bottom: none;
+            }
+
+        .announcement-body .group-list .group-item:not(:last-child)::after {
+            content: '\2022'; /* Unicode bullet */
+            color: var(--clr-border);
+            margin-left: 8px;
+            margin-right: 2px;
+            font-size: 18px;
+            vertical-align: middle;
+        }
+
+
+
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 4px;
+            border-bottom: 1px solid var(--clr-border);
+            cursor: default;
+        }
+            /* Modal group-item (with checkbox) keeps original look */
+
+            .group-item:last-child {
+                border-bottom: none;
+            }
+
+            .group-item label {
+                cursor: pointer;
+                flex-grow: 1;
+                margin-left: 8px;
+                color: var(--clr-text-primary);
+            }
+
+        .group-checkbox {
+            margin-right: 0;
+            cursor: pointer;
+        }
+
+        .group-toggle {
+            cursor: pointer;
+            color: var(--clr-primary);
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            border: none;
+            background: none;
+            outline: none;
+            box-shadow: none;
+            transition: color 0.2s;
+        }
+
+            .group-toggle:hover {
+                color: var(--clr-secondary);
+                text-decoration: none;
+            }
+
+            .group-toggle .toggle-arrow {
+                font-size: 16px;
+                display: inline-block;
+                transition: transform 0.2s;
+            }
+
+            .group-toggle.open .toggle-arrow {
+                transform: rotate(90deg);
+            }
+
+</style>
+    
 <style>
-    .btn:hover {
-        background-color: var(--clr-secondary);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    /* General Form Section Styling */
+    .form-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
     }
 
-    .btn:disabled {
-        background-color: var(--clr-border);
-        color: var(--clr-text-secondary);
-        cursor: not-allowed;
-        opacity: 0.6;
-        box-shadow: none;
-        transform: none;
+    .form-container {
+        background-color: var(--clr-surface);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 80%;
+        max-width: 600px;
+        margin: auto;
     }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-header {
+        text-align: center;
+        padding: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    /* Input Fields Styling */
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--clr-border);
+        border-radius: 6px;
+        background-color: var(--clr-background);
+        color: var(--clr-text-primary);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-size: 1rem;
+    }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--clr-primary);
+            box-shadow: 0 0 8px rgba(93, 42, 102, 0.5);
+        }
+
+        /* Date & Time Inputs */
+        input[type="date"],
+        input[type="time"] {
+            padding-right: 10px;
+            cursor: pointer;
+        }
+
+            input[type="date"]::-webkit-calendar-picker-indicator,
+            input[type="time"]::-webkit-calendar-picker-indicator {
+                cursor: pointer;
+            }
+
+    /* Select Dropdown Styling */
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 16px;
+        padding-right: 35px;
+    }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+        select option {
+            background-color: var(--clr-background);
+            color: var(--clr-text-primary);
+        }
+
+    /* Textarea Resizing */
+    textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    /* Radio & Checkbox Styling - FIXED */
+    .radio-group,
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+        .radio-group label,
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            margin-right: 0;
+            cursor: pointer;
+        }
+
+    /* Fixed checkbox and radio styling */
+    input[type="radio"],
+    input[type="checkbox"] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--clr-border);
+        background-color: var(--clr-background);
+        margin-right: 8px;
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    input[type="checkbox"] {
+        border-radius: 4px;
+    }
+
+    input[type="radio"] {
+        border-radius: 50%;
+    }
+
+        /* Fix for radio button checked state */
+        input[type="radio"]:checked {
+            border-color: var(--clr-primary);
+            border-width: 2px;
+        }
+
+            input[type="radio"]:checked::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: var(--clr-primary);
+            }
+
+    /* Fix for checkbox checked state */
+    input[type="checkbox"]:checked {
+        background-color: var(--clr-primary);
+        border-color: var(--clr-primary);
+    }
+
+        input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 9px;
+            width: 5px;
+            height: 10px;
+            border: solid var(--clr-text-on-primary);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+    /* Hover state */
+    input[type="radio"]:hover,
+    input[type="checkbox"]:hover {
+        border-color: var(--clr-primary);
+    }
+
+    /* Focus state */
+    input[type="radio"]:focus,
+    input[type="checkbox"]:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(93, 42, 102, 0.25);
+    }
+
+    /* Form Navigation Buttons */
+    .form-navigation {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .btn-primary {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--clr-primary);
+            opacity: 0.9;
+        }
 
     .btn-secondary {
         background-color: var(--clr-secondary);
         color: var(--clr-text-on-secondary);
     }
 
-    .btn-accent {
-        background-color: var(--clr-accent);
-        color: var(--clr-text-on-accent);
-    }
-
-    /* Action Buttons (Icons) */
-    .btn-action {
-        background: none;
-        border: none;
-        color: inherit;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        padding: 0;
-        /* Remove padding for icon buttons */
-        box-shadow: none;
-        font-size: 18px;
-        vertical-align: middle;
-    }
-
-        .btn-action:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-            /* No need to reset transform/box-shadow as they aren't set on .btn-action */
+        .btn-secondary:hover {
+            background-color: var(--clr-secondary);
+            opacity: 0.9;
         }
-
-    .btn-edit {
-        color: var(--clr-secondary);
-    }
-
-    .btn-delete {
-        color: #e74c3c;
-    }
-
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: var(--clr-overlay);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-    }
-
-    .announcement-modal-error-container {
-        background-color: #fdecea;
-        color: #b71c1c;
-        border: 1px solid #f5c2c0;
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-size: 1rempx;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 10px 0;
-        position: relative;
-    }
-
-        .announcement-modal-error-container::before {
-            content: "❌";
-            align-self: center;
-            font-size: 18px;
-            display: inline-block;
-        }
-
-
-    .modal-overlay.active {
-        opacity: 1;
-        pointer-events: all;
-    }
-
-    .modal {
-        background-color: var(--clr-surface);
-        border-radius: 12px;
-        width: 90%;
-        max-width: 600px;
-        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
-        /* Keep child elements contained */
-        transform: translateY(20px);
-        transition: transform 0.3s ease;
-        margin: 20px;
-        /* Add some margin in case content pushes it to edge */
-        display: flex;
-        flex-direction: column;
-        max-height: calc(100vh - 40px);
-    }
-
-    .modal-overlay.active .modal {
-        transform: translateY(0);
-    }
-
-    .modal-header {
-        padding: 16px 24px;
-        background-color: var(--clr-primary);
-        color: var(--clr-text-on-primary);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-shrink: 0;
-    }
-
-    .modal-title {
-        font-size: 20px;
-        font-weight: bold;
-        color: var(--clr-text-on-primary);
-        margin: 0;
-    }
-
-    .modal-close {
-        background: none;
-        border: none;
-        color: var(--clr-text-on-primary);
-        font-size: 24px;
-        line-height: 1;
-        /* Prevent extra space */
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        transition: background-color 0.2s ease;
-        padding: 0;
-    }
-
-        .modal-close:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-    .modal-body {
-        padding: 24px;
-        overflow-y: auto !important;
-        /* Allow vertical scrolling; !important might be needed */
-        flex-grow: 1;
-        scrollbar-width: thin;
-        scrollbar-color: var(--clr-border) var(--clr-surface);
-    }
-
-
-
-
-    .modal-footer {
-        padding: 16px 24px;
-        border-top: 1px solid var(--clr-border);
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        flex-shrink: 0;
-        background-color: var(--clr-surface);
-    }
-
-    .theme-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: var(--clr-surface);
-        color: var(--clr-text-primary);
-        border: 1px solid var(--clr-border);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 990;
-        /* Below modal, above most content */
-    }
-
-        .theme-toggle:hover {
-            background-color: var(--clr-accent);
-            color: var(--clr-text-on-accent);
-        }
-
-
-    .page-header {
-        background-color: var(--clr-primary);
-        color: var(--clr-text-on-primary);
-        padding: 20px 0;
-        margin-bottom: 30px;
-        border-radius: 15px;
-        width: 100%;
-    }
-
-
-    .loading-groups-animation-container {
-        min-height: 80px;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Assuming .dot-wave styles are defined elsewhere */
-
-    .loading-announcements-animation-container {
-        padding: 40px 0;
-        text-align: center;
-    }
-
-
-
-    .loading-announcement-btn-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .loading-announcement-btn {
-        display: inline-flex;
-        /* Use flex */
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        background-color: var(--clr-primary);
-        color: var(--clr-text-on-primary);
-        font-size: 1.1rem;
-        border: none;
-        cursor: pointer;
-        width: 2.2rem;
-        height: 2.2rem;
-        padding: 0;
-        transition: transform 0.3s ease;
-    }
-
-        .loading-announcement-btn:hover {
-            transform: translateY(-3px);
-        }
-
-
-    .announcement-card {
-        background-color: var(--clr-surface);
-        border-radius: 12px;
-        margin-bottom: 20px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .announcement-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-    .announcement-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--clr-border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .announcement-title {
-        font-weight: bold;
-        margin: 0;
-        color: var(--clr-text-primary);
-        font-size: 1.1rem;
-    }
-
-    .announcement-body {
-        padding: 20px;
-        color: var(--clr-text-secondary);
-        line-height: 1.6;
-    }
-
-        .announcement-body p {
-            margin-bottom: 0;
-        }
-
-    .announcement-footer {
-        padding: 12px 20px;
-        border-top: 1px solid var(--clr-border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        background-color: rgba(0, 0, 0, 0.03);
-    }
-
-    .announcement-author {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .author-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid var(--clr-accent);
-    }
-
-    .author-info {
-        display: flex;
-        gap: 0.5rem;
-        flex-direction: column;
-    }
-
-    .author-name {
-        font-weight: bold;
-        color: var(--clr-text-primary);
-        font-size: 14px;
-    }
-
-    .announcement-date {
-        color: var(--clr-text-secondary);
-        font-size: 12px;
-    }
-
-    .announcement-actions {
-        display: flex;
-        gap: 12px;
-    }
-
-
-    .add-announcement-btn {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50% !important;
-        background-color: var(--clr-accent);
-        color: var(--clr-text-on-accent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        z-index: 990;
-        padding: 0;
-        border: none;
-        cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .add-announcement-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-        }
-
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-label {
-        font-weight: bold;
-        color: var(--clr-text-primary);
-        margin-bottom: 8px;
-        display: block;
-        font-size: 14px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px 16px;
-        border-radius: 8px;
-        border: 1px solid var(--clr-border);
-        background-color: var(--clr-background);
-        color: var(--clr-text-primary);
-        font-family: inherit;
-        font-size: 16px;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        box-sizing: border-box;
-    }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--clr-primary);
-            box-shadow: 0 0 0 3px rgba(93, 42, 102, 0.2);
-        }
-
-    textarea.form-control {
-        min-height: 120px;
-        resize: vertical;
-        line-height: 1.5;
-        resize: none;
-    }
-
-
-    .group-list {
-        width: 100%;
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid var(--clr-border);
-        border-radius: 8px;
-        padding: 8px 12px;
-        background-color: var(--clr-background);
-        box-sizing: border-box;
-        scrollbar-width: thin;
-        scrollbar-color: var(--clr-border) var(--clr-background);
-    }
-
-
-
-
-    .group-item {
-        display: flex;
-        align-items: center;
-        padding: 8px 4px;
-        border-bottom: 1px solid var(--clr-border);
-        cursor: default;
-    }
-
-        .group-item:last-child {
-            border-bottom: none;
-        }
-
-        .group-item label {
-            cursor: pointer;
-            flex-grow: 1;
-            margin-left: 8px;
-            color: var(--clr-text-primary);
-        }
-
-    .group-checkbox {
-        margin-right: 0;
-        cursor: pointer;
-    }
-
-    .group-toggle {
-        cursor: pointer;
-        color: var(--clr-primary);
-        font-size: 14px;
-        font-weight: bold;
-        margin-top: 12px;
-        display: inline-block;
-        text-decoration: none;
-        border-bottom: 1px dashed var(--clr-primary);
-    }
-
-        .group-toggle:hover {
-            color: var(--clr-secondary);
-            border-bottom-style: solid;
-        }
-
-    .groups-container {
+        .groups-container {
         margin-top: 10px;
         padding: 10px;
         background-color: rgba(0, 0, 0, 0.03);
@@ -500,304 +813,79 @@
     }
 
     @@media (max-width: 768px) {
-        .modal
+        .modal {
+            max-width: 95%;
+            margin: 10px;
+            max-height: calc(100vh - 20px);
+        }
 
-    {
-        max-width: 95%;
-        margin: 10px;
-        max-height: calc(100vh - 20px);
-    }
+        .modal-body {
+            padding: 16px;
+        }
 
-    .modal-body {
-        padding: 16px;
-    }
+        .modal-footer {
+            padding: 12px 16px;
+        }
 
-    .modal-footer {
-        padding: 12px 16px;
-    }
+        .add-announcement-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            bottom: 20px;
+            right: 20px;
+        }
 
-    .add-announcement-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-        bottom: 20px;
-        right: 20px;
-    }
+        .announcement-footer {
+            align-items: flex-start;
+        }
 
-    .announcement-footer {
-        align-items: flex-start;
-    }
-
-    .announcement-actions {
-        align-self: flex-end;
-    }
-
+        .announcement-actions {
+            align-self: flex-end;
+        }
     }
 </style>
+    }
 
-<style>
-        /* General Form Section Styling */
-        .form-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-        }
 
-        .form-container {
-            background-color: var(--clr-surface);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 80%;
-            max-width: 600px;
-            margin: auto;
-        }
+    
 
-        .form-group {
-            margin-bottom: 20px;
-        }
 
-        .form-header {
-            text-align: center;
-            padding: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
 
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        /* Input Fields Styling */
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--clr-border);
-            border-radius: 6px;
-            background-color: var(--clr-background);
-            color: var(--clr-text-primary);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            font-size: 1rem;
-        }
-
-            input:focus,
-            select:focus,
-            textarea:focus {
-                outline: none;
-                border-color: var(--clr-primary);
-                box-shadow: 0 0 8px rgba(93, 42, 102, 0.5);
-            }
-
-            /* Date & Time Inputs */
-            input[type="date"],
-            input[type="time"] {
-                padding-right: 10px;
-                cursor: pointer;
-            }
-
-                input[type="date"]::-webkit-calendar-picker-indicator,
-                input[type="time"]::-webkit-calendar-picker-indicator {
-                    cursor: pointer;
-                }
-
-        /* Select Dropdown Styling */
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 16px;
-            padding-right: 35px;
-        }
-
-            select::-ms-expand {
-                display: none;
-            }
-
-            select option {
-                background-color: var(--clr-background);
-                color: var(--clr-text-primary);
-            }
-
-        /* Textarea Resizing */
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        /* Radio & Checkbox Styling - FIXED */
-        .radio-group,
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-            .radio-group label,
-            .checkbox-group label {
-                display: flex;
-                align-items: center;
-                font-weight: normal;
-                margin-right: 0;
-                cursor: pointer;
-            }
-
-        /* Fixed checkbox and radio styling */
-        input[type="radio"],
-        input[type="checkbox"] {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--clr-border);
-            background-color: var(--clr-background);
-            margin-right: 8px;
-            position: relative;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        input[type="checkbox"] {
-            border-radius: 4px;
-        }
-
-        input[type="radio"] {
-            border-radius: 50%;
-        }
-
-            /* Fix for radio button checked state */
-            input[type="radio"]:checked {
-                border-color: var(--clr-primary);
-                border-width: 2px;
-            }
-
-                input[type="radio"]:checked::after {
-                    content: '';
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 10px;
-                    height: 10px;
-                    border-radius: 50%;
-                    background-color: var(--clr-primary);
-                }
-
-        /* Fix for checkbox checked state */
-        input[type="checkbox"]:checked {
-            background-color: var(--clr-primary);
-            border-color: var(--clr-primary);
-        }
-
-            input[type="checkbox"]:checked::after {
-                content: '';
-                position: absolute;
-                top: 4px;
-                left: 9px;
-                width: 5px;
-                height: 10px;
-                border: solid var(--clr-text-on-primary);
-                border-width: 0 2px 2px 0;
-                transform: rotate(45deg);
-            }
-
-        /* Hover state */
-        input[type="radio"]:hover,
-        input[type="checkbox"]:hover {
-            border-color: var(--clr-primary);
-        }
-
-        /* Focus state */
-        input[type="radio"]:focus,
-        input[type="checkbox"]:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(93, 42, 102, 0.25);
-        }
-
-        /* Form Navigation Buttons */
-        .form-navigation {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-            .btn:hover {
-                transform: translateY(-2px);
-            }
-
-        .btn-primary {
-            background-color: var(--clr-primary);
-            color: var(--clr-text-on-primary);
-        }
-
-            .btn-primary:hover {
-                background-color: var(--clr-primary);
-                opacity: 0.9;
-            }
-
-        .btn-secondary {
-            background-color: var(--clr-secondary);
-            color: var(--clr-text-on-secondary);
-        }
-
-            .btn-secondary:hover {
-                background-color: var(--clr-secondary);
-                opacity: 0.9;
-            }
-</style>
-}
 
 <div class="col-12">
     <!-- Main Content -->
-        <div class="container-fluid row" style="margin:auto !important">
-            <!-- Announcements Container -->
-            <div class="announcement-container">
-                <div class="row container-fluid" id="announcement-container">
-                    <!-- JavaScript will render announcement cards here -->
-                </div>
-                <!-- Loading Announcement Container -->
-                <div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;"
-                     id="loading-announcements-animation-container">
-                    <div class="dot-wave">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </div>
+    <div class="container-fluid row" style="margin:auto !important">
+        <!-- Announcements Container -->
+        <div class="announcement-container">
+            <div class="row container-fluid" id="announcement-container">
+                <!-- JavaScript will render announcement cards here -->
+            </div>
+            <!-- Loading Announcement Container -->
+            <div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;"
+                 id="loading-announcements-animation-container">
+                <div class="dot-wave">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
                 </div>
             </div>
-
-            <!-- Load more announcements button -->
-            <div class="loading-announcement-btn-container">
-                <button class="loading-announcement-btn" id="load-more-btn">
-                    <i class="fa-solid fa-angles-down"></i>
-                </button>
-            </div>
-
-            <!-- Add Announcement Button -->
-            <button class="btn add-announcement-btn" id="add-announcement-btn">
-                <i class="fas fa-plus"></i>
-            </button>
-
-
         </div>
+
+        <!-- Load more announcements button -->
+        <div class="loading-announcement-btn-container">
+            <button class="loading-announcement-btn" id="load-more-btn">
+                <i class="fa-solid fa-angles-down"></i>
+            </button>
+        </div>
+
+        <!-- Add Announcement Button -->
+        <button class="btn add-announcement-btn" id="add-announcement-btn">
+            <i class="fas fa-plus"></i>
+        </button>
+
+
+    </div>
 
 
     <!-- Add/Edit Announcement Modal -->
@@ -851,686 +939,698 @@
 </div>
 @section Scripts {
     <script>
-                           class AnnouncementPageHandler {
-            constructor() {
-                // URLs
-                this.URLs = {
-                    allAnnouncements: "/Teachers/Announcement/GetAllAnnouncements",
-                    addAnnouncement: "/Teachers/Announcement/PostAnnouncement",
-                    editAnnouncement: "/Teachers/Announcement/EditAnnouncement",
-                    deleteAnnouncement: "/Teachers/Announcement/DeleteAnnouncement",
-                    getAllGroups: "/Teachers/Announcement/getAllGroups"
-                }
-
-                // Request objects (using consistent naming)
-                this.getAllAnnouncementRequest = {
-                    teacherId: @ViewBag.TeacherId,
-                    take: 5,
-                    skip: 0
-                };
-
-
-                // Add a property to store all groups
-                this.allGroupsData = null;
-
-                this.addAnnouncementRequest = {
-                    announcementBody: "",
-                    announcementTitle: "",
-                    teacherId: 1,
-                    isImportant: false,
-                    groupIds: []
-                };
-
-                this.getAllGroupsRequest = {
-                    teacherId: 1
-                };
-
-                this.editAnnouncementRequest = {
-                    announcementId: 0,
-                    announcementBody: "",
-                    announcementTitle: "",
-                    isImportant: false,
-                    groupIds: []
-                };
-
-                this.deleteAnnouncementRequest = {
-                    announcementId: 0
-                };
-
-                this.getAnnouncementResponse = {
-                    // isValid : bool
-                    // errors  : [],
-                    // data    : []
-                };
-
-                // Page Data
-                this.announcementsData = [];
-
-                // HTML elements
-                this.modalOverlay = document.getElementById('modalOverlay');
-                this.announcementContainer = document.getElementById("announcement-container");
-
-                // Bind add functionality
-                const addAnnouncementBtn = document.getElementById("add-announcement-btn");
-                addAnnouncementBtn.addEventListener("click", () => {
-                    // Reset add announcement object
-                    this.addAnnouncementRequest.announcementBody = "";
-                    this.addAnnouncementRequest.announcementTitle = "";
-                    this.addAnnouncementRequest.groupIds = [];
-                    this.addAnnouncementRequest.isImportant = false;
-
-                    // Open modal as add modal
-                    this.openAnnouncementModal("Add Announcement", this.addAnnouncementRequest, "Submit", 0);
-
-                });
-
-                // Load the first announcements bundle
-                this.getMoreAnnouncements();
-            }
-
-            // Utils
-            sendAsyncRequest = async (url, method, requestBody) => {
-                try {
-                    const response = await fetch(url, {
-                        method: method,
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify(requestBody)
-                    });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    return data;
-                } catch (error) {
-                    return new Error(error);
-                }
-            }
-
-            validateRequest = (announcementRequest) => {
-                if (!announcementRequest) {
-                    this.renderError("Something went wrong");
-                    return false;
-                }
-
-                if (!announcementRequest.announcementBody || announcementRequest.announcementBody.trim() === "") {
-                    this.renderError("Announcement Body can't be empty");
-                    return false;
-                }
-
-                // Get selected group IDs from checkboxes
-                const selectedCheckboxes = document.querySelectorAll('.group-checkbox:checked');
-                const selectedGroupIds = Array.from(selectedCheckboxes).map(checkbox =>
-                    parseInt(checkbox.getAttribute('data-target-group-id'))
-                );
-
-                if (selectedGroupIds.length === 0) {
-                    this.renderError("You have to choose at least one group!");
-                    return false;
-                }
-
-                // Update the request with form values
-                const titleInput = document.getElementById('announcementTitle');
-                const bodyInput = document.getElementById('announcementBody');
-
-                announcementRequest.announcementTitle = titleInput.value.trim();
-                announcementRequest.announcementBody = bodyInput.value.trim();
-                announcementRequest.groupIds = selectedGroupIds;
-
-                return true;
-            }
-
-            parseCustomDate = (dateString) => {
-                 const trimmed = dateString.replace(/(\.\d{3})\d+/, '$1');
-                 const date = new Date(trimmed);
-
-                 const day = String(date.getDate()).padStart(2, '0');
-                 const monthShort = date.toLocaleString('en-US', { month: 'short' });
-                 const year = String(date.getFullYear()).slice(-2);
-
-                 let hours = date.getHours();
-                 const minutes = String(date.getMinutes()).padStart(2, '0');
-                 const ampm = hours >= 12 ? 'PM' : 'AM';
-
-                 hours = hours % 12;
-                 hours = hours ? hours : 12; // handle midnight (0 => 12)
-                 const hourStr = String(hours).padStart(2, '0');
-
-                 return `${day} ${monthShort} ${year} ${hourStr}:${minutes} ${ampm}`;
-              }
-
-            // Async Functionalities
-            getAnnouncements = async (request) => {
-                try {
-                    const response = await this.sendAsyncRequest(this.URLs.allAnnouncements, "POST", request);
-                    return response;
-                } catch (error) {
-                    console.log(error);
-                    return {
-                        isValid: false,
-                        errors: ["Something went wrong"],
-                        data: []
-                    };
-                }
-            }
-
-
-            // Modify getAllGroups to cache the result
-            getAllGroups = async () => {
-                if (this.allGroupsData) {
-                    return this.allGroupsData; // Return cached data if available
-                }
-                try {
-                    let groups = await this.sendAsyncRequest(this.URLs.getAllGroups, "POST", this.getAllGroupsRequest);
-                    this.allGroupsData = groups; // Cache the result
-                    return groups;
-                } catch (error) {
-                    this.allGroupsData = []; // Cache empty array on error
-                    return [];
-                }
-            }
-
-            getMoreAnnouncements = async () => {
-                try {
-                    // Start loading animation
-                    this.startLoadingAnnouncementsAnimation();
-                    let response = await this.getAnnouncements(this.getAllAnnouncementRequest);
-                    // If there are announcements in the response...
-                    if (response.data && response.data.length > 0) {
-                        const mappedAnnouncements = response.data.map(item => ({
-                            ...item,
-                            announcementId: item.id,
-                            formattedDate: new Date(item.dateTime).toLocaleString()
-                        }));
-
-                        this.announcementsData = [...this.announcementsData, ...mappedAnnouncements];
-                        // Update pagination parameters
-                        this.getAllAnnouncementRequest.skip += 5;
-                        this.getAllAnnouncementRequest.take += 5;
-                        this.renderAnnouncements();
-                        this.stopLoadingAnnouncementsAnimation();
-                        return true;
-                    } else {
-                        this.stopLoadingAnnouncementsAnimation();
-                        return false;
-                    }
-                } catch (error) {
-                    this.stopLoadingAnnouncementsAnimation();
-                    return false;
-                }
-            }
-
-            deleteAnnouncement = async (announcementId) => {
-                try {
-                    let request = { announcementId: announcementId };
-                    const response = await this.sendAsyncRequest(this.URLs.deleteAnnouncement, "POST", request);
-                    if (response.isValid === true) {
-                        let index = this.announcementsData.findIndex(announcement =>
-                            announcement.announcementId === announcementId
-                        );
-                        if (index !== -1) {
-                            this.announcementsData.splice(index, 1);
-                            this.renderAnnouncements();
+            class AnnouncementPageHandler {
+                    constructor() {
+                        
+                        this.URLs = {
+                            allAnnouncements: "/Teachers/Announcement/GetAllAnnouncements",
+                            addAnnouncement: "/Teachers/Announcement/PostAnnouncement",
+                            editAnnouncement: "/Teachers/Announcement/EditAnnouncement",
+                            deleteAnnouncement: "/Teachers/Announcement/DeleteAnnouncement",
+                            getAllGroups: "/Teachers/Announcement/getAllGroups"
                         }
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } catch (error) {
-                    return false;
-                }
-            }
 
-            addAnnouncement = async (addAnnouncementRequest) => {
-                try {
-                    let response = await this.sendAsyncRequest(this.URLs.addAnnouncement, "POST", addAnnouncementRequest);
-                    if (response.isValid === true && response.data.length > 0) {
-                        let newAnnouncement = {
-                            ...response.data[0],
-                            announcementId: response.data[0].id
+                        
+                        this.getAllAnnouncementRequest = {
+                            teacherId: @ViewBag.TeacherId,
+                            take: 5,
+                            skip: 0
                         };
-                        this.announcementsData.push(newAnnouncement);
-                        this.renderAnnouncements();
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } catch (error) {
-                    return false;
-                }
-            }
 
-            editAnnouncement = async (editAnnouncementRequest) => {
-                try {
-                    let response = await this.sendAsyncRequest(this.URLs.editAnnouncement, "POST", editAnnouncementRequest);
-                    if (response.isValid === true) {
-                        let index = this.announcementsData.findIndex(announcement =>
-                            // Assuming announcementId is the correct identifier in announcementsData
-                            // If your GetAllAnnouncements response uses 'id', change this line:
-                            (announcement.id || announcement.announcementId) === editAnnouncementRequest.announcementId
-                        );
-                        if (index >= 0) {
-                            // Ensure we have all group data available
-                            const allGroups = await this.getAllGroups(); // Reuse cached data if implemented
 
-                            // --- Start Change ---
-                            // Map the UPDATED groupIds from the request to full group objects
-                            const updatedGroups = editAnnouncementRequest.groupIds.map(id => {
-                                const groupInfo = allGroups.find(g => g.groupID === id);
-                                return {
-                                    groupID: id,
-                                    groupName: groupInfo ? groupInfo.groupName : "Unknown Group" // Get name from allGroups
-                                };
+                        
+                        this.allGroupsData = null;
+
+                        this.addAnnouncementRequest = {
+                            announcementBody: "",
+                            announcementTitle: "",
+                            teacherId: 1,
+                            isImportant: false,
+                            groupIds: []
+                        };
+
+                        this.getAllGroupsRequest = {
+                            teacherId: 1
+                        };
+
+                        this.editAnnouncementRequest = {
+                            announcementId: 0,
+                            announcementBody: "",
+                            announcementTitle: "",
+                            isImportant: false,
+                            groupIds: []
+                        };
+
+                        this.deleteAnnouncementRequest = {
+                            announcementId: 0
+                        };
+
+                        this.getAnnouncementResponse = {
+                            // isValid : bool
+                            // errors  : [],
+                            // data    : []
+                        };
+
+                        
+                        this.announcementsData = [];
+
+                        
+                        this.modalOverlay = document.getElementById('modalOverlay');
+                        this.announcementContainer = document.getElementById("announcement-container");
+
+                        
+                        const addAnnouncementBtn = document.getElementById("add-announcement-btn");
+                        if (addAnnouncementBtn) {
+                            addAnnouncementBtn.addEventListener("click", () => {
+                                // Reset add announcement object
+                                this.addAnnouncementRequest.announcementBody = "";
+                                this.addAnnouncementRequest.announcementTitle = "";
+                                this.addAnnouncementRequest.groupIds = [];
+                                this.addAnnouncementRequest.isImportant = false;
+
+                                
+                                this.openAnnouncementModal("Add Announcement", this.addAnnouncementRequest, "Submit", 0);
+
                             });
+                        }
 
-                            // Update the correct 'groups' property in the local cache
-                            this.announcementsData[index].groups = updatedGroups;
-                            // --- End Change ---
+                        
+                        this.getMoreAnnouncements();
+                    }
 
-                            // Update other properties
-                            this.announcementsData[index].announcementBody = editAnnouncementRequest.announcementBody;
-                            this.announcementsData[index].announcementTitle = editAnnouncementRequest.announcementTitle;
-                            this.announcementsData[index].isImportant = editAnnouncementRequest.isImportant;
+                    
+                    sendAsyncRequest = async (url, method, requestBody) => {
+                        try {
+                            const response = await fetch(url, {
+                                method: method,
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Accept": "application/json"
+                                },
+                                body: JSON.stringify(requestBody)
+                            });
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            const data = await response.json();
+                            return data;
+                        } catch (error) {
+                            return new Error(error);
+                        }
+                    }
 
-                            // Optional: Update dateTime if the backend returns it or if you want to signify an edit time
-                            // this.announcementsData[index].dateTime = new Date().toISOString();
-
-                            this.renderAnnouncements(); // Re-render with updated data
-                            return true;
-                        } else {
-                            console.error("Announcement not found in local data for editing:", editAnnouncementRequest.announcementId);
+                    validateRequest = (announcementRequest) => {
+                        if (!announcementRequest) {
+                            this.renderError("Something went wrong");
                             return false;
                         }
-                    } else {
-                        // Handle API validation errors if necessary (response.errors)
-                        console.error("Edit API call failed:", response.errors);
-                        return false;
+
+                        if (!announcementRequest.announcementBody || announcementRequest.announcementBody.trim() === "") {
+                            this.renderError("Announcement Body can't be empty");
+                            return false;
+                        }
+
+                        
+                        const selectedCheckboxes = document.querySelectorAll('.group-checkbox:checked');
+                        const selectedGroupIds = Array.from(selectedCheckboxes).map(checkbox =>
+                            parseInt(checkbox.getAttribute('data-target-group-id'))
+                        );
+
+                        if (selectedGroupIds.length === 0) {
+                            this.renderError("You have to choose at least one group!");
+                            return false;
+                        }
+
+                        
+                        const titleInput = document.getElementById('announcementTitle');
+                        const bodyInput = document.getElementById('announcementBody');
+
+                        announcementRequest.announcementTitle = titleInput.value.trim();
+                        announcementRequest.announcementBody = bodyInput.value.trim();
+                        announcementRequest.groupIds = selectedGroupIds;
+
+                        return true;
                     }
-                } catch (error) {
-                    console.error("Error during editAnnouncement:", error);
-                    return false;
-                }
-            }
 
-            // UI Functionality
-            renderAnnouncements = async () => {
-                // Ensure allGroupsData is populated (call getAllGroups if needed)
-                if (!this.allGroupsData) {
-                    await this.getAllGroups();
-                }
-                let announcementHTML = ``;
+                    parseCustomDate = (dateString) => {
+                         const trimmed = dateString.replace(/(\.\d{3})\d+/, '$1');
+                         const date = new Date(trimmed);
 
-                if (this.announcementsData && this.announcementsData.length > 0) {
-                    this.announcementsData.forEach((announcement) => {
-                        let groupsHTML = `<div class="group-list">`;
-                        if (announcement.groups && announcement.groups.length > 0) {
-                            announcement.groups.forEach((group) => {
-                                // Find the full group info from the cached data
-                                const fullGroupInfo = this.allGroupsData.find(g => g.groupID === group.groupID);
-                                const groupName = fullGroupInfo ? fullGroupInfo.groupName : "Unknown Group"; // Use fetched name
+                         const day = String(date.getDate()).padStart(2, '0');
+                         const monthShort = date.toLocaleString('en-US', { month: 'short' });
+                         const year = String(date.getFullYear()).slice(-2);
 
-                                groupsHTML += `
-                                    <div class="group-item" data-target-group-id="${group.groupID}">
-                                        ${groupName}
+                         let hours = date.getHours();
+                         const minutes = String(date.getMinutes()).padStart(2, '0');
+                         const ampm = hours >= 12 ? 'PM' : 'AM';
+
+                         hours = hours % 12;
+                         hours = hours ? hours : 12; // handle midnight (0 => 12)
+                         const hourStr = String(hours).padStart(2, '0');
+
+                         return `${day} ${monthShort} ${year} ${hourStr}:${minutes} ${ampm}`;
+                      }
+
+                    
+                    getAnnouncements = async (request) => {
+                        try {
+                            const response = await this.sendAsyncRequest(this.URLs.allAnnouncements, "POST", request);
+                            return response;
+                        } catch (error) {
+                            console.log(error);
+                            return {
+                                isValid: false,
+                                errors: ["Something went wrong"],
+                                data: []
+                            };
+                        }
+                    }
+
+
+                    
+                    getAllGroups = async () => {
+                        if (this.allGroupsData) {
+                            return this.allGroupsData; 
+                        }
+                        try {
+                            let groups = await this.sendAsyncRequest(this.URLs.getAllGroups, "POST", this.getAllGroupsRequest);
+                            this.allGroupsData = groups; 
+                            return groups;
+                        } catch (error) {
+                            this.allGroupsData = []; 
+                            return [];
+                        }
+                    }
+
+                    getMoreAnnouncements = async () => {
+                        try {
+                            
+                            this.startLoadingAnnouncementsAnimation();
+                            let response = await this.getAnnouncements(this.getAllAnnouncementRequest);
+                            
+                            if (response.data && response.data.length > 0) {
+                                const mappedAnnouncements = response.data.map(item => ({
+                                    ...item,
+                                    announcementId: item.id,
+                                    formattedDate: new Date(item.dateTime).toLocaleString()
+                                }));
+
+                                this.announcementsData = [...this.announcementsData, ...mappedAnnouncements];
+                                
+                                this.getAllAnnouncementRequest.skip += 5;
+                                this.getAllAnnouncementRequest.take += 5;
+                                this.renderAnnouncements();
+                                this.stopLoadingAnnouncementsAnimation();
+                                return true;
+                            } else {
+                                this.stopLoadingAnnouncementsAnimation();
+                                return false;
+                            }
+                        } catch (error) {
+                            this.stopLoadingAnnouncementsAnimation();
+                            return false;
+                        }
+                    }
+
+                    deleteAnnouncement = async (announcementId) => {
+                        try {
+                            let request = { announcementId: announcementId };
+                            const response = await this.sendAsyncRequest(this.URLs.deleteAnnouncement, "POST", request);
+                            if (response.isValid === true) {
+                                let index = this.announcementsData.findIndex(announcement =>
+                                    announcement.announcementId === announcementId
+                                );
+                                if (index !== -1) {
+                                    this.announcementsData.splice(index, 1);
+                                    this.renderAnnouncements();
+                                }
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } catch (error) {
+                            return false;
+                        }
+                    }
+
+                    addAnnouncement = async (addAnnouncementRequest) => {
+                        try {
+                            let response = await this.sendAsyncRequest(this.URLs.addAnnouncement, "POST", addAnnouncementRequest);
+                            if (response.isValid === true && response.data.length > 0) {
+                                let newAnnouncement = {
+                                    ...response.data[0],
+                                    announcementId: response.data[0].id
+                                };
+                                this.announcementsData.push(newAnnouncement);
+                                this.renderAnnouncements();
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } catch (error) {
+                            return false;
+                        }
+                    }
+
+                    editAnnouncement = async (editAnnouncementRequest) => {
+                        try {
+                            let response = await this.sendAsyncRequest(this.URLs.editAnnouncement, "POST", editAnnouncementRequest);
+                            if (response.isValid === true) {
+                                let index = this.announcementsData.findIndex(announcement =>
+                                    // Assuming announcementId is the correct identifier in announcementsData
+                                    // If your GetAllAnnouncements response uses 'id', change this line:
+                                    (announcement.id || announcement.announcementId) === editAnnouncementRequest.announcementId
+                                );
+                                if (index >= 0) {
+                                    
+                                    const allGroups = await this.getAllGroups(); // Reuse cached data if implemented
+
+                                    
+                                    
+                                    const updatedGroups = editAnnouncementRequest.groupIds.map(id => {
+                                        const groupInfo = allGroups.find(g => g.groupID === id);
+                                        return {
+                                            groupID: id,
+                                            groupName: groupInfo ? groupInfo.groupName : "Unknown Group" // Get name from allGroups
+                                        };
+                                    });
+
+                                    
+                                    this.announcementsData[index].groups = updatedGroups;
+                                    
+
+                                    
+                                    this.announcementsData[index].announcementBody = editAnnouncementRequest.announcementBody;
+                                    this.announcementsData[index].announcementTitle = editAnnouncementRequest.announcementTitle;
+                                    this.announcementsData[index].isImportant = editAnnouncementRequest.isImportant;
+
+                                    
+                                    
+
+                                    this.renderAnnouncements(); 
+                                    return true;
+                                } else {
+                                    console.error("Announcement not found in local data for editing:", editAnnouncementRequest.announcementId);
+                                    return false;
+                                }
+                            } else {
+                                
+                                console.error("Edit API call failed:", response.errors);
+                                return false;
+                            }
+                        } catch (error) {
+                            console.error("Error during editAnnouncement:", error);
+                            return false;
+                        }
+                    }
+
+                    
+                    renderAnnouncements = async () => {
+                        
+                        if (!this.allGroupsData) {
+                            await this.getAllGroups();
+                        }
+                        let announcementHTML = ``;
+
+                        if (this.announcementsData && this.announcementsData.length > 0) {
+                            this.announcementsData.forEach((announcement) => {
+                                let groupsHTML = `<div class="group-list">`;
+                                if (announcement.groups && announcement.groups.length > 0) {
+                                    announcement.groups.forEach((group) => {
+                                        // Find the full group info from the cached data
+                                        const fullGroupInfo = this.allGroupsData.find(g => g.groupID === group.groupID);
+                                        const groupName = fullGroupInfo ? fullGroupInfo.groupName : "Unknown Group"; 
+
+                                        groupsHTML += `
+                                            <div class="group-item" data-target-group-id="${group.groupID}">
+                                                ${groupName}
+                                            </div>
+                                        `;
+                                    });
+                                }
+                                groupsHTML += `</div>`
+
+                                announcementHTML += `
+                                    <div class="col-12 col-md-10 container">
+                                        <div class="announcement-card" data-announcement-id="${announcement.announcementId}">
+                                            <div class="announcement-header">
+                                                <h2 class="announcement-title">${announcement.announcementTitle}</h2>
+                                            </div>
+                                            <div class="announcement-body">
+                                                <p>${announcement.announcementBody}</p>
+                                                <div class="groups-container" style="display: none;">
+                                                    ${groupsHTML}
+                                                </div>
+                                                <a href="#" class="group-toggle"><span class="toggle-arrow">&#9654;</span> Groups</a>
+                                            </div>
+                                            <div class="announcement-footer">
+                                                <div class="announcement-author">
+            <div class="author-info" style="padding-left:0;">
+                <span class="announcement-date">${this.parseCustomDate(announcement.dateTime)}</span>
+            </div>
+        </div>
+                                                <div class="announcement-actions">
+                                                    <button class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn-action btn-delete"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 `;
                             });
+                            this.bindLoadMoreAnnouncementsFunctionality();
+                        } else {
+                            announcementHTML += `<h1>You haven't posted any announcements yet!</h1>`;
                         }
-                        groupsHTML += `</div>`
 
-                        announcementHTML += `
-                            <div class="col-12 col-md-10 container">
-                                <div class="announcement-card" data-announcement-id="${announcement.announcementId}">
-                                    <div class="announcement-header">
-                                        <h2 class="announcement-title">${announcement.announcementTitle}</h2>
+                        this.announcementContainer.innerHTML = announcementHTML;
+                        this.bindEditAnnouncementFunctionality();
+                        this.bindDeleteAnnouncementFunctionality();
+                        this.bindGroupToggleFunctionality();
+                    };
+
+                    renderError = (errorMessage) => {
+                        let errorContainer = document.getElementById("announcement-modal-error-container");
+                        if (!errorMessage) {
+                            errorMessage = "Something went wrong!";
+                        }
+                        errorContainer.innerHTML = errorMessage;
+                        errorContainer.classList.remove("d-none");
+                        setTimeout(() => {
+                            errorContainer.classList.add("d-none");
+                        }, 3000);
+                    }
+
+                    stopLoadingGroupsAnimation = () => {
+                        let groupSelectListAnimation = document.getElementById("loading-groups-animation-container");
+                        if (groupSelectListAnimation) {
+                            groupSelectListAnimation.classList.add("d-none");
+                        }
+                    }
+
+                    startLoadingGroupsAnimation = () => {
+                        let groupSelectListAnimation = document.getElementById("loading-groups-animation-container");
+                        if (groupSelectListAnimation) {
+                            groupSelectListAnimation.classList.remove("d-none");
+                        }
+                    }
+
+                    startLoadingAnnouncementsAnimation = () => {
+                        let announcementsAnimationContainer = document.getElementById("loading-announcements-animation-container");
+                        if (announcementsAnimationContainer) {
+                            announcementsAnimationContainer.classList.remove("d-none");
+                        }
+                    }
+
+                    stopLoadingAnnouncementsAnimation = () => {
+                        let announcementsAnimationContainer = document.getElementById("loading-announcements-animation-container");
+                        if (announcementsAnimationContainer) {
+                            announcementsAnimationContainer.classList.add("d-none");
+                        }
+                    }
+
+                    // New function to handle the group toggle functionality
+                    bindGroupToggleFunctionality = () => {
+                        const groupToggles = document.querySelectorAll('.group-toggle');
+                        groupToggles.forEach(toggle => {
+                            if (toggle) {
+                                toggle.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    const groupsContainer = toggle.previousElementSibling;
+                                    const arrow = toggle.querySelector('.toggle-arrow');
+                                    const isOpen = groupsContainer.style.display === 'block';
+                                    if (!isOpen) {
+                                        groupsContainer.style.display = 'block';
+                                        toggle.classList.add('open');
+                                        if (arrow) arrow.innerHTML = '&#9660;'; // ▼
+                                    } else {
+                                        groupsContainer.style.display = 'none';
+                                        toggle.classList.remove('open');
+                                        if (arrow) arrow.innerHTML = '&#9654;'; // ▶
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    // Modal Functionalities
+                    bindEditAnnouncementFunctionality = () => {
+                        const editButtons = document.querySelectorAll('.btn-edit');
+                        editButtons.forEach(button => {
+                            if (button) {
+                                button.addEventListener('click', async () => {
+                                    const card = button.closest('.announcement-card');
+                                    let announcementId = parseInt(card.dataset.announcementId);
+                                    console.log(announcementId);
+                                    console.log(card);
+                                    const title = card.querySelector('.announcement-title');
+                                    const body = card.querySelector('.announcement-body p');
+                                    let elements = card.querySelectorAll('div[data-target-group-id]');
+                                    let selectedGroupIds = Array.from(elements).map((element) =>
+                                        parseInt(element.getAttribute("data-target-group-id"))
+                                    );
+
+                                    this.editAnnouncementRequest.announcementId = announcementId;
+                                    this.editAnnouncementRequest.announcementBody = body.innerHTML;
+                                    this.editAnnouncementRequest.announcementTitle = title.innerHTML;
+                                    this.editAnnouncementRequest.isImportant = false;
+                                    this.editAnnouncementRequest.groupIds = selectedGroupIds;
+
+                                    this.openAnnouncementModal("Edit Announcement", this.editAnnouncementRequest, "Update", 1);
+
+                                    
+                                    this.modalOverlay.classList.add("active");
+                                });
+                            }
+                        });
+                    }
+
+                    bindLoadMoreAnnouncementsFunctionality = () => {
+                        const loadMoreBtn = document.getElementById("load-more-btn");
+                        if (loadMoreBtn) {
+                            loadMoreBtn.addEventListener("click", () => {
+                                this.getMoreAnnouncements();
+                            });
+                        }
+                    }
+
+                    bindDeleteAnnouncementFunctionality = () => {
+                        const deleteButtons = document.querySelectorAll('.btn-delete');
+                        deleteButtons.forEach(button => {
+                            if (button) {
+                                button.addEventListener('click', () => {
+                                    const card = button.closest('.announcement-card');
+                                    const announcementId = parseInt(card.dataset.announcementId);
+                                    this.openDeleteModal(announcementId);
+
+                                    
+                                    this.modalOverlay.classList.add("active");
+                                });
+                            }
+                        });
+                    }
+
+                    bindModalFunctionalities = () => {
+                        const closeModal = document.getElementById('closeModal');
+                        const cancelBtn = document.getElementById('cancelBtn');
+
+                        if (closeModal) {
+                            closeModal.addEventListener("click", () => {
+                                this.modalOverlay.classList.remove("active");
+                            });
+                        }
+                        if (cancelBtn) {
+                            cancelBtn.addEventListener("click", () => {
+                                this.modalOverlay.classList.remove("active");
+                            });
+                        }
+                    }
+
+                    loadGroups = async (selectedGroupIds) => {
+                        if (!selectedGroupIds || selectedGroupIds.length <= 0) {
+                            selectedGroupIds = [];
+                        }
+                        this.startLoadingGroupsAnimation();
+                        let allGroups = await this.getAllGroups();
+                        let innerHTML = ``;
+                        allGroups.forEach((element) => {
+                            const isChecked = selectedGroupIds.includes(element.groupID) ? 'checked' : '';
+                            innerHTML += `
+                                <div class="group-item">
+                                    <input type="checkbox" ${isChecked} data-target-group-id="${element.groupID}" id="group-${element.groupID}" class="group-checkbox">
+                                    <label for="group-${element.groupID}">${element.groupName}</label>
+                                </div>
+                            `;
+                        });
+                        this.stopLoadingGroupsAnimation();
+                        const groupSelectList = document.getElementById("group-select-list");
+                        groupSelectList.innerHTML = innerHTML;
+                    }
+
+                    openAnnouncementModal = async (modalTitle, announcementObject, buttonText, type) => {
+                        if (!announcementObject) {
+                            announcementObject = {
+                                announcementBody: "",
+                                announcementTitle: "",
+                                isImportant: false,
+                                groupIds: []
+                            };
+                        }
+                        if (!buttonText) {
+                            buttonText = "Publish";
+                        }
+
+                        let modalHtml =
+                            `
+                            <div class="modal" id="modal">
+                                <div class="modal-header">
+                                    <h2 class="modal-title">${modalTitle}</h2>
+                                    <button class="modal-close" id="closeModal">✕</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="announcement-modal-error-container" class="announcement-modal-error-container  d-none"></div>
+                                    <div class="form-group">
+                                        <label for="announcementTitle" class="form-label">Title (Optional)</label>
+                                        <input type="text" id="announcementTitle" class="form-control" placeholder="Enter announcement title" value="${announcementObject.announcementTitle}">
                                     </div>
-                                    <div class="announcement-body">
-                                        <p>${announcement.announcementBody}</p>
-                                        <div class="groups-container" style="display: none;">
-                                            ${groupsHTML}
-                                        </div>
-                                        <a href="#" class="group-toggle">Show targeted groups</a>
+                                    <div class="form-group">
+                                        <label for="announcementBody" class="form-label">Body</label>
+                                        <textarea id="announcementBody" class="form-control" placeholder="Enter announcement content">${announcementObject.announcementBody}</textarea>
                                     </div>
-                                    <div class="announcement-footer">
-                                        <div class="announcement-author">
-                                            <img src="/pics/profile.jpg" alt="Sarah Johnson" class="author-img">
-                                            <div class="author-info">
-                                                <span class="author-name">Sarah Johnson</span>
-                                                <span class="announcement-date">${this.parseCustomDate(announcement.dateTime)}</span>
+                                    <div class="form-group">
+                                        <label class="form-label">Target Groups</label>
+                                        <div class="group-list">
+                                            <div>
+                                                <div class="loading-groups-animation-container" id="loading-groups-animation-container">
+                                                    <div class="dot-wave">
+                                                        <div class="dot"></div>
+                                                        <div class="dot"></div>
+                                                        <div class="dot"></div>
+                                                        <div class="dot"></div>
+                                                    </div>
+                                                </div>
+                                                <div id="group-select-list"></div>
                                             </div>
-                                        </div>
-                                        <div class="announcement-actions">
-                                            <button class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="btn-action btn-delete"><i class="fas fa-trash"></i></button>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                                    <button class="btn btn-accent" id="confirmBtn">${buttonText}</button>
+                                </div>
                             </div>
-                        `;
-                    });
-                    this.bindLoadMoreAnnouncementsFunctionality();
-                } else {
-                    announcementHTML += `<h1>You haven't posted any announcements yet!</h1>`;
-                }
+                            `;
 
-                this.announcementContainer.innerHTML = announcementHTML;
-                this.bindEditAnnouncementFunctionality();
-                this.bindDeleteAnnouncementFunctionality();
-                this.bindGroupToggleFunctionality();
-            };
+                        this.modalOverlay.innerHTML = modalHtml;
+                        this.modalOverlay.classList.add("active");
 
-            renderError = (errorMessage) => {
-                let errorContainer = document.getElementById("announcement-modal-error-container");
-                if (!errorMessage) {
-                    errorMessage = "Something went wrong!";
-                }
-                errorContainer.innerHTML = errorMessage;
-                errorContainer.classList.remove("d-none");
-                setTimeout(() => {
-                    errorContainer.classList.add("d-none");
-                }, 3000);
-            }
+                        // Bind modal functionalities (close and cancel)
+                        this.bindModalFunctionalities();
 
-            stopLoadingGroupsAnimation = () => {
-                let groupSelectListAnimation = document.getElementById("loading-groups-animation-container");
-                if (groupSelectListAnimation) {
-                    groupSelectListAnimation.classList.add("d-none");
-                }
-            }
+                        await this.loadGroups(announcementObject.groupIds);
 
-            startLoadingGroupsAnimation = () => {
-                let groupSelectListAnimation = document.getElementById("loading-groups-animation-container");
-                if (groupSelectListAnimation) {
-                    groupSelectListAnimation.classList.remove("d-none");
-                }
-            }
+                        const confirmBtn = document.getElementById("confirmBtn");
+                        if (type === 0) {
+                            confirmBtn.addEventListener("click", async () => {
+                                this.bindAddAnnouncementModalFunctionality();
 
-            startLoadingAnnouncementsAnimation = () => {
-                let announcementsAnimationContainer = document.getElementById("loading-announcements-animation-container");
-                if (announcementsAnimationContainer) {
-                    announcementsAnimationContainer.classList.remove("d-none");
-                }
-            }
-
-            stopLoadingAnnouncementsAnimation = () => {
-                let announcementsAnimationContainer = document.getElementById("loading-announcements-animation-container");
-                if (announcementsAnimationContainer) {
-                    announcementsAnimationContainer.classList.add("d-none");
-                }
-            }
-
-            // New function to handle the group toggle functionality
-            bindGroupToggleFunctionality = () => {
-                const groupToggles = document.querySelectorAll('.group-toggle');
-                groupToggles.forEach(toggle => {
-                    toggle.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const groupsContainer = toggle.previousElementSibling;
-
-                        if (groupsContainer.style.display === 'none') {
-                            groupsContainer.style.display = 'block';
-                            toggle.textContent = 'Hide targeted groups';
+                                if (this.validateRequest(this.addAnnouncementRequest)) {
+                                    confirmBtn.setAttribute("disabled", "true");
+                                    let response = await this.addAnnouncement(this.addAnnouncementRequest);
+                                    confirmBtn.removeAttribute("disabled");
+                                    if (response === true) {
+                                        this.modalOverlay.classList.remove("active");
+                                        
+                                        showSuccessToast("Success", "Announcement published successfully!", 3)
+                                    } else {
+                                        this.renderError("Something went wrong");
+                                    }
+                                }
+                            });
                         } else {
-                            groupsContainer.style.display = 'none';
-                            toggle.textContent = 'Show targeted groups';
+                            confirmBtn.addEventListener("click", async () => {
+                                this.bindEditAnnouncementFunctionality();
+                                if (this.validateRequest(this.editAnnouncementRequest)) {
+                                    confirmBtn.setAttribute("disabled", "true");
+                                    let response = await this.editAnnouncement(this.editAnnouncementRequest);
+                                    confirmBtn.removeAttribute("disabled");
+                                    if (response === true) {
+                                        this.modalOverlay.classList.remove("active");
+                                        
+                                        showSuccessToast("Success", "Announcement has been updated successfully!", 3)
+                                    } else {
+                                        this.renderError("Something went wrong");
+                                    }
+                                }
+                            });
                         }
-                    });
-                });
-            }
+                    }
 
-            // Modal Functionalities
-            bindEditAnnouncementFunctionality = () => {
-                const editButtons = document.querySelectorAll('.btn-edit');
-                editButtons.forEach(button => {
-                    button.addEventListener('click', async () => {
-                        const card = button.closest('.announcement-card');
-                        let announcementId = parseInt(card.dataset.announcementId);
-                        console.log(announcementId);
-                        console.log(card);
-                        const title = card.querySelector('.announcement-title');
-                        const body = card.querySelector('.announcement-body p');
-                        let elements = card.querySelectorAll('div[data-target-group-id]');
-                        let selectedGroupIds = Array.from(elements).map((element) =>
-                            parseInt(element.getAttribute("data-target-group-id"))
+                    openDeleteModal = (announcementId) => {
+                        this.modalOverlay.innerHTML =
+                            `
+                            <div class="modal" id="modal">
+                                <div class="modal-header">
+                                    <h2 class="modal-title">Delete Announcement</h2>
+                                    <button class="modal-close" id="closeModal">✕</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="announcement-modal-error-container" class="announcement-modal-error-container  d-none"></div>
+                                    <h2>Are you sure you want to delete this Announcement?</h2>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                                    <button class="btn btn-accent" id="confirmBtn">Delete</button>
+                                </div>
+                            </div>
+                            `;
+
+                        this.modalOverlay.classList.add("active");
+                        this.bindModalFunctionalities();
+
+                        const confirmBtn = document.getElementById("confirmBtn");
+                        confirmBtn.addEventListener("click", async () => {
+                            confirmBtn.setAttribute("disabled", "true");
+                            let response = await this.deleteAnnouncement(announcementId);
+                            if (response === true) {
+                                this.modalOverlay.classList.remove("active");
+                                
+                                showSuccessToast("Success", "Announcement has been deleted successfully!", 3)
+                            } else {
+                                this.renderError("Something went wrong");
+                                confirmBtn.removeAttribute("disabled");
+                            }
+                        });
+                    }
+
+                    bindAddAnnouncementModalFunctionality() {
+                        const announcementTitle = document.getElementById("announcementTitle");
+                        if (announcementTitle) {
+                            this.addAnnouncementRequest.announcementTitle = announcementTitle.value;
+                        }
+
+                        const announcementBody = document.getElementById("announcementBody");
+                        if (announcementBody) {
+                            this.addAnnouncementRequest.announcementBody = announcementBody.value;
+                        }
+
+                        // Get all checked group checkboxes
+                        const checkedGroupCheckboxes = document.querySelectorAll('.group-checkbox:checked');
+                        const selectedGroups = Array.from(checkedGroupCheckboxes).map(checkbox =>
+                            parseInt(checkbox.getAttribute('data-target-group-id'))
                         );
 
-                        this.editAnnouncementRequest.announcementId = announcementId;
-                        this.editAnnouncementRequest.announcementBody = body.innerHTML;
-                        this.editAnnouncementRequest.announcementTitle = title.innerHTML;
-                        this.editAnnouncementRequest.isImportant = false;
-                        this.editAnnouncementRequest.groupIds = selectedGroupIds;
-
-                        this.openAnnouncementModal("Edit Announcement", this.editAnnouncementRequest, "Update", 1);
-
-                        // Show the modal
-                        this.modalOverlay.classList.add("active");
-                    });
-                });
-            }
-
-            bindLoadMoreAnnouncementsFunctionality = () => {
-                const loadMoreBtn = document.getElementById("load-more-btn");
-                if (loadMoreBtn) {
-                    loadMoreBtn.addEventListener("click", () => {
-                        this.getMoreAnnouncements();
-                    });
-                }
-            }
-
-            bindDeleteAnnouncementFunctionality = () => {
-                const deleteButtons = document.querySelectorAll('.btn-delete');
-                deleteButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const card = button.closest('.announcement-card');
-                        const announcementId = parseInt(card.dataset.announcementId);
-                        this.openDeleteModal(announcementId);
-
-                        // Show the modal
-                        this.modalOverlay.classList.add("active");
-                    });
-                });
-            }
-
-            bindModalFunctionalities = () => {
-                const closeModal = document.getElementById('closeModal');
-                const cancelBtn = document.getElementById('cancelBtn');
-
-                closeModal.addEventListener("click", () => {
-                    this.modalOverlay.classList.remove("active");
-                });
-
-                cancelBtn.addEventListener("click", () => {
-                    this.modalOverlay.classList.remove("active");
-                });
-            }
-
-            loadGroups = async (selectedGroupIds) => {
-                if (!selectedGroupIds || selectedGroupIds.length <= 0) {
-                    selectedGroupIds = [];
-                }
-                this.startLoadingGroupsAnimation();
-                let allGroups = await this.getAllGroups();
-                let innerHTML = ``;
-                allGroups.forEach((element) => {
-                    const isChecked = selectedGroupIds.includes(element.groupID) ? 'checked' : '';
-                    innerHTML += `
-                        <div class="group-item">
-                            <input type="checkbox" ${isChecked} data-target-group-id="${element.groupID}" id="group-${element.groupID}" class="group-checkbox">
-                            <label for="group-${element.groupID}">${element.groupName}</label>
-                        </div>
-                    `;
-                });
-                this.stopLoadingGroupsAnimation();
-                const groupSelectList = document.getElementById("group-select-list");
-                groupSelectList.innerHTML = innerHTML;
-            }
-
-            openAnnouncementModal = async (modalTitle, announcementObject, buttonText, type) => {
-                if (!announcementObject) {
-                    announcementObject = {
-                        announcementBody: "",
-                        announcementTitle: "",
-                        isImportant: false,
-                        groupIds: []
-                    };
-                }
-                if (!buttonText) {
-                    buttonText = "Publish";
-                }
-
-                let modalHtml =
-                    `
-                    <div class="modal" id="modal">
-                        <div class="modal-header">
-                            <h2 class="modal-title">${modalTitle}</h2>
-                            <button class="modal-close" id="closeModal">✕</button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="announcement-modal-error-container" class="announcement-modal-error-container  d-none"></div>
-                            <div class="form-group">
-                                <label for="announcementTitle" class="form-label">Title (Optional)</label>
-                                <input type="text" id="announcementTitle" class="form-control" placeholder="Enter announcement title" value="${announcementObject.announcementTitle}">
-                            </div>
-                            <div class="form-group">
-                                <label for="announcementBody" class="form-label">Body</label>
-                                <textarea id="announcementBody" class="form-control" placeholder="Enter announcement content">${announcementObject.announcementBody}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Target Groups</label>
-                                <div class="group-list">
-                                    <div>
-                                        <div class="loading-groups-animation-container" id="loading-groups-animation-container">
-                                            <div class="dot-wave">
-                                                <div class="dot"></div>
-                                                <div class="dot"></div>
-                                                <div class="dot"></div>
-                                                <div class="dot"></div>
-                                            </div>
-                                        </div>
-                                        <div id="group-select-list"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                            <button class="btn btn-accent" id="confirmBtn">${buttonText}</button>
-                        </div>
-                    </div>
-                    `;
-
-                this.modalOverlay.innerHTML = modalHtml;
-                this.modalOverlay.classList.add("active");
-
-                // Bind modal functionalities (close and cancel)
-                this.bindModalFunctionalities();
-
-                await this.loadGroups(announcementObject.groupIds);
-
-                const confirmBtn = document.getElementById("confirmBtn");
-                if (type === 0) {
-                    confirmBtn.addEventListener("click", async () => {
-                        this.bindAddAnnouncementModalFunctionality();
-
-                        if (this.validateRequest(this.addAnnouncementRequest)) {
-                            confirmBtn.setAttribute("disabled", "true");
-                            let response = await this.addAnnouncement(this.addAnnouncementRequest);
-                            confirmBtn.removeAttribute("disabled");
-                            if (response === true) {
-                                this.modalOverlay.classList.remove("active");
-                                // Show success toast
-                                showSuccessToast("Success", "Announcement published successfully!", 3)
-                            } else {
-                                this.renderError("Something went wrong");
-                            }
-                        }
-                    });
-                } else {
-                    confirmBtn.addEventListener("click", async () => {
-                        this.bindEditAnnouncementFunctionality();
-                        if (this.validateRequest(this.editAnnouncementRequest)) {
-                            confirmBtn.setAttribute("disabled", "true");
-                            let response = await this.editAnnouncement(this.editAnnouncementRequest);
-                            confirmBtn.removeAttribute("disabled");
-                            if (response === true) {
-                                this.modalOverlay.classList.remove("active");
-                                // Show success toast
-                                showSuccessToast("Success", "Announcement has been updated successfully!", 3)
-                            } else {
-                                this.renderError("Something went wrong");
-                            }
-                        }
-                    });
-                }
-            }
-
-            openDeleteModal = (announcementId) => {
-                this.modalOverlay.innerHTML =
-                    `
-                    <div class="modal" id="modal">
-                        <div class="modal-header">
-                            <h2 class="modal-title">Delete Announcement</h2>
-                            <button class="modal-close" id="closeModal">✕</button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="announcement-modal-error-container" class="announcement-modal-error-container  d-none"></div>
-                            <h2>Are you sure you want to delete this Announcement?</h2>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                            <button class="btn btn-accent" id="confirmBtn">Delete</button>
-                        </div>
-                    </div>
-                    `;
-
-                this.modalOverlay.classList.add("active");
-                this.bindModalFunctionalities();
-
-                const confirmBtn = document.getElementById("confirmBtn");
-                confirmBtn.addEventListener("click", async () => {
-                    confirmBtn.setAttribute("disabled", "true");
-                    let response = await this.deleteAnnouncement(announcementId);
-                    if (response === true) {
-                        this.modalOverlay.classList.remove("active");
-                        // Show success toast
-                        showSuccessToast("Success", "Announcement has been deleted successfully!", 3)
-                    } else {
-                        this.renderError("Something went wrong");
-                        confirmBtn.removeAttribute("disabled");
+                        this.addAnnouncementRequest.selectedGroups = selectedGroups;
                     }
+
+
+
+            }
+
+                // Initialize the page handler when the DOM is fully loaded
+                document.addEventListener('DOMContentLoaded', () => {
+                    new AnnouncementPageHandler();
                 });
-            }
-
-            bindAddAnnouncementModalFunctionality() {
-                const announcementTitle = document.getElementById("announcementTitle");
-                if (announcementTitle) {
-                    this.addAnnouncementRequest.announcementTitle = announcementTitle.value;
-                }
-
-                const announcementBody = document.getElementById("announcementBody");
-                if (announcementBody) {
-                    this.addAnnouncementRequest.announcementBody = announcementBody.value;
-                }
-
-                // Get all checked group checkboxes
-                const checkedGroupCheckboxes = document.querySelectorAll('.group-checkbox:checked');
-                const selectedGroups = Array.from(checkedGroupCheckboxes).map(checkbox =>
-                    parseInt(checkbox.getAttribute('data-target-group-id'))
-                );
-
-                this.addAnnouncementRequest.selectedGroups = selectedGroups;
-            }
-
-
-
-        }
-
-        // Initialize the page handler when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new AnnouncementPageHandler();
-        });
     </script>
 }
 
