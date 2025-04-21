@@ -19,7 +19,7 @@
                     }
                     else
                     {
-                        <img alt="profile" src="~/images/default_profile.png" class="group__profile__image" />
+                        <img alt="profile" src="~/images/default_user.svg" class="group__profile__image" />
                     }
                     <div class="group__profile__details">
                         <h2 class="group__profile__name">@Model.Teacher.AppUser.FirstName @Model.Teacher.AppUser.LastName</h2>
@@ -188,7 +188,7 @@
                 @foreach(var session in Model.Sessions)
                 {
                     <div class="group-carousel__slide">
-						<a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Students" asp-route-Id="@session.ID">
+						<a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Assistants" asp-route-Id="@session.ID">
                         <div class="session-card">
                             <div class="session-card__header">
                                 @if (session.IsOnline)
@@ -236,7 +236,7 @@
 
 
 @{
-    var url = Model.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.CoverPicture) : Url.Content("~/images/default_cover.png");
+    var url = Model.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.CoverPicture) : Url.Content("~/images/default_group.svg");
 }
 
 @section Styles {
