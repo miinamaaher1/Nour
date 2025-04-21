@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Algorithm;
 using XCourse.Core.DTOs.CenterAdmins;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
+using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.CenterAdminServices;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
@@ -33,7 +35,11 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // GET: RoomController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var room = _centerAdminService.GetRoom(id);
+
+
+          
+            return View(room);
         }
 
         // GET: RoomController/Create
@@ -90,6 +96,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             }
         }
 
+
         // GET: RoomController/Edit/5
         public ActionResult Edit(int id)
         {
@@ -134,7 +141,11 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                         return RedirectToAction("Index", new { id = room.CenterId });
                     }
                     else
-                        { return View(room); }
+                        {
+                        
+                        return View(room);
+                    
+                    }
                 }
                 return View(room);
             }
@@ -144,25 +155,120 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             }
         }
 
+
+     
+
+        
+       
+
+
+       
+
+       
         // GET: RoomController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var room = _centerAdminService.GetRoom(id);
+            if (room == null) { return View("Error"); }
+            return View(room);
         }
 
         // POST: RoomController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(RoomDto room)
+        {
+           
+                try
+                {
+
+                    int t = _centerAdminService.DeleteRoom(room);
+                    if (t == 1)
+                    {
+                        return RedirectToAction("Index", new { id = room.CenterId });
+                    }
+                    else
+                {
+                    
+                        return RedirectToAction("TransfomReservations", new { RoomId=room.RoomId,  CenterId=room.CenterId });
+
+                    }
+                }
+                catch
+                {
+                    return View(room);
+                }
+            
+
+           
+
+        }
+
+
+       
+        public ActionResult TransfomReservations(int RoomId, int CenterId)
+        {
+
+            var Avalible = _centerAdminService.transfomReservations(RoomId,CenterId);
+            if (Avalible.ApproveReservations.All(r => r.AvailableRooms.Count == 0))
+            {
+                return RedirectToAction("UnableDeleting", new { id = RoomId });
+
+            }
+
+
+            return View (Avalible);
+
+
+
+        }
+
+        [HttpPost]
+        public ActionResult TransfomReservations(transfomReservations transfom)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                int t = _centerAdminService.ConfirmTransformRoom(transfom);
+
+                if(t == 1)
+                {
+                    return RedirectToAction("Index", new { id = transfom.CenterId });
+                }
+
+                else
+                {
+                    return View(transfom);
+                        
+                       
+
+
+                }
             }
+
             catch
             {
-                return View();
+                return View(transfom);
             }
+
+
+
+
         }
+
+
+        public ActionResult UnableDeleting(int id)
+        {
+
+
+            var Deletemessage = _centerAdminService.GetRoom(id);
+            return View(Deletemessage);
+
+
+        }
+
+
+
+
+
     }
 }

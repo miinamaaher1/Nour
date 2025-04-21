@@ -39,6 +39,7 @@ namespace XCourse.Services.Implementations.StudentServices
                 Location = group.Location,
                 Key = _configuration["GoogleMaps:ApiKey"],
                 DefaultRoom = group.DefaultRoom,
+                Sessions = _unitOfWork.Sessions.FindAll(s => s.GroupID == group.ID && s.StartDateTime >= DateTime.Now,["RoomReservation.Room"], null, 3).ToList(),
                 Teacher = group.Teacher,
                 IsOnline = group.IsOnline,
                 IsPrivate = group.IsPrivate,
@@ -47,11 +48,6 @@ namespace XCourse.Services.Implementations.StudentServices
                 PricePerSession = group.PricePerSession,
                 Defaults = new List<DefaultTimeVM>()
             };
-
-            var Sessions = _unitOfWork.Sessions.FindAll(s => s.GroupID == group.ID 
-                                                        && s.StartDateTime>=DateTime.Now
-                        , [ "RoomReservation.Room"], null, 3).ToList();
-            details.Sessions = Sessions;
 
             
 

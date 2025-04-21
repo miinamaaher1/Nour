@@ -1,19 +1,209 @@
 ﻿@model IEnumerable<XCourse.Core.ViewModels.AssistantViewModels.PendingRequestVM>
 
-<h2>Pending Requests</h2>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Assistants/PendingRequestsMain.css" />
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var request in Model)
-        {
-            <tr>
-                <td>@request.Status</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container mt-5">
+    <!-- Table ****  -->
+    <div class="container">
+        <div class="header-section">
+            <h2>Pending Requests</h2>
+        </div>
+    </div>
+    <div class="data-table">
+        <div class="data-table__container">
+            <table class="data-table__table">
+                <thead>
+                    <tr>
+                        <th>Teacher Name</th>
+                        <th>Subject</th>
+                        <th>Major</th>
+                        <th>Year</th>
+                        <th>Semester</th>
+                        <th colspan="3" style="text-align: center !important">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7">No pending requests.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var request in Model)
+                        {
+                            <tr>
+                                <td>@request.TeacherName</td>
+                                <td>@request.SubjectName</td>
+                                <td>@request.Major</td>
+                                <td>@request.Year</td>
+                                <td>@request.Semester</td>
+                                <td class="data-table__actions">
+                                    <form method="post" asp-action="AcceptConfirmed" asp-route-id="@request.InvitationID">
+                                        <button   type="submit"
+                                           class="data-table__btn data-table__btn--accept"
+                                           style="display: inline-block; text-decoration: none;">
+                                            <i class="fas fa-check me-1"></i>
+                                            Accept
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="data-table__actions">
+                                    <button type="button"
+                                            class="data-table__btn data-table__btn--delete modal-trigger"
+                                            style="display: inline-block; text-decoration: none; border: none; cursor: pointer;"
+                                            data-modal-target="rejectModal"
+                                            data-id="@request.InvitationID"
+                                            data-teacher="@request.TeacherName"
+                                            data-subject="@request.SubjectName"
+                                            data-major="@request.Major"
+                                            data-year="@request.Year"
+                                            data-semester="@request.Semester">
+                                        <i class="fas fa-xmark me-1"></i>
+                                        Reject
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal Container -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-container">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Rejection</h5>
+                <button type="button" class="modal-close-button" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="teacher-card">
+                    <div class="teacher-card__header">
+                        Are you sure you want to reject this Request?
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Teacher Name:</div>
+                        <div class="teacher-card__value" id="modalTeacherName"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Subject:</div>
+                        <div class="teacher-card__value" id="modalSubject"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Major:</div>
+                        <div class="teacher-card__value" id="modalMajor"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Year:</div>
+                        <div class="teacher-card__value" id="modalYear"></div>
+                    </div>
+                    <div class="teacher-card__row">
+                        <div class="teacher-card__label">Semester:</div>
+                        <div class="teacher-card__value" id="modalSemester"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="rejectForm" method="post"
+                      asp-area="Assistants"
+                      asp-controller="PendingRequests"
+                      asp-action="RejectConfirmed">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="invitationId" name="id" value="" />
+                    <button type="button" class="btn--accept modal-back-btn">
+                        <i class="fas fa-arrow-left"></i> Go Back
+                    </button>
+                    <button type="submit" class="btn--reject">
+                        <i class="fas fa-xmark"></i> Reject
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- JavaScript for modal functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select elements
+            const rejectButtons = document.querySelectorAll('.modal-trigger');
+            const modal = document.getElementById('rejectModal');
+            const closeButton = modal.querySelector('.modal-close-button');
+            const backButton = modal.querySelector('.modal-back-btn');
+
+
+
+            @if (TempData["ToastMessage"] != null)
+            {
+                <text>
+                        showSuccessToast("Confirmed", "@TempData["ToastMessage"]", 4);
+                </text>
+            }
+
+
+            // Function to open modal
+            function openModal(event) {
+                const button = event.currentTarget;
+                const id = button.getAttribute('data-id');
+                const teacher = button.getAttribute('data-teacher');
+                const subject = button.getAttribute('data-subject');
+                const major = button.getAttribute('data-major');
+                const year = button.getAttribute('data-year');
+                const semester = button.getAttribute('data-semester');
+
+                // Update modal content
+                document.getElementById('modalTeacherName').textContent = teacher;
+                document.getElementById('modalSubject').textContent = subject;
+                document.getElementById('modalMajor').textContent = major;
+                document.getElementById('modalYear').textContent = year;
+                document.getElementById('modalSemester').textContent = semester;
+
+                // Set the invitation ID for the form submission
+                document.getElementById('invitationId').value = id;
+
+                // Update the form action
+                // document.getElementById('rejectForm').action = '/Assistants/PendingRequests/RejectConfirmed/' + id;
+
+                // Show modal
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Function to close modal
+            function closeModal() {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+
+            // Add event listeners to buttons
+            rejectButtons.forEach(button => {
+                button.addEventListener('click', openModal);
+            });
+
+            closeButton.addEventListener('click', closeModal);
+            backButton.addEventListener('click', closeModal);
+
+            // Close modal if clicking outside of modal content
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Close modal on escape key press
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('show')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,178 @@
+﻿
+.container {
+    display: grid;
+    max-width: 600px;
+    height: 80vh;
+    align-items: center
+}
+
+.card {
+    background-color: var(--clr-surface);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.card__header {
+    text-align: center;
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+    padding: 16px 20px;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.card__content {
+    padding: 20px;
+}
+
+.card__row {
+    display: flex;
+    border-bottom: 1px solid var(--clr-border);
+    padding: 12px 20px;
+}
+
+    .card__row:last-child {
+        border-bottom: none;
+    }
+
+.card__label {
+    width: 130px;
+    font-weight: 500;
+    color: var(--clr-text-secondary);
+}
+
+.card__value {
+    flex: 1;
+    color: var(--clr-text-primary);
+}
+
+.card__actions {
+    display: flex;
+    gap: 10px;
+    margin: 20px;
+}
+/* Create button container */
+.button-container {
+    display: flex;
+    gap: 15px;
+    padding: 16px 20px;
+    justify-content: space-evenly;
+}
+
+/* Consistent button styling */
+.btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+    min-width: 100px;
+}
+/* Remove default form button styling */
+.btn-primary {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    width: 100%;
+    height: 100%;
+}
+.btn--accept {
+    background-color: var(--clr-accent);
+    color: var(--clr-text-on-accent);
+}
+
+    .btn--accept:hover {
+        background-color: #c99a5f;
+    }
+
+.btn--edit {
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+}
+
+    .btn--edit:hover {
+        background-color: #a06c4e;
+    }
+.btn--details {
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+}
+
+    .btn--details:hover {
+        background-color: #a06c4e;
+    }
+
+.btn--delete {
+    background-color: #d44848;
+    color: #ffffff;
+}
+
+    .btn--delete:hover {
+        background-color: #b33a3a;
+    }
+/* Enhanced dropdown styling */
+select.card__value,
+select.form-control,
+.card__value select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 0.95rem;
+    color: var(--clr-text-primary);
+    appearance: none; /* Removes default browser styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23888' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 24px;
+    padding-right: 30px; /* Space for the dropdown arrow */
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+    select.card__value:hover,
+    select.form-control:hover,
+    .card__value select:hover {
+        border-color: #b8b8b8;
+    }
+
+    select.card__value:focus,
+    select.form-control:focus,
+    .card__value select:focus {
+        border-color: var(--clr-accent);
+        box-shadow: 0 0 0 3px rgba(201, 154, 95, 0.2);
+        outline: none;
+    }
+
+/* For the Topic input field to match dropdowns */
+input.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+    input.form-control:focus {
+        border-color: var(--clr-accent);
+        box-shadow: 0 0 0 3px rgba(201, 154, 95, 0.2);
+        outline: none;
+    }

@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Implementations.AssistantServices;
 using XCourse.Services.Interfaces.AssistantServices;
 
 namespace XCourse.Web.Areas.Assistants.Controllers
 {
+    [Area("Assistants")]
     public class PendingRequestsController : Controller
     {
         private readonly IPendingRequestService _pendingRequestService;
@@ -16,80 +18,29 @@ namespace XCourse.Web.Areas.Assistants.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: PendingRequestsController
         public async Task<IActionResult> Index()
         {
             var pendingRequests = await _pendingRequestService.GetPendingRequestsAsync(User);
             return View(pendingRequests);
         }
 
-        // GET: PendingRequestsController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: PendingRequestsController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: PendingRequestsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> AcceptConfirmed(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            
+            var Result = await _pendingRequestService.AcceptInvitationRequest(id);
+            TempData["ToastMessage"] = "Invitation Confirmed Successfully";
+            TempData["ToastType"] = "success";
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: PendingRequestsController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PendingRequestsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> RejectConfirmed(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PendingRequestsController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PendingRequestsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var Result = await _pendingRequestService.RejectInvitationRequest(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
