@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +19,13 @@ namespace XCourse.Services.Implementations.TeacherServices
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IYouTubeUploaderService _youTubeUploaderService;
+        private readonly IConfiguration _configuration;
 
-        public SessionService(IUnitOfWork unitOfWork, IYouTubeUploaderService youTubeUploaderService)
+        public SessionService(IUnitOfWork unitOfWork, IYouTubeUploaderService youTubeUploaderService, IConfiguration configuration)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
             _youTubeUploaderService = youTubeUploaderService;
+            _configuration = configuration;
         }
 
         public async Task<Teacher> GetTeacherByUserId(string userId)
@@ -197,7 +201,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             session.Description = sessionVM.Description;
 
             //update session location
-            session.Location = sessionVM.Location;
+            session.Location = new Point(sessionVM.Location.OriginX, sessionVM.Location.OriginY) { SRID = 4326 };
 
             // update session Address
             session.Address = new Address();
@@ -419,7 +423,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             sessionVM.EndTime.Second);
 
             //update session location
-            newSession.Location = sessionVM.Location;
+            newSession.Location = new Point(sessionVM.Location.OriginX, sessionVM.Location.OriginY) { SRID = 4326 };
 
             // update session Address
             newSession.Address = new Address();

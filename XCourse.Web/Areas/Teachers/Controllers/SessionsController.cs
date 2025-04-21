@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 using XCourse.Core.DTOs;
+using XCourse.Core.DTOs.StudentDTOs;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels.Sessions;
 using XCourse.Services.Interfaces.TeacherServices;
@@ -13,10 +14,14 @@ namespace XCourse.Web.Areas.Teachers.Controllers
     public class SessionsController : Controller
     {
         private readonly ISessionService _sessionService;
-        public SessionsController(ISessionService sessionService)
+        private readonly IConfiguration _configuration;
+
+        public SessionsController(ISessionService sessionService, IConfiguration configuration)
         {
             _sessionService = sessionService;
+            _configuration = configuration;
         }
+
         public async Task<IActionResult> Index(int? groupId = null)
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -34,6 +39,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             }
             var session = await _sessionService.GetSessionDetailsById(id, teacherId);
 
+            ViewBag.Key = _configuration["GoogleMaps:ApiKey"];
             return View(session);
         }
         async public Task<IActionResult> GroupSessions(int id)
@@ -128,7 +134,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 EndTime = TimeOnly.FromDateTime(session.EndDateTime),
                 Date = DateOnly.FromDateTime(session.StartDateTime),
                 Description = session.Description,
-                Location = session.Location,
+                Location = new MapInfoDTO { OriginX = session.Location.X, OriginY = session.Location.Y, Key = _configuration["GoogleMaps:ApiKey"] },
                 Address = new Core.Entities.Address
                 {
                     Governorate = session.Address?.Governorate,
@@ -232,7 +238,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         {
             AddOfflineLocalSessionVM sessionVM = new AddOfflineLocalSessionVM();
             sessionVM.GroupID = id;
-            sessionVM.Location = new NetTopologySuite.Geometries.Point(10, 20) { SRID = 4326 };
+            sessionVM.Location = new MapInfoDTO { OriginX = 0, OriginY = 0, Key = _configuration["GoogleMaps:ApiKey"] };
             var now = DateTime.Now;
             sessionVM.StartTime = new TimeOnly(now.Hour, now.Minute);
             sessionVM.EndTime = sessionVM.StartTime.AddHours(1);
@@ -250,13 +256,18 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 Teacher teacher = await _sessionService.GetTeacherByUserId(userID);
                 teacherId = teacher.ID;
             }
-            if (sessionVM.Latitude.HasValue && sessionVM.Longitude.HasValue)
+            if (sessionVM.Location == null)
             {
-                sessionVM.Location = new NetTopologySuite.Geometries.Point(sessionVM.Latitude.Value, sessionVM.Longitude.Value) { SRID = 4326 };
+                sessionVM.Location = new MapInfoDTO
+                {
+                    OriginX = 0,
+                    OriginY = 0,
+                    Key = _configuration["GoogleMaps:ApiKey"]
+                };
             }
-            else
+            else if (string.IsNullOrEmpty(sessionVM.Location.Key))
             {
-                sessionVM.Location = null;
+                sessionVM.Location.Key = _configuration["GoogleMaps:ApiKey"];
             }
             if (!ModelState.IsValid)
             {
