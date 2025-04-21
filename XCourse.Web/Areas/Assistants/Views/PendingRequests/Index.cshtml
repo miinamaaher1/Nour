@@ -1,4 +1,5 @@
-﻿@model IEnumerable<XCourse.Core.ViewModels.AssistantViewModels.PendingRequestVM>
+@model IEnumerable<XCourse.Core.ViewModels.AssistantViewModels.PendingRequestVM>
+
 
 @section Styles {
     <link rel="stylesheet" href="~/css/Assistants/PendingRequestsMain.css" />
@@ -10,7 +11,7 @@
         <div class="header-section">
             <h2>Pending Requests</h2>
         </div>
-    </div>
+     </div>
     <div class="data-table">
         <div class="data-table__container">
             <table class="data-table__table">
@@ -28,7 +29,9 @@
                     @if (Model == null || !Model.Any())
                     {
                         <tr>
+
                             <td colspan="7">No pending requests.</td>
+
                         </tr>
                     }
                     else
@@ -42,6 +45,7 @@
                                 <td>@request.Year</td>
                                 <td>@request.Semester</td>
                                 <td class="data-table__actions">
+
                                     <form method="post" asp-action="AcceptConfirmed" asp-route-id="@request.InvitationID">
                                         <button   type="submit"
                                            class="data-table__btn data-table__btn--accept"
@@ -69,6 +73,7 @@
                             </tr>
                         }
                     }
+
                 </tbody>
             </table>
         </div>

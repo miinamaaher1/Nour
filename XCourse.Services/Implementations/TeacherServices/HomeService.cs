@@ -30,10 +30,16 @@ namespace XCourse.Services.Implementations.TeacherServices
                 includes: ["Subject", "DefaultRoom", "DefaultRoom.Center"]
             );
 
+            var today = DateTime.Today;
+            var nextWeek = today.AddDays(7);
+
             var sessions = await _unitOfWork.Sessions.FindAllAsync(
-                s => s.Group.TeacherID == teacher.ID,
+                s => s.Group.TeacherID == teacher.ID &&
+                     s.StartDateTime >= today &&
+                     s.StartDateTime < nextWeek,
                 includes: ["Group.Subject", "RoomReservation.Room.Center"]
             );
+
 
             var upcomingSessions = sessions
                

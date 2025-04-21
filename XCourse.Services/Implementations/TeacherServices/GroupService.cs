@@ -11,6 +11,7 @@ using XCourse.Core.DTOs.Teachers;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
+using XCourse.Services.Interfaces.PaymentService;
 using XCourse.Services.Interfaces.Teachers;
 
 namespace XCourse.Services.Implementations.TeacherServices
@@ -19,11 +20,13 @@ namespace XCourse.Services.Implementations.TeacherServices
     {
         private static readonly GeometryFactory _geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         private readonly IUnitOfWork _unitOfWork;
-        public GroupService(IUnitOfWork unitOfWork)
+        private readonly ITransactionService _transactionService;
+        public GroupService(IUnitOfWork unitOfWork, ITransactionService transactionService)
         {
             _unitOfWork = unitOfWork;
+            _transactionService = transactionService;
         }
-        
+
         // Adding Announcement Method
         public async Task<bool> PostAnnouncement(int groupId, int teacherId, string body, bool isImportant, string? title)
         {
@@ -53,7 +56,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 return false;
             }
         }
-        
+
 
         // Reservation Methods 
         async public Task<ReserveGroupResponseDTO> ReserveOnlineGroup(ReserveOnlineGroupRequestDTO request)
@@ -83,6 +86,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             onlineGroup.SubjectID = request.SubjectId;
             onlineGroup.Address = null;
             onlineGroup.IsPrivate = request.IsPrivate;
+            onlineGroup.IsOnline = true;
             onlineGroup.IsGirlsOnly = request.IsGirlsOnly;
             onlineGroup.IsActive = true;
             onlineGroup.CurrentStudents = 0;
@@ -93,8 +97,18 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             // Reserving sessions 
             onlineGroup.Sessions = new List<Session>();
+            onlineGroup.GroupDefaults = new List<GroupDefaults>();
             foreach (var defaultSession in request.DefaultSessionResrvations!)
             {
+                GroupDefaults gd = new GroupDefaults()
+                {
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    StartTime = defaultSession.StartTime,
+                    EndTime = defaultSession.EndTime,
+                    WeekDay = defaultSession.WeekDay
+                };
+
                 DateOnly current = request.StartDate;
 
                 while (!MatchesWeekDay(current, defaultSession.WeekDay))
@@ -115,6 +129,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     };
 
                     onlineGroup.Sessions.Add(session);
+                    onlineGroup.GroupDefaults.Add(gd);
                     current = current.AddDays(7);
                 }
             }
@@ -252,7 +267,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             if (!validationResult.IsValid)
                 return validationResult;
 
-            var center = await _unitOfWork.Centers.FindAsync(c => c.ID == request.CenterId, ["Address"]);
+            var center = await _unitOfWork.Centers.FindAsync(c => c.ID == request.CenterId, ["Address", "CenterAdmin"]);
 
             var groupInCenter = new Group
             {
@@ -270,9 +285,12 @@ namespace XCourse.Services.Implementations.TeacherServices
                 GroupDefaults = new List<GroupDefaults>()
             };
 
+            double totalPrice = 0;
+
             foreach (var session in request.Sessions)
             {
                 var room = await _unitOfWork.Rooms.FindAsync(r => r.ID == session.RoomId);
+
                 if (room == null)
                 {
                     return new ReserveGroupResponseDTO
@@ -282,8 +300,12 @@ namespace XCourse.Services.Implementations.TeacherServices
                     };
                 }
 
-                // create default sessions
-                GroupDefaults groupDefaults = new GroupDefaults
+                var pricePerHour = (double)room.PricePerHour;
+                var duration = (session.EndTime - session.StartTime).TotalMinutes;
+                double pricePerSession = pricePerHour * (duration / 60);
+
+                // Create default session definition
+                var groupDefaults = new GroupDefaults
                 {
                     WeekDay = session.DayId,
                     StartDate = session.StartDate,
@@ -296,6 +318,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 };
                 groupInCenter.GroupDefaults.Add(groupDefaults);
 
+                // Create all actual sessions
                 DateOnly current = session.StartDate;
                 while (!MatchesWeekDay(current, session.DayId))
                 {
@@ -309,8 +332,8 @@ namespace XCourse.Services.Implementations.TeacherServices
                         StartDateTime = current.ToDateTime(session.StartTime),
                         EndDateTime = current.ToDateTime(session.EndTime),
                         Duration = session.EndTime.ToTimeSpan() - session.StartTime.ToTimeSpan(),
-                        Location = center.Location,
                         IsOnline = false,
+                        Location = center.Location,
                         Address = new Address
                         {
                             Street = center.Address!.Street,
@@ -320,6 +343,8 @@ namespace XCourse.Services.Implementations.TeacherServices
                         }
                     };
 
+                    totalPrice += pricePerSession;
+
                     var reservation = new RoomReservation
                     {
                         ReservationStatus = ReservationStatus.Pending,
@@ -328,17 +353,33 @@ namespace XCourse.Services.Implementations.TeacherServices
                         TotalPrice = room.PricePerHour,
                         StartTime = session.StartTime,
                         EndTime = session.EndTime,
-                        Session = newSession,
+                        Date = current,
                         IsDeleted = false,
-                        WeekDay = session.DayId
+                        WeekDay = GetWeekDay(current),
+                        Session = newSession
                     };
 
+                    newSession.RoomReservation = reservation;
                     groupInCenter.Sessions.Add(newSession);
-                    _unitOfWork.Sessions.Add(newSession);
-                    _unitOfWork.RoomReservations.Add(reservation);
 
                     current = current.AddDays(7);
                 }
+            }
+
+            bool transactionResult = await _transactionService.MakeTransactionAsync(
+                teacher.AppUserID,
+                center.CenterAdmin!.AppUserID,
+                (decimal)totalPrice,
+                TransactionType.Payment
+            );
+
+            if (!transactionResult)
+            {
+                return new ReserveGroupResponseDTO
+                {
+                    IsValid = false,
+                    Errors = ["Payment Failed! Check first that you have enough balance"]
+                };
             }
 
             try
@@ -364,7 +405,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 
 
         // DB Utility Methods 
-        public async Task<IEnumerable<GroupVM>> GetAllGroups(int teacherId)
+        public async Task<ICollection<GroupVM>> GetAllGroups(int teacherId)
         {
             var groups = await _unitOfWork.Groups.FindAllAsync(g => g.TeacherID == teacherId && g.IsActive == true, ["GroupDefaults.Room.Center", "Subject"]);
             List<GroupVM> groupVMList = new List<GroupVM>();
@@ -481,7 +522,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             return groupDetailsVM;
         }
-        public async Task<IEnumerable<Subject>> GetMatchingSubjects(RequestSubjectDto request)
+        public async Task<ICollection<Subject>> GetMatchingSubjects(RequestSubjectDto request)
         {
             var teacherSubjects = await _unitOfWork.Subjects.FindAllAsync(s => s.Teachers!.Any(t => t.ID == request.TeacherId));
 
@@ -492,13 +533,13 @@ namespace XCourse.Services.Implementations.TeacherServices
             return filteredSubjects;
 
         }
-        public async Task<IEnumerable<Subject>> GetAllSubjects(RequestSubjectDto request)
+        public async Task<ICollection<Subject>> GetAllSubjects(RequestSubjectDto request)
         {
             var teacherSubjects = await _unitOfWork.Subjects.FindAllAsync(s => s.Teachers!.Any(t => t.ID == request.TeacherId));
-            return teacherSubjects;
+            return teacherSubjects.ToList();
 
         }
-        public async Task<IEnumerable<ResponseCenterDto>> GetAllCentersPerGovernorate(string governorate)
+        public async Task<ICollection<ResponseCenterDto>> GetAllCentersPerGovernorate(string governorate)
         {
             var centers = await _unitOfWork.Centers.FindAllAsync(c =>
                 c.Address != null &&
@@ -509,9 +550,9 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 CenterId = c.ID,
                 CenterName = c.Name
-            });
+            }).ToList();
         }
-        public async Task<IEnumerable<Room>> GetAllAvailableRooms(RequestRoomDto request)
+        public async Task<ICollection<Room>> GetAllAvailableRooms(RequestRoomDto request)
         {
             var allRoomsInTheCenter = await _unitOfWork.Rooms
                 .FindAllAsync(r =>
@@ -540,6 +581,22 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             return availableRooms;
         }
+        public async Task<ICollection<int>> GetAllMatchingYears(int teacherId)
+        {
+            List<int> years = new List<int>();
+            if (teacherId <= 0)
+            {
+                return years;
+            }
+            var teacher = await _unitOfWork.Teachers.FindAsync(t => t.ID == teacherId, ["Subjects"]);
+
+            var matchingYears = teacher.Subjects!
+                .Select(s => (int)s.Year)
+                .ToList();
+
+            return matchingYears;
+        }
+
 
 
         // Validation Methods
@@ -738,6 +795,24 @@ namespace XCourse.Services.Implementations.TeacherServices
         private bool IsOverlapping(TimeOnly s1, TimeOnly e1, TimeOnly s2, TimeOnly e2)
         {
             return (s1 < e2 && e1 > s2);
+        }
+        private WeekDay GetWeekDay(DateOnly date)
+        {
+            return date.DayOfWeek switch
+            {
+                DayOfWeek.Saturday => WeekDay.Saturday,
+                DayOfWeek.Sunday => WeekDay.Sunday,
+                DayOfWeek.Monday => WeekDay.Monday,
+                DayOfWeek.Tuesday => WeekDay.Tuesday,
+                DayOfWeek.Wednesday => WeekDay.Wednesday,
+                DayOfWeek.Thursday => WeekDay.Thursday,
+                DayOfWeek.Friday => WeekDay.Friday,
+                _ => WeekDay.None
+            };
+        }
+        public Task<ICollection<string>> GetAllGovernorates()
+        {
+            throw new NotImplementedException();
         }
     }
 }

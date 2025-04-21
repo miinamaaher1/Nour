@@ -1,4 +1,4 @@
-﻿@model XCourse.Core.Entities.Subject
+@model XCourse.Core.Entities.Subject
 
 @{
     ViewData["Title"] = "Delete";
@@ -29,6 +29,7 @@
             <div class="card__value">@Model.Semester</div>
         </div>
         <div class="card__actions" style="justify-content: center;">
+
             <a asp-action="DeleteConfirmed" asp-route-id="@Model.ID"
                 class="btn btn--delete"
                 style="display: inline-block; text-decoration: none;">
