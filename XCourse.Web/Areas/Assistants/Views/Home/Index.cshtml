@@ -1,5 +1,508 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using XCourse.Core.ViewModels.AssistantViewModels
+@model HomeDashboardVM
+
 @{
+    ViewData["Title"] = "Assistant Dashboard";
+}
+@section Styles{
+<style>
+    :root, [data-theme="light"] {
+        --clr-background: #FAF6F0;
+        --clr-surface: #F5EDE1;
+        --clr-primary: #5D2A66;
+        --clr-secondary: #B57256;
+        --clr-accent: #E0A96D;
+        --clr-text-primary: #210F37;
+        --clr-text-secondary: #8A5640;
+        --clr-text-on-primary: #FFFFFF;
+        --clr-text-on-secondary: #FFFFFF;
+        --clr-text-on-accent: #210F37;
+        --clr-border: #D1C5B8;
+        --clr-overlay: rgba(33, 15, 55, 0.5);
+    }
+
+    [data-theme="dark"] {
+        --clr-background: #1E1E1E;
+        --clr-surface: #2E2E2E;
+        --clr-primary: #B39DDB;
+        --clr-secondary: #7986CB;
+        --clr-accent: #F08080;
+        --clr-text-primary: #F5F5F5;
+        --clr-text-secondary: #AFAFAF;
+        --clr-text-on-primary: #2E2E2E;
+        --clr-text-on-secondary: #F5F5F5;
+        --clr-text-on-accent: #1E1E1E;
+        --clr-border: #424242;
+        --clr-overlay: rgba(0, 0, 0, 0.7);
+    }
+
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+        .header-Assistant {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        }
+
+         .header-Assistant h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+    .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--clr-border);
+        border-radius: 2rem;
+        background: transparent;
+        color: var(--clr-text-primary);
+        cursor: pointer;
+    }
+
+    .welcome-card {
+        padding: 2rem;
+        margin-bottom: 2rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        border-left: 4px solid var(--clr-primary);
+    }
+
+        .welcome-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-card p {
+            color: var(--clr-text-secondary);
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--clr-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: var(--clr-text-secondary);
+        }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--clr-border);
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .badge-accent {
+        background-color: var(--clr-accent);
+        color: var(--clr-text-on-accent);
+    }
+
+    .invitations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .invitation-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        border-left: 4px solid var(--clr-accent);
+    }
+
+    .invitation-info h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .invitation-info p {
+        color: var(--clr-text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .invitation-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+    .btn-secondary {
+        background-color: var(--clr-secondary);
+        color: var(--clr-text-on-secondary);
+    }
+
+    .btn-accent {
+        background-color: var(--clr-accent);
+        color: var(--clr-text-on-accent);
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    thead {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+    th, td {
+        padding: 1rem;
+        text-align: left;
+    }
+
+    tbody tr {
+        border-top: 1px solid var(--clr-border);
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .status-completed {
+        background-color: var(--clr-primary);
+        color: var(--clr-text-on-primary);
+    }
+
+    .status-in-progress {
+        background-color: var(--clr-accent);
+        color: var(--clr-text-on-accent);
+    }
+
+    .status-upcoming {
+        background-color: var(--clr-surface);
+        color: var(--clr-text-primary);
+        border: 1px solid var(--clr-border);
+    }
+
+    .grid-2col {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-card {
+        padding: 1.5rem;
+        background-color: var(--clr-surface);
+        border-radius: 1rem;
+    }
+
+        .info-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--clr-primary);
+        }
+
+    .info-list {
+        list-style-position: inside;
+        margin-bottom: 1rem;
+    }
+
+        .info-list li {
+            margin-bottom: 0.5rem;
+        }
+
+    @@media (max-width: 768px) {
+        .header
+
+    {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .invitation-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .invitation-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    }
+</style>
+}
+<div class="container">
+
+    <div class="welcome-card">
+        <h2>Welcome Back, @Model.AssistantName </h2>
+        <p>Here's your activity overview for today, @DateTime.Now.ToString("dddd, MMMM d, yyyy")</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Assigned Groups</h3>
+            <div class="value">@Model.TotalGroups </div>
+            <p>Active groups you're currently managing</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Attendance</h3>
+            <div class="value">@ViewBag.PendingAttendance</div>
+            <p>Groups needing attendance records</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pending Grades</h3>
+            <div class="value">@ViewBag.PendingGrades</div>
+            <p>Students waiting for grades</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">
+        Pending Invitations
+        <span class="badge badge-accent">@ViewBag.PendingInvitations?.Count New</span>
+    </h2>
+
+    <div class="invitations-list">
+        @if (Model.PendingRequests != null && Model.PendingRequests.Count > 0)
+        {
+            foreach (var invitation in Model.PendingRequests)
+            {
+                <div class="invitation-card">
+                    <div class="invitation-info">
+                        <h3>@invitation.SubjectName </h3>
+                        <p>Invited by: @invitation.TeacherName </p>
+                        <p>@invitation.Year Year • @invitation.Semester</p>
+                    </div>
+                    <div class="invitation-actions">
+                        <button class="btn btn-primary" onclick="acceptInvitation('@invitation.InvitationID')">Accept</button>
+                        <button class="btn btn-secondary" onclick="declineInvitation('@invitation.InvitationID')">Decline</button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No pending invitations at the moment.</p>
+        }
+
+        <div style="text-align: center; margin-top: 1rem;">
+            <a asp-action="Index" asp-controller="PendingRequests" asp-area="Assistants" class="btn btn-accent">Load More</a>
+        </div>
+    </div>
+
+    <h2 class="section-title">Today's Schedule</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Course</th>
+                    <th>Time</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.SessionsToday != null&& Model.SessionsToday.Count>0)
+                {
+                    foreach (var schedule in Model.SessionsToday)
+                    {
+                        <tr>
+							<td>@schedule.TeacherName</td>
+                            <td>@schedule.SubjectName</td>
+                            <td>@schedule.StartTime</td>
+							<td>@schedule.Duration</td>
+                            <td>
+                                @if (schedule.Status == SessionStatus.ended)
+                                {
+                                    <span class="status-badge status-completed">Completed</span>
+                                }
+                                else if (schedule.Status == SessionStatus.ongoing)
+                                {
+                                    <span class="status-badge status-in-progress">In Progress</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge status-upcoming">Upcoming</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-controller="Session" asp-area="Assistants" class="btn btn-primary">Details</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6">No schedule for today.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <h2 class="section-title">Group Performance Summary</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Course</th>
+                    <th>Average Capacity</th>
+                    <th>Average Attendance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.GroupPerformances != null && Model.GroupPerformances.Count>0)
+                {
+                    foreach (var group in Model.GroupPerformances)
+                    {
+                        <tr>
+                            <td>@group.TeacherName</td>
+                            <td>@group.GroupName</td>
+                            <td>@group.StudentsPercentage%</td>
+                            <td>@group.AttendanceRate%</td>
+                            <td>
+                                <a asp-action="Details" asp-controller="Group" asp-area="Assistants" asp-route-id="@group.GroupID" class="btn btn-primary">Details</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5">No performance data available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        // Functions for accepting and declining invitations
+        function acceptInvitation(id) {
+            // In a real application, you would make an AJAX call to your controller
+            console.log('Accepting invitation: ' + id);
+
+            // Example AJAX call
+            fetch('/Assistant/AcceptInvitation/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Invitation accepted successfully!');
+                    // Reload the page or update the UI
+                    window.location.reload();
+                } else {
+                    alert('Failed to accept invitation.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing your request.');
+            });
+        }
+
+        function declineInvitation(id) {
+            // In a real application, you would make an AJAX call to your controller
+            console.log('Declining invitation: ' + id);
+
+            // Example AJAX call
+            fetch('/Assistant/DeclineInvitation/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Invitation declined successfully!');
+                    // Reload the page or update the UI
+                    window.location.reload();
+                } else {
+                    alert('Failed to decline invitation.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing your request.');
+            });
+        }
+    </script>
 }
