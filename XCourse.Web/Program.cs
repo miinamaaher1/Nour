@@ -8,6 +8,7 @@ using XCourse.Core.Entities;
 using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Web.ServicesCollections;
+using XCourse.Web.Middleware;
 namespace XCourse.Web
 {
     public class Program

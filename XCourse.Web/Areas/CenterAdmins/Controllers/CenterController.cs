@@ -159,22 +159,51 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // GET: CenterController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var deletecenter = _centerAdminService.GetCenter(id);
+            if (deletecenter == null) return NotFound();
+            return View(deletecenter);
         }
 
         // POST: CenterController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(CreateCenterViewModel Center)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+
+
+                int t=_centerAdminService.DeleteCenter(Center);
+                if (t == 1)
+                {
+                    return RedirectToAction(nameof(Index));
+
+                }
+
+                else
+                {
+                    
+
+                    return RedirectToAction("ConfirmDelete", new {  CenterID=Center.CenterID });
+
+                }
+               
             }
             catch
             {
-                return View();
+                return View(Center);
             }
         }
+
+
+
+
+        public ActionResult ConfirmDelete(int CenterID)
+        {
+            var Deletemessage=_centerAdminService.GetCenter(CenterID);
+            return View(Deletemessage);
+
+        }
+        
     }
 }

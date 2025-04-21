@@ -353,8 +353,9 @@ namespace XCourse.Services.Implementations.TeacherServices
                         TotalPrice = room.PricePerHour,
                         StartTime = session.StartTime,
                         EndTime = session.EndTime,
+                        Date = current,
                         IsDeleted = false,
-                        WeekDay = session.DayId,
+                        WeekDay = GetWeekDay(current),
                         Session = newSession
                     };
 
@@ -795,7 +796,20 @@ namespace XCourse.Services.Implementations.TeacherServices
         {
             return (s1 < e2 && e1 > s2);
         }
-
+        private WeekDay GetWeekDay(DateOnly date)
+        {
+            return date.DayOfWeek switch
+            {
+                DayOfWeek.Saturday => WeekDay.Saturday,
+                DayOfWeek.Sunday => WeekDay.Sunday,
+                DayOfWeek.Monday => WeekDay.Monday,
+                DayOfWeek.Tuesday => WeekDay.Tuesday,
+                DayOfWeek.Wednesday => WeekDay.Wednesday,
+                DayOfWeek.Thursday => WeekDay.Thursday,
+                DayOfWeek.Friday => WeekDay.Friday,
+                _ => WeekDay.None
+            };
+        }
         public Task<ICollection<string>> GetAllGovernorates()
         {
             throw new NotImplementedException();

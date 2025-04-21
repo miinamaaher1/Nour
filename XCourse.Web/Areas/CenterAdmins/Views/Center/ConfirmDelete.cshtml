@@ -1,0 +1,38 @@
+﻿@model XCourse.Core.ViewModels.CenterAdminViewModels.CreateCenterViewModel
+@section Styles {
+    <link rel="stylesheet" href="~/css/Assistants/Card.css" />
+}
+
+<div class="container">
+    <div class="teacher-card">
+        <div class="teacher-card__header">
+            Unable to delete the center 
+            <br />
+            <br />
+            Please delete the rooms first before deleting the center.
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Center Name:</div>
+            <div class="teacher-card__value">@Model.Name</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">
+                @Html.DisplayNameFor(model => model.Address)
+                :
+            </div>
+            <div class="teacher-card__value">@Model.Address.Street @Model.Address.City</div>
+        </div>
+     
+        <div class="teacher-card__actions" style="justify-content: center;">
+
+           
+            <a asp-action="Index"
+               class="btn btn--accept"
+               style="display: inline-block; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </a>
+
+        </div>
+    </div>
+</div>

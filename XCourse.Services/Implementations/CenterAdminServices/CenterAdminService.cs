@@ -353,6 +353,7 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
             var Reservation = _unitOfWork.RoomReservations.Find(r => r.ID == ReservationID, new string[] { "Room", "Room.RoomReservations" });
 
+
             if (Reservation == null)
                 return new EditRoomReservation();
 
@@ -367,6 +368,12 @@ namespace XCourse.Services.Implementations.CenterAdminServices
                 .Where(r => r.Equipment == Reservation.Room.Equipment &&
                             r.Capacity >= Reservation.Room.Capacity);
                 
+
+
+
+
+
+
 
             var availableRoomsList = correctRooms
        .Where(room =>
@@ -514,18 +521,32 @@ namespace XCourse.Services.Implementations.CenterAdminServices
         {
             var Room = _unitOfWork.Rooms.Find(r => r.ID == room.RoomId, new string[] { "RoomReservations" });
             if (Room == null) return 0;
-            var pendingreservations= Room.RoomReservations.Where(r => r.ReservationStatus == ReservationStatus.Declined|| r.ReservationStatus == ReservationStatus.Pending|| (r.ReservationStatus==ReservationStatus.Approved&&r.Date < DateOnly.FromDateTime(DateTime.Now))).ToList();
-           
-            _unitOfWork.RoomReservations.DeleteRange(pendingreservations);
+          
+            var reservationsToDelete = Room.RoomReservations
+          .Where(r =>
+         r.ReservationStatus == ReservationStatus.Declined ||
+         r.ReservationStatus == ReservationStatus.Pending ||
+         (r.ReservationStatus == ReservationStatus.Approved && r.Date < DateOnly.FromDateTime(DateTime.Now)))
+         .Distinct()
+         .ToList();
+
+            _unitOfWork.RoomReservations.DeleteRange(reservationsToDelete);
+
+            
 
             var FuturePendingReservations = Room.RoomReservations.Where(r => (r.ReservationStatus == ReservationStatus.Pending || r.ReservationStatus == ReservationStatus.Declined) && r.Date < DateOnly.FromDateTime(DateTime.Now)).ToList();
             _unitOfWork.RoomReservations.DeleteRange(FuturePendingReservations);
 
 
-            var approveReservations = Room.RoomReservations.Where(r => r.ReservationStatus == ReservationStatus.Approved)
-                .Where(r => r.Date >= DateOnly.FromDateTime(DateTime.Now)).ToList();
 
-            if(!approveReservations.Any())
+
+
+            var approveReservations = Room.RoomReservations
+             .Where(r =>
+            r.ReservationStatus == ReservationStatus.Approved &&
+                 r.Date >= DateOnly.FromDateTime(DateTime.Now))
+                 .ToList();
+            if (!approveReservations.Any())
             {
                 _unitOfWork.Save();
                 _unitOfWork.Rooms.Delete(Room);
@@ -537,12 +558,37 @@ namespace XCourse.Services.Implementations.CenterAdminServices
             return 0;
             
 
+           
+        }
+
+        public int DeleteCenter(CreateCenterViewModel center)
+        {
+            if (center == null)
+            {
+                return 0;
+            }
+
+            var Center = _unitOfWork.Centers.Find(c => c.ID == center.CenterID, new string[] { "Rooms" });
+
+            if (!Center.Rooms.Any())
+            {
+              
+                _unitOfWork.Centers.Delete(Center);
+                _unitOfWork.Save();
+                return 1;
+
+            }
 
             
 
+                return 0;
 
-           
+
         }
+
+
+
+
 
     }
 }

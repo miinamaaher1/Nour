@@ -1,7 +1,7 @@
 @model List<XCourse.Core.Entities.Session>;
 
-<div class="container my-4" style="margin: auto">
-    <div class="row g-4" style="margin: auto">
+<div class="container my-4">
+    <div class="row g-4 session-cards-row">
         @if (Model != null && Model.Any())
         {
             foreach (var session in Model)
@@ -22,12 +22,10 @@
                             </h5>
                             <ul class="session-list">
                                 <li>
-                                    <i class="fas fa-clock icon-spaced"></i>
                                     <strong>Duration:</strong>
                                     @(session.Duration?.ToString() ?? "N/A")
                                 </li>
                                 <li>
-                                    <i class="fas fa-calendar-alt icon-spaced"></i>
                                     @if (session.StartDateTime.Date == session.EndDateTime.Date)
                                     {
                                         <span class="session-date">@session.StartDateTime.ToString("yyyy-MM-dd")</span>
@@ -46,10 +44,9 @@
                                     }
                                 </li>
                                 <li>
-                                    <i class="fas fa-map-marker-alt icon-spaced"></i>
-                                    <strong>Location:</strong>
                                     @if (session.IsOnline)
                                     {
+                                        <strong>Location:</strong>
                                         <span class="session-badge-primary">Online</span>
                                         @if (!string.IsNullOrWhiteSpace(session.URL))
                                         {
@@ -63,7 +60,10 @@
                                         if (!string.IsNullOrWhiteSpace(session.Address.Neighborhood)) addressParts.Add(session.Address.Neighborhood);
                                         if (!string.IsNullOrWhiteSpace(session.Address.City)) addressParts.Add(session.Address.City);
                                         if (!string.IsNullOrWhiteSpace(session.Address.Governorate)) addressParts.Add(session.Address.Governorate);
-                                        <span class="session-address">@string.Join(", ", addressParts)</span>
+                                        <div class="session-location-box">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>@string.Join(", ", addressParts)</span>
+                                        </div>
                                     }
                                     else
                                     {
@@ -72,21 +72,17 @@
                                 </li>
                             </ul>
                             <div class="session-card-actions">
-                                <a asp-area="Teachers" asp-action="Details" asp-route-id="@session.ID" asp-controller="Sessions" class="session-btn-accent">
-                                    <i class="fas fa-info-circle"></i> Session Details
+                                <a asp-area="Teachers" asp-action="Details" asp-route-id="@session.ID" asp-controller="Sessions" class="session-btn-accent" title="Details">
+                                    <i class="fas fa-info-circle"></i> Details
                                 </a>
-                                <a asp-area="Teachers" asp-action="Edit" asp-route-id="@session.ID" asp-controller="Sessions" class="session-btn-edit">
-                                    <i class="fas fa-pen"></i> Edit
+                                <a asp-area="Teachers" asp-action="Edit" asp-route-id="@session.ID" asp-controller="Sessions" class="session-btn-accent" title="Edit">
+                                    <i class="fas fa-edit"></i> Edit
                                 </a>
                                 @if (session.Group != null)
                                 {
-                                    <a asp-area="Teachers" asp-action="Details" asp-route-id="@session.GroupID" asp-controller="Group" class="session-btn-primary">
+                                    <a asp-area="Teachers" asp-action="Details" asp-route-id="@session.GroupID" asp-controller="Group" class="session-btn-accent" title="Group">
                                         <i class="fas fa-users"></i> Group
                                     </a>
-                                }
-                                else
-                                {
-                                    <span class="session-btn-secondary session-btn-disabled"><i class="fas fa-users"></i> No Group</span>
                                 }
                             </div>
                         </div>
@@ -105,30 +101,64 @@
 
 @section Styles {
     <style>
+        .session-location-box {
+            background: var(--clr-surface);
+            border: 1px solid var(--clr-border);
+            border-radius: 0.6rem;
+            padding: 0.6rem 1rem;
+            margin: 0.5rem 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1rem;
+            color: var(--clr-text-primary);
+            box-shadow: 0 2px 8px rgba(122,60,139,0.06);
+            line-height: 2 !important;
+        }
+        .session-location-box i {
+            color: var(--clr-primary);
+            font-size: 1.2em;
+        }
         .session-card {
             background: var(--clr-surface);
             border: 1px solid var(--clr-border);
             border-radius: 1rem;
-            color: var(--clr-text-primary);
-            transition: box-shadow 0.2s;
-            height: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            padding: 1.2rem 1rem;
+            margin-bottom: 2rem;
+            min-height: 340px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 1px 4px var(--clr-overlay);
-            margin-bottom: 1.5rem;
+            justify-content: space-between;
+            transition: box-shadow 0.2s;
         }
-
-            .session-card:hover {
-                box-shadow: 0 4px 24px var(--clr-overlay);
+        .session-cards-row > .col-md-6, .session-cards-row > .col-lg-4, .session-cards-row > .col-12 {
+            display: flex;
+        }
+        .session-card {
+            width: 100%;
+        }
+        @@media (max-width: 991px) {
+            .session-cards-row > .col-md-6, .session-cards-row > .col-lg-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
             }
-
+        }
+        @@media (max-width: 575px) {
+            .session-card {
+                min-height: unset;
+                padding: 1rem 0.5rem;
+            }
+        }
+        .session-card:hover {
+            box-shadow: 0 4px 24px var(--clr-overlay);
+        }
         .session-card-body {
             display: flex;
             flex-direction: column;
             height: 100%;
             padding: 1.5rem;
         }
-
         .session-card-title {
             color: var(--clr-primary);
             font-size: 1.25rem;
