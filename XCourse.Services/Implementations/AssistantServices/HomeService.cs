@@ -58,7 +58,7 @@ namespace XCourse.Services.Implementations.AssistantServices
 
             var groupIds = invitations.Select(i => i.GroupID).ToList();
 
-            var sessions = await _unitOfWork.Sessions.FindAllAsync(s => groupIds.Contains(s.GroupID) && s.StartDateTime.Date == DateTime.Now.Date, includes: new[] { "Group", "Group.Teacher.AppUser" });
+            var sessions = await _unitOfWork.Sessions.FindAllAsync(s => groupIds.Contains(s.GroupID) && s.StartDateTime.Date == DateTime.Now.Date, includes: new[] { "Group", "Group.Teacher.AppUser" ,"Group.Subject"});
 
             var sessionsToday = sessions.Select(s => new SessionsToday
             {
@@ -77,19 +77,23 @@ namespace XCourse.Services.Implementations.AssistantServices
             var invitations = await _unitOfWork.AssistantInvitations.FindAllAsync(i => i.AssistantID == assistantId && i.Status == AssistantInvitationStatus.Accepted);
 
             var groupIds = invitations.Select(i => i.GroupID).ToList();
-            var groups = await _unitOfWork.Groups.FindAllAsync(g => groupIds.Contains(g.ID), includes: new[] { "Subject", "Teacher.AppUser" });
+            var groups = await _unitOfWork.Groups.FindAllAsync(g => groupIds.Contains(g.ID), includes: new[] { "Subject", "Teacher.AppUser","Students" });
 
-            var groupPerformanceTasks = groups.Select(async g => new GroupPerformance
+            var groupPerformances = new List<GroupPerformance>();
+
+            foreach (var g in groups)
             {
-                GroupID = g.ID,
-                GroupName = g.Subject.Topic,
-                TeacherName = g.Teacher.AppUser.FirstName + " " + g.Teacher.AppUser.LastName,
-                StudentsPercentage = g.CurrentStudents > 0 ? (double)(g.CurrentStudents / g.MaxStudents) * 100 : 0,
-                AttendanceRate = await getAttendanceRate(g.ID),
-            });
+                var performance = new GroupPerformance
+                {
+                    GroupID = g.ID,
+                    GroupName = g.Subject.Topic,
+                    TeacherName = g.Teacher.AppUser.FirstName + " " + g.Teacher.AppUser.LastName,
+                    StudentsPercentage = g.Students.Count > 0 ? (double)(g.Students.Count / g.MaxStudents) * 100 : 0,
+                    AttendanceRate = await getAttendanceRate(g.ID),
+                };
 
-            var groupPerformances = await Task.WhenAll(groupPerformanceTasks);
-
+                groupPerformances.Add(performance);
+            }
             return groupPerformances.ToList();
         }
 
