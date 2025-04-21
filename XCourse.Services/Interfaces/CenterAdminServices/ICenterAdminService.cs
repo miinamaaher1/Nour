@@ -26,5 +26,8 @@ namespace XCourse.Services.Interfaces.CenterAdminServices
         public int DeleteCenter(CreateCenterViewModel center);
 
 
+        public int DeleteReservation(DetailsReservationViewModel details);
+
+
     }
 }

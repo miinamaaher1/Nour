@@ -1,49 +1,71 @@
-﻿@model XCourse.Core.ViewModels.CenterAdminViewModels.CreateCenterViewModel
+@model XCourse.Core.ViewModels.CenterAdminViewModels.CreateCenterViewModel
+@section Styles {
+    <link rel="stylesheet" href="~/css/Assistants/Card.css" />
+    <link rel="stylesheet" href="~/css/form.css" />
+    <style>
+        .center-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            
+        }
+    </style>
+   
 
-@{
-    ViewData["Title"] = "Delete";
+
 }
+<div class="container">
+    <div class="teacher-card">
+        <div class="teacher-card__header">
+            @if (Model.PreviewPicture != null)
+            {
+                <img class="center-image" id="PreviewPicture" alt="profile"
+                     src="data:image/*;base64,@(Convert.ToBase64String(Model.PreviewPicture))" />
+            }
+            else
+            {
+                <img class ="center-image" id="PreviewPicture" alt="profile"
+                     src="~/images/default_center.svg" />
+            }            Are you sure you want to delete this?
+        </div>
 
-<h1>Delete</h1>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Center Name:</div>
+            <div class="teacher-card__value">@Model.Name</div>
+        </div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>CreateCenterViewModel</h4>
-    <hr />
-    <dl class="row">
+        <div class="teacher-card__row">
+            <div class="teacher-card__value">
+                <i class="fas fa-map-marker-alt"></i>&nbsp;
+                <span>@Model.Address.Street St. @Model.Address.City City, @Model.Address.Governorate</span>
+            </div>
+        </div>
+
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Gender:</div>
+            <div class="teacher-card__value">
+
+                
+                @if (@Model.IsGirlsOnly == true)
+                {
+
+                    <span>Girls</span>
+
+                }
+                <span>Mixed</span>
+
+                </div>
+        </div>
+    </div>
+</div>
+
+
+
        
       
  
-
-
-       <dt>
-            <div class="form-group" style="text-align: center">
-                @if (Model.PreviewPicture != null)
-                {
-                    <img id="PreviewPicture" alt="profile" style="border-radius: 10px; width: 100%; height: 250px; object-fit: cover;"
-                         src="data:image/*;base64,@(Convert.ToBase64String(Model.PreviewPicture))" />
-                }
-                else
-                {
-                    <img id="PreviewPicture" alt="profile" style="border-radius: 10px; width: 100%; height: 250px; object-fit: cover;"
-                         src="~/images/default_center.svg" />
-                }
-                </div>
-       </dt>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-       
-    </dl>
 
     <form asp-action="Delete">
        
@@ -52,7 +74,11 @@
         <input type="hidden" asp-for="Name" />
         <input type="hidden" asp-for="Address" />
 
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index"  class="btn btn-outline-success">Back to List</a>
+    <div class="form-navigation">
+        <a asp-action="Index" class="btn btn-close">Cancel</a>
+        <button type="submit" class="btn btn-primary">Delete</button>
+    </div>
+       
     </form>
-</div>
+
+    
