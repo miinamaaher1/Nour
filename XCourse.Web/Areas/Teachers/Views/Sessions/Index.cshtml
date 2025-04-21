@@ -1,4 +1,4 @@
-﻿@using XCourse.Core.ViewModels.TeachersViewModels
+@using XCourse.Core.ViewModels.TeachersViewModels
 @model List<TeacherSessionVM>
 
 @{
@@ -59,7 +59,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            background: var(--clr-secondary);
+            background: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -156,26 +156,112 @@
                 color: var(--clr-accent);
             }
 
-        /* Popup styles */
-        .tui-full-calendar-popup-container {
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-            border-radius: 10px !important;
-            overflow: hidden !important;
+        /* Popup styles - static light mode colors */
+        .tui-full-calendar-popup {
+            z-index: 9999 !important;
+            background: #fff !important;
+            backdrop-filter: blur(2px) !important;
         }
 
-        .tui-full-calendar-popup-section-item {
-            padding: 8px 0 !important;
+        .tui-full-calendar-popup-container {
+            box-shadow: 0 20px 40px rgba(60, 60, 130, 0.19) !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            border: 2px solid #13c296 !important; /* green accent */
+            background: #fff !important;
+            padding: 32px 28px 24px 28px !important;
+            min-width: 340px !important;
+            max-width: 440px !important;
+            margin: auto !important;
+        }
+
+        .tui-full-calendar-popup-container * {
+            color: #222 !important; /* dark text for light mode */
+        }
+
+        .tui-full-calendar-popup-container a.btn-outline-info,
+        .tui-full-calendar-popup-container a.btn-outline-info:visited {
+            color: #13c296 !important; /* green accent */
+            border-color: #13c296 !important;
+            background: transparent !important;
+        }
+        .tui-full-calendar-popup-container a.btn-outline-info:hover {
+            background: #13c296 !important;
+            color: #fff !important;
+            border-color: #13c296 !important;
+        }
+
+        .tui-full-calendar-popup-section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid #e5e7eb !important; /* light gray */
+        }
+
+        .tui-full-calendar-schedule-title {
+            font-size: 1.35rem !important;
+            font-weight: 700 !important;
+            color: #4a6cf7 !important; /* blue primary */
+            letter-spacing: 0.5px;
+        }
+
+        .tui-full-calendar-popup-detail-date {
+            font-size: 1.05rem !important;
+            color: #7b8794 !important; /* muted gray */
+            font-weight: 500;
+        }
+
+        .tui-full-calendar-section-detail {
+            margin-top: 18px !important;
+        }
+
+        .tui-full-calendar-popup-detail-item {
+            padding: 0 !important;
+            background: none !important;
+            box-shadow: none !important;
+            margin-bottom: 10px !important;
+        }
+
+        .tui-full-calendar-popup-detail-item-separate {
+            border-bottom: 1px solid #e5e7eb !important;
+            padding-bottom: 10px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .tui-full-calendar-popup-detail-item:last-child {
+            border-bottom: none !important;
+        }
+
+        .tui-full-calendar-popup-top-line {
+            height: 5px !important;
+            background: #13c296 !important; /* green accent */
+            color: #fff !important;
+            border-radius: 0 0 8px 8px !important;
+        }
+
+        .tui-full-calendar-popup-arrow-fill {
+            background: #4a6cf7 !important; /* blue primary */
+            color: #fff !important;
         }
 
         .tui-full-calendar-popup-section-title {
-            font-weight: 600 !important;
+            font-weight: 700 !important;
+            color: #4a6cf7 !important; /* blue primary */
+            font-size: 1.12rem !important;
+        }
+
+        .tui-full-calendar-popup-section-item {
+            padding: 12px 0 !important;
+            font-size: 1.02em !important;
         }
 
         .tui-full-calendar-section-button {
-            background-color: var(--primary-color) !important;
-            color: white !important;
+            background: #4a6cf7 !important; /* blue primary */
+            color: #fff !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
             border: none !important;
-            border-radius: 4px !important;
         }
 
         /* Calendar Controls Styling */
