@@ -188,7 +188,7 @@
                 @foreach(var session in Model.Sessions)
                 {
                     <div class="group-carousel__slide">
-						<a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Students" asp-route-Id="@session.ID">
+						<a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Assistants" asp-route-Id="@session.ID">
                         <div class="session-card">
                             <div class="session-card__header">
                                 @if (session.IsOnline)
