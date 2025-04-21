@@ -106,26 +106,6 @@
                     </div>
                 }
 
-                <div class="form-group" style="text-align: center">
-                    @if (Model.Input.ProfilePicture != null)
-                    {
-                        <img id="profilePicture" alt="profile" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;"
-                                src="data:image/*;base64,@(Convert.ToBase64String(Model.Input.ProfilePicture))" />
-                    }
-                    else
-                    {
-                        <img id="profilePicture" alt="profile" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;"
-                                src="~/images/default_user.svg" />
-                    }
-                    <div class="custom-file mt-2">
-                        <input type="file"
-                                accept="image/*"
-                                asp-for="Input.ProfilePicture"
-                                class="form-control"
-                                onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
-                        <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
-                    </div>
-                </div>
                 <div class="form-navigation">
                     <button id="registerSubmit" type="submit" class="btn btn-primary">Sign up</button>
                 </div>

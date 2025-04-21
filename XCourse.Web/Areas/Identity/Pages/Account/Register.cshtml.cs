@@ -124,8 +124,6 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             public string LastName { get; set; }
             [Column(TypeName = "varbinary(MAX)")]
             [Display(Name = "Profile Picture")]
-            public byte[] ProfilePicture { get; set; }
-            [EnumDataType(typeof(Gender))]
             public Gender Gender { get; set; }
             [DataType(DataType.Date)]
             [Display(Name = "Date of Birth")]
@@ -182,17 +180,6 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 user.DateOfBirth = Input.DateOfBirth;
                 user.Gender = Input.Gender;
                 user.AccountType = Input.AccountType;
-
-                if (Request.Form.Files.Count > 0)
-                {
-                    var file = Request.Form.Files.FirstOrDefault();
-
-                    using (var dataStream = new MemoryStream())
-                    {
-                        await file.CopyToAsync(dataStream);
-                        user.ProfilePicture = dataStream.ToArray();
-                    }
-                }
 
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
