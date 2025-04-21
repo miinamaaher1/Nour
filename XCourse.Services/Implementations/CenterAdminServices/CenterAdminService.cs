@@ -324,17 +324,19 @@ namespace XCourse.Services.Implementations.CenterAdminServices
         {
             var Reservation = _unitOfWork.RoomReservations.Find(R => R.ID == id,
 
-                new string[] { "Room" });
+                new string[] {
+                     "Room",
+                     "Session",
+                     "Student"
 
-
+                });
             if (Reservation == null) return new DetailsReservationViewModel();
-
-
             var Details = new DetailsReservationViewModel()
+
             {
                 RoomID = Reservation.RoomID,
                 ID = Reservation.ID,
-                Name = Reservation.Room.Name,
+                Name = Reservation!.Room!.Name,
                 EndTime = Reservation.EndTime,
                 StartTime = Reservation.StartTime,
                 WeekDay = Reservation.WeekDay,
@@ -343,7 +345,33 @@ namespace XCourse.Services.Implementations.CenterAdminServices
                 Capacity = Reservation.Room.Capacity,
                 Date = Reservation.Date,
                 PreviewPicture = Reservation.Room.PreviewPicture
+
+
             };
+
+          
+            if(Reservation.Student !=null)
+            {
+                var Student = _unitOfWork.Students.Find(s => s.ID == Reservation.StudentID,
+                    new string[] {
+                     "AppUser"
+                });
+
+                Details.TeacherName = Student!.AppUser!.FirstName;
+                Details.SubjectName = "for Study";
+                Details.Type = "student";
+            }
+
+            else
+            {
+                var group = _unitOfWork.Groups.Find(g => g.ID == Reservation!.Session!.GroupID
+                , new string[] { "Subject", "Teacher.AppUser" });
+
+                Details.TeacherName = group!.Teacher!.AppUser!.FirstName;
+             Details.SubjectName = group!.Subject!.Topic;
+                Details.Type = "Teacher";
+            }
+            
             return Details;
 
         }
@@ -586,6 +614,17 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
         }
 
+        public int DeleteReservation(DetailsReservationViewModel details)
+        {
+
+            var reservation = _unitOfWork.RoomReservations.Find(r => r.ID == details.ID);
+            if (reservation == null) return 0;
+
+            _unitOfWork.RoomReservations.Delete(reservation);
+           _unitOfWork.Save();
+            return reservation.RoomID;
+
+        }
 
 
 
