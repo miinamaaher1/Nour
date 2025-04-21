@@ -1,6 +1,6 @@
-﻿@model IEnumerable<XCourse.Core.Entities.Subject>
+@model IEnumerable<XCourse.Core.Entities.Subject>
 @section Styles {
-    <link rel="stylesheet" href="~/css/Teachers/SubjectsPage.css" />
+  <link rel="stylesheet" href="~/css/Teachers/SubjectsPage.css" />
 }
 @{
     ViewData["Title"] = "Index";
@@ -9,8 +9,6 @@
 <div class="container mt-5">
     <!-- Table ****  -->
     @* <h2>Subjects</h2> *@
-
-
     @*     <a asp-action="Create" *@
     @*        class="data-table__btn data-table__btn--add" *@
     @*        style="display: inline-block; text-decoration: none;"> *@
@@ -18,11 +16,14 @@
     @*         Add Subject *@
     @*     </a> *@
 
-    <div class="container">
+
+     <div class="container">
+
         <div class="header-section">
             <h2>Subjects</h2>
             <a asp-action="Create" class="data-table__btn data-table__btn--add"
                style="display: inline-block; text-decoration: none;">
+
 
                 <i class="fas fa-plus"></i> Add Subject
             </a>
@@ -138,3 +139,4 @@
             </div>
         </div>
     </div>
+

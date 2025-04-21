@@ -104,11 +104,13 @@ namespace XCourse.Services.Implementations.StudentServices
             {
 
                 var auser = await _userManager.GetUserAsync(user);
+
                 var room = _unitOfWork.Rooms.Find(r=>r.ID==roomId, ["Center"]);
 
                 var centerAdmin= _unitOfWork.CenterAdmins.Find(c=>c.ID == room.Center.CenterAdminID, ["AppUser"]);
 
                 var total = (decimal)(end - start).TotalHours * room.PricePerHour;
+
 
                 var reservations = _unitOfWork.RoomReservations.FindAll(r => r.Date == date && r.RoomID == roomId);
 
@@ -144,9 +146,6 @@ namespace XCourse.Services.Implementations.StudentServices
                     status.Errors = ["Payment failed"];
                     return status;
                 }
-
-
-
                 _unitOfWork.RoomReservations.Add(rr);
                 _unitOfWork.Save();
                 status.IsValid = true;

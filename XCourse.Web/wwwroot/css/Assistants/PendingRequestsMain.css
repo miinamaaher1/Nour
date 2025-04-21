@@ -36,7 +36,6 @@
         font-weight: 500;
         text-align: left;
         padding: 14px 16px;
-        border-bottom: 2px solid var(--clr-border);
     }
 
         .data-table__table th:first-child {
@@ -46,6 +45,10 @@
         .data-table__table th:last-child {
             border-top-right-radius: 8px;
         }
+
+    .data-table__table tr:last-child td {
+        border-bottom: none;
+    }
 
     .data-table__table tbody tr {
         transition: background-color 0.2s;
@@ -150,3 +153,160 @@
         background-color: color-mix(in srgb, var(--clr-primary) 85%, black);
         transform: translateY(-5px);
     }
+
+/* Modal Base Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--clr-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+    .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+.modal-container {
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-container {
+    transform: translateY(0);
+}
+
+.modal-content {
+    background-color: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.modal-close-button {
+    background: none;
+    border: none;
+    color: var(--clr-text-on-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 20px;
+    border-top: 1px solid var(--clr-border);
+}
+
+    .modal-footer form {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+
+/* Button Styles */
+.btn--accept, .btn--reject {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn--accept {
+    background-color: var(--clr-secondary);
+    color: var(--clr-text-on-secondary);
+}
+
+.btn--reject {
+    background-color: #D32F2F; /* Red for deletion/rejection */
+    color: white;
+}
+
+.btn--accept:hover {
+    background-color: color-mix(in srgb, var(--clr-secondary) 90%, black);
+}
+
+.btn--reject:hover {
+    background-color: #B71C1C; /* Darker red on hover */
+}
+
+/* Teacher Card Styles */
+.teacher-card {
+    background-color: var(--clr-surface);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.teacher-card__header {
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--clr-text-primary);
+    text-align: center;
+    border-bottom: 1px solid var(--clr-border);
+    margin-bottom: 12px;
+}
+
+.teacher-card__row {
+    display: flex;
+    padding: 8px 16px;
+}
+
+.teacher-card__label {
+    flex: 0 0 140px;
+    font-weight: 600;
+    color: var(--clr-text-secondary);
+}
+
+.teacher-card__value {
+    flex: 1;
+    color: var(--clr-text-primary);
+}

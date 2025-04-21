@@ -1,0 +1,933 @@
+﻿@using XCourse.Core.DTOs.StudentDTOs
+@model XCourse.Core.ViewModels.AssistantViewModels.AssistantGroupDetails
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="col-12">
+    <!-- 1. Profile Section -->
+    <div class="container">
+        <section class="group__profile">
+            <div class="group__profile__container">
+                <div class="group__profile__overlay"></div>
+                <div class="group__profile__header">
+                    @if (Model.Teacher.AppUser.ProfilePicture != null)
+                    {
+                        <img alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(Model.Teacher.AppUser.ProfilePicture))"
+                        class="group__profile__image" />
+                    }
+                    else
+                    {
+                        <img alt="profile" src="~/images/default_profile.png" class="group__profile__image" />
+                    }
+                    <div class="group__profile__details">
+                        <h2 class="group__profile__name">@Model.Teacher.AppUser.FirstName @Model.Teacher.AppUser.LastName</h2>
+                        <div class="group__profile__info">
+                            <span>@Model.Subject.Topic</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!--2. Group Details -->
+    <div class="container my-4">
+        <!-- Card 01 -->
+        <div class="group-card">
+            <div class="group-content">
+                <div class="group-card__meta row g-2">
+                    <di class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        @switch ((int)(Model?.Subject.Year!))
+                        {
+                            case 0:
+                                <span>Primary One</span>
+                                break;
+                            case 1:
+                                <span>Primary Two</span>
+                                break;
+                            case 2:
+                                <span>Primary Three</span>
+                                break;
+                            case 3:
+                                <span>Primary Four</span>
+                                break;
+                            case 4:
+                                <span>Primary Five</span>
+                                break;
+                            case 5:
+                                <span>Primary Six</span>
+                                break;
+                            case 6:
+                                <span>Preparatory One</span>
+                                break;
+                            case 7:
+                                <span>Preparatory Two</span>
+                                break;
+                            case 8:
+                                <span>Preparatory Three</span>
+                                break;
+                            case 9:
+                                <span>Secondary One</span>
+                                break;
+                            case 10:
+                                <span>Secondary Two</span>
+                                break;
+                            case 11:
+                                <span>Secondary Three</span>
+                                break;
+                            default:
+                                <span>Unknown Grade</span>
+                                break;
+                        }
+                    </di g-2v>
+                    <di class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span>@Model.Subject.Major</span>
+                    </di g-2v>
+                    <div class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-school"></i>
+                        @switch ((int)Model?.Subject.Semester!)
+                        {
+                            case 1:
+                                <span>First Semester</span>
+                                break;
+                            case 2:
+                                <span>Second Semester</span>
+                                break;
+                            case 3:
+                                <span>Full Year</span>
+                                break;
+                            default:
+                                <span>Unknown</span>
+                                break;
+                        }
+                    </div>
+                    <div class="group-card__meta-item col-12 col-md-6 col-lg-3">
+                        <i class="fa-solid fa-tags"></i>
+                        <span>L.E. @Model.PricePerSession</span>
+                    </div>
+                </div>
+                <div class="badge-container">
+                    @if (Model.IsOnline)
+                    {
+                        <span class="group-card__feature">
+                            <i class="fas fa-globe"></i>&nbsp;Online
+                        </span>
+                    }
+                    @if (Model.IsPrivate)
+                    {
+                        <span class="group-card__feature">
+                            <i class="fas fa-lock"></i>&nbsp;Private
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Card 02 -->
+        <div class="group-card">
+            <div class="group-card__content">
+                <div class="group-card__sessions mt-4">
+                    <div class="group-card__session-title">Default Session Days</div>
+                    @foreach(var def in Model.Defaults)
+                    {
+                        <div class="session-time">
+                            <div class="day-circle">
+                                @if (def.WeekDay.HasValue)
+                                {
+                                    @switch ((int)(def.WeekDay!))
+                                    {
+                                        case 1:
+                                            <div class="day-circle">SAT</div>
+                                            break;
+                                        case 2:
+                                            <div class="day-circle">SUN</div>
+                                            break;
+                                        case 4:
+                                            <div class="day-circle">MON</div>
+                                            break;
+                                        case 8:
+                                            <div class="day-circle">TUE</div>
+                                            break;
+                                        case 16:
+                                            <div class="day-circle">WED</div>
+                                            break;
+                                        case 32:
+                                            <div class="day-circle">THU</div>
+                                            break;
+                                        case 64:
+                                            <div class="day-circle">FRI</div>
+                                            break;
+                                        default:
+                                            <div class="day-circle"> - </div>
+                                            break;
+                                    }
+                                }
+                            </div>
+                            <div>@def.StartTime - @def.EndTime</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- card 03 -->
+        <!-- Info Section -->
+        <section class="center-info">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Center Details -->
+                    <div class="col-md-8 d-flex flex-column justify-content-center">
+                        @if (Model?.DefaultRoom?.Center?.Name != null)
+                        {
+                            <div class="center-info__name">
+                                <i class="fa-solid fa-building-columns me-2"></i>
+                                @Model.DefaultRoom.Center.Name
+                            </div>
+                        }
+                        @if (Model?.Address?.Governorate != null)
+                        {
+                            <div class="center-info__location">
+                                <i class="fa-solid fa-location-dot me-2"></i>
+                                @Model.Address.Street St. @Model.Address.City City, @Model.Address.Governorate
+                            </div>
+                        }
+                    </div>
+                    <!-- Map Icon -->
+                    <div class="col-md-4 d-flex justify-content-center align-items-center">
+                        <div class="center-info__map">
+                            @if(Model.Location != null)
+                            {
+                                <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.Key, OriginX=Model.Location.X, OriginY=Model.Location.Y }" style="width:100%; height:100%" />
+                            } else
+                            {
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!--Upcoming sessions-->
+<div class="container col-12">
+    <div class="group-carousel container">
+        <div class="group-carousel__container">
+            <div class="session-section__title">
+                <h2>Upcoming Sessions</h2>
+                <a asp-action="Index" asp-controller="Session" asp-area="Students" class="view-all-link" asp-route-id="@Model.Id"> View All</a>
+            </div>
+            <div class="group-carousel__track" id="sessionsCarouselTrack">
+                <!-- Session 1 -->
+                @foreach(var session in Model.Sessions)
+                {
+                    <div class="group-carousel__slide">
+						<a style="text-decoration:none;" asp-action="Details" asp-controller="Session" asp-area="Students" asp-route-Id="@session.ID">
+                        <div class="session-card">
+                            <div class="session-card__header">
+                                @if (session.IsOnline)
+                                {
+                                    <div class="session-card__status session-card__status--online">
+                                        <i class="fas fa-circle"></i>
+                                        Online
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="session-card__status session-card__status--offline">
+                                        <i class="fas fa-circle"></i>
+                                        Offline
+                                    </div>
+                                }
+                                 
+                                <div class="session-card__duration">
+                                    <i class="fa-solid fa-hourglass-half"></i>
+                                        @session.Duration!.Value.ToString(@"hh\:mm")
+                                </div>
+                            </div>
+                                <div class="session-card__date">@session.StartDateTime.ToString("MMMM dd, yyyy - HH:mm")</div>
+                        </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="group-carousel__controls">
+            <button class="group-carousel__button" id="sessionPrevButton">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="group-carousel__button" id="sessionNextButton">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="group-carousel__dots" id="sessionsCarouselDots">
+            <!-- Dots will be added here via JavaScript -->
+        </div>
+    </div>
+</div>
+
+
+@{
+    var url = Model.CoverPicture != null ? "data:image/*;base64," + Convert.ToBase64String(Model.CoverPicture) : Url.Content("~/images/default_cover.png");
+}
+
+@section Styles {
+    <style>
+        .group__profile {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .group__profile__container {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            background: url('@url') center/cover no-repeat;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .group__profile__overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 1;
+        }
+
+        .group__profile__header {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .group__profile__image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 20px;
+            border: 3px solid var(--clr-primary);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .group__profile__details {
+            margin-left: 24px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .group__profile__name {
+            color: var(--clr-primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .group__profile__info {
+            display: flex;
+            font-size: 1.3rem;
+            align-items: center;
+            color: var(--clr-text-secondary);
+            font-size: normal;
+            margin-top: -10px;
+        }
+
+
+        /* ========= 2. GROUP CARD ========= */
+        .group-card {
+            background-color: var(--clr-surface);
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            padding: 1.5rem;
+            margin: 1rem auto;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .group-card__content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .group-card__meta-item {
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .group-card__meta-item i {
+            color: var(--clr-secondary);
+        }
+
+
+        /* ========= 3. SESSION TIMES ========= */
+        .group-card__sessions {
+            background-color: var(--clr-background);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+
+        .group-card__session-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--clr-text-secondary);
+        }
+
+        .group-card__session-time {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .group-card__day-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+
+        /* ========= Center Info Section ========= */
+        .center-info {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
+        }
+
+        .center-info__map {
+            width: 250px;
+            height: 250px;
+            background-color: var(--clr-accent,);
+            border-radius: 50%;
+            overflow: hidden;
+            color: var(--clr-text-on-accent);
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .center-info__name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .center-info__location {
+            font-size: 1rem;
+            color: var(--clr-text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .center-info i {
+            color: var(--clr-accent);
+        }
+
+        @@media (max-width: 768px) {
+            .center-profile__header {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .center-profile__details {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            .center-info__map {
+                width: 250px;
+                height: 250px;
+                margin-top: 3rem !important;
+            }
+        }
+
+        .group-card__feature {
+            display: flex;
+            align-items: center;
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .join-now-button {
+            margin-left: auto;
+        }
+
+        /* Sessions */
+/* Sessions Carousel Specific Styles */
+.sessions-carousel {
+    position: relative;
+    padding: 20px 0;
+}
+
+.sessions-carousel__container {
+    overflow: hidden;
+    margin-top: -20px;
+}
+
+.sessions-carousel__track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.sessions-carousel__slide {
+    flex: 0 0 100%;
+    padding: 10px 15px;
+    box-sizing: border-box;
+}
+
+@@media (min-width: 768px) {
+    .sessions-carousel__slide {
+        flex: 0 0 50%;
+    }
+}
+
+@@media (min-width: 992px) {
+    .sessions-carousel__slide {
+        flex: 0 0 33.333%;
+    }
+}
+
+@@media (min-width: 1200px) {
+    .sessions-carousel__slide {
+        flex: 0 0 25%;
+    }
+}
+
+/* Session Card Styles */
+.session-card {
+    background-color: var(--clr-surface);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--clr-border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 15px;
+}
+
+.session-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px var(--clr-overlay);
+}
+
+.session-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.session-section__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+.session-section__title h2 {
+    color: var(--clr-primary);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.session-section__title .view-all-link {
+    /* Example: */
+    color: var(--clr-primary);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: semi-bold;
+    padding-right: 20px;
+    cursor: pointer;
+}
+
+/* Example hover effect for the link */
+.session-section__title .view-all-link:hover {
+    text-decoration: underline;
+        }
+
+.session-card__status {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.session-card__status--online {
+    background-color: #e6f7ea;
+    color: #28a745;
+}
+
+.session-card__status--offline {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.session-card__status i {
+    margin-right: 5px;
+}
+
+.session-card__duration {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--clr-text-secondary);
+}
+
+    .session-card__duration i {
+        margin-right: 5px;
+    }
+
+.session-card__date {
+    font-size: 0.9rem;
+    color: var(--clrte-xt-secondary);
+    margin-bottom: 10px;
+}
+
+.session-card__subject {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    margin-bottom: 15px;
+}
+
+.session-card__teacher {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--clr-border);
+}
+
+.session-card__teacher-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+    .session-card__teacher-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.session-card__teacher-name {
+    font-size: 0.9rem;
+    color: var(--clr-text-secondary);
+}
+
+/* Sessions Carousel Controls */
+.sessions-carousel__controls {
+    position: absolute;
+    top: 50%;
+    left: -35px;
+    right: -35px;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.sessions-carousel__button {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    pointer-events: auto;
+    z-index: 15;
+}
+
+    .sessions-carousel__button:hover {
+        background-color: var(--clr-secondary);
+    }
+
+.sessions-carousel__dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 8px;
+}
+
+.sessions-carousel__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--clr-border);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sessions-carousel__dot--active {
+    background-color: var(--clr-primary);
+    transform: scale(1.2);
+}
+/* Block - Carousel */
+.group-carousel {
+    position: relative;
+    /* Make sure the container is a positioned element */
+    padding: 20px 0;
+    /* Reduced overall vertical padding */
+}
+
+.group-carousel__container {
+    overflow: hidden;
+}
+
+.group-carousel__track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.group-carousel__slide {
+    flex: 0 0 100%;
+    padding: 10px 15px;
+    box-sizing: border-box;
+}
+
+@@media (min-width: 768px) {
+    .group-carousel__slide {
+        flex: 0 0 50%;
+    }
+}
+
+@@media (min-width: 992px) {
+    .group-carousel__slide {
+        flex: 0 0 33.333%;
+    }
+}
+
+@@media (min-width: 1200px) {
+    .group-carousel__slide {
+        flex: 0 0 25%;
+    }
+}
+
+
+/* Element - Carousel Controls */
+.group-carousel__controls {
+    position: absolute;
+    top: 50%;
+    left: -35px;
+    right: -35px;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none;
+    /* Allow clicks to pass through except on buttons */
+}
+
+.group-carousel__button {
+    background-color: var(--clr-primary);
+    color: var(--clr-text-on-primary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    pointer-events: auto;
+    /* Enable interaction for buttons */
+    z-index: 15;
+    /* Ensure controls are above the carousel slides */
+}
+
+    /* Hover effect on buttons remains unchanged */
+    .group-carousel__button:hover {
+        background-color: var(--clr-secondary);
+    }
+
+.group-carousel__dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 8px;
+}
+
+.group-carousel__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--clr-border);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.group-carousel__dot--active {
+    background-color: var(--clr-primary);
+    transform: scale(1.2);
+}
+
+
+
+
+    </style>
+}
+
+@section Scripts {
+    <script>
+         // Function to initialize the sessions carousel
+        function initSessionsCarousel() {
+            const sessionsCarouselTrack = document.getElementById('sessionsCarouselTrack');
+            const sessionsCarouselDots = document.getElementById('sessionsCarouselDots');
+            const sessionPrevButton = document.getElementById('sessionPrevButton');
+            const sessionNextButton = document.getElementById('sessionNextButton');
+
+            // Get all slides
+            const slides = sessionsCarouselTrack.querySelectorAll('.group-carousel__slide');
+
+            // Variables for carousel functionality
+            let currentSlide = 0;
+            let slidesPerView = getSlidesPerView();
+            let totalSlides = Math.ceil(slides.length / slidesPerView);
+
+            // Create dot indicators
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = i === 0 ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                dot.dataset.slide = i;
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                sessionsCarouselDots.appendChild(dot);
+            }
+
+            // Add event listeners to buttons
+            sessionPrevButton.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
+            });
+
+            sessionNextButton.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+
+            // Function to go to a specific slide
+            function goToSlide(slideIndex) {
+                // Handle wrapping
+                if (slideIndex < 0) {
+                    slideIndex = totalSlides - 1;
+                } else if (slideIndex >= totalSlides) {
+                    slideIndex = 0;
+                }
+
+                currentSlide = slideIndex;
+                updateCarousel();
+            }
+
+            // Function to update carousel display
+            function updateCarousel() {
+                // Update track position
+                const offset = -1 * currentSlide * (100 / slidesPerView) * slidesPerView;
+                sessionsCarouselTrack.style.transform = `translateX(${offset}%)`;
+
+                // Update active dot
+                const dots = sessionsCarouselDots.querySelectorAll('.group-carousel__dot');
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('group-carousel__dot--active');
+                    } else {
+                        dot.classList.remove('group-carousel__dot--active');
+                    }
+                });
+            }
+
+            // Function to determine slides per view based on viewport width
+            function getSlidesPerView() {
+                if (window.innerWidth >= 1200) return 4;
+                if (window.innerWidth >= 992) return 3;
+                if (window.innerWidth >= 768) return 2;
+                return 1;
+            }
+
+            // Update slides per view on window resize
+            window.addEventListener('resize', () => {
+                const newSlidesPerView = getSlidesPerView();
+                if (newSlidesPerView !== slidesPerView) {
+                    slidesPerView = newSlidesPerView;
+                    totalSlides = Math.ceil(slides.length / slidesPerView);
+
+                    // Reset dots
+                    sessionsCarouselDots.innerHTML = '';
+                    for (let i = 0; i < totalSlides; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = i === currentSlide ? 'group-carousel__dot group-carousel__dot--active' : 'group-carousel__dot';
+                        dot.dataset.slide = i;
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                        sessionsCarouselDots.appendChild(dot);
+                    }
+
+                    // Reset current slide if needed
+                    if (currentSlide >= totalSlides) {
+                        currentSlide = totalSlides - 1;
+                    }
+
+                    updateCarousel();
+                }
+            });
+
+            // Initialize carousel display
+            updateCarousel();
+        }
+
+        // Initialize the sessions carousel when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initSessionsCarousel);
+    </script>
+}
