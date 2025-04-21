@@ -24,7 +24,7 @@
                         <div class="session-card">
                             <div class="session-card__teacher">
                                 <div class="session-card__teacher-img">
-                                    <img src="@(card.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(card.TeacherProfilePicture) : Url.Content("~/images/default_profile.png"))"
+                                    <img src="@(card.TeacherProfilePicture != null ? "data:image/*;base64," + Convert.ToBase64String(card.TeacherProfilePicture) : Url.Content("~/images/default_user.svg"))"
                                          alt="Teacher">
                                 </div>
                                 <div class="session-card__subject">@card.TeacherName</div>

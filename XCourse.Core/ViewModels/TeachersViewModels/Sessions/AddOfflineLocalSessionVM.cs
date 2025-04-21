@@ -12,17 +12,12 @@ namespace XCourse.Core.ViewModels.TeachersViewModels.Sessions
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using NetTopologySuite.Geometries;
+    using XCourse.Core.DTOs.StudentDTOs;
 
     public class AddOfflineLocalSessionVM
     {
         [Required(ErrorMessage = "Group ID is required.")]
         public int GroupID { get; set; }
-
-        [Required(ErrorMessage = "Latitude is required.")]
-        public double? Latitude { get; set; }
-
-        [Required(ErrorMessage = "Longitude is required.")]
-        public double? Longitude { get; set; }
 
         [Required(ErrorMessage = "Date is required.")]
         [DataType(DataType.Date)]
@@ -36,8 +31,7 @@ namespace XCourse.Core.ViewModels.TeachersViewModels.Sessions
         [DataType(DataType.Time)]
         public TimeOnly EndTime { get; set; }
 
-        [Column(TypeName = "geography")]
-        public Point? Location { get; set; }
+        public MapInfoDTO Location { set; get; }
 
         [Required(ErrorMessage = "Address is required.")]
         public Address? Address { get; set; }

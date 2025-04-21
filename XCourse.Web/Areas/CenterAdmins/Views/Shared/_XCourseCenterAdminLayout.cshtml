@@ -11,39 +11,20 @@
 @section NavigationMenu {
 
     <li class="nav-item">
-        <a asp-action="Index" asp-controller="Center" asp-area="CenterAdmins" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Center" ? "active" : "") ">
+        <a asp-action="Index" asp-controller="Center" asp-area="CenterAdmins" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Center"
+                                                                                                || ViewContext.RouteData.Values["controller"]?.ToString() == "Room"
+                                                                                                || ViewContext.RouteData.Values["controller"]?.ToString() == "Reservation" ? "active" : "") ">
             <i class="fa-solid fa-building nav-icon"></i>
             <span class="nav-text">Centers</span>
         </a>
     </li>
 
-    @* <li class="nav-item"> *@
-    @*     <a asp-action="Index" asp-controller="Center" asp-area="CenterAdmins" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "") "> *@
-    @*         <i class="fa-solid fa-house nav-icon"></i> *@
-    @*         <span class="nav-text">Home</span> *@
-    @*     </a> *@
-    @* </li> *@
-
-    @* <li class="nav-item"> *@
-    @*     <a asp-action="MyGroups" asp-controller="Group" asp-area="Students" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "") "> *@
-    @*         <i class="fa-solid fa-users nav-icon"></i> *@
-    @*         <span class="nav-text">Groups</span> *@
-    @*     </a> *@
-    @* </li> *@
-
-    @* <li class="nav-item"> *@
-    @*     <a asp-action="Index" asp-controller="Session" asp-area="Students" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Session" ? "active" : "") "> *@
-    @*         <i class="fa-solid fa-video nav-icon"></i> *@
-    @*         <span class="nav-text">Sessions</span> *@
-    @*     </a> *@
-    @* </li> *@
-
-    @* <li class="nav-item"> *@
-    @*     <a asp-action="Index" asp-controller="Teacher" asp-area="Students" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Teacher" ? "active" : "") "> *@
-    @*         <i class="fa-solid fa-person-chalkboard nav-icon"></i> *@
-    @*         <span class="nav-text">Teachers</span> *@
-    @*     </a> *@
-    @* </li> *@
+    <li class="nav-item">
+        <a asp-action="TopUpWallet" asp-controller="Payment" asp-area="CenterAdmins" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payment" ? "active" : "") ">
+            <i class="fa-solid fa-wallet  nav-icon"></i>
+            <span class="nav-text">Wallet</span>
+        </a>
+    </li>
 }
 
 @section Scripts {

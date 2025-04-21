@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,7 @@ using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels;
 using XCourse.Core.ViewModels.TeachersViewModels.Sessions;
 using XCourse.Infrastructure.Repositories.Interfaces;
+using XCourse.Services.Implementations.VideoServices;
 using XCourse.Services.Interfaces.TeacherServices;
 
 namespace XCourse.Services.Implementations.TeacherServices
@@ -15,10 +18,14 @@ namespace XCourse.Services.Implementations.TeacherServices
     public class SessionService : ISessionService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IYouTubeUploaderService _youTubeUploaderService;
+        private readonly IConfiguration _configuration;
 
-        public SessionService(IUnitOfWork unitOfWork)
+        public SessionService(IUnitOfWork unitOfWork, IYouTubeUploaderService youTubeUploaderService, IConfiguration configuration)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
+            _youTubeUploaderService = youTubeUploaderService;
+            _configuration = configuration;
         }
 
         public async Task<Teacher> GetTeacherByUserId(string userId)
@@ -194,7 +201,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             session.Description = sessionVM.Description;
 
             //update session location
-            session.Location = sessionVM.Location;
+            session.Location = new Point(sessionVM.Location.OriginX, sessionVM.Location.OriginY) { SRID = 4326 };
 
             // update session Address
             session.Address = new Address();
@@ -291,8 +298,27 @@ namespace XCourse.Services.Implementations.TeacherServices
             newSession.Duration = sessionVM.StartTime - sessionVM.EndTime;
             newSession.GroupID = sessionVM.GroupID;
             newSession.Description = sessionVM.Description;
-            
-            // Video service here 
+
+            if (sessionVM.Video != null)
+            {
+                var title = group.Teacher.AppUser.FirstName
+                            + " " + group.Teacher.AppUser.LastName
+                            + " " + group.Subject.Topic
+                            + " " + Guid.NewGuid();
+
+                var url = await _youTubeUploaderService.UploadVideoAsync(sessionVM.Video.OpenReadStream(), title, sessionVM.Description);
+
+                if (url == null)
+                {
+                    return new EditSessionResponseDTO
+                    {
+                        Status = false,
+                        Errors = new List<string> { "Couldn't upload video." }
+                    };
+                }
+
+                newSession.URL = url;
+            }
 
             newSession.StartDateTime = new DateTime(
             sessionVM.Date!.Value.Year,
@@ -397,7 +423,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             sessionVM.EndTime.Second);
 
             //update session location
-            newSession.Location = sessionVM.Location;
+            newSession.Location = new Point(sessionVM.Location.OriginX, sessionVM.Location.OriginY) { SRID = 4326 };
 
             // update session Address
             newSession.Address = new Address();
@@ -507,9 +533,27 @@ namespace XCourse.Services.Implementations.TeacherServices
             session.EndDateTime = endDateTime;
             session.Description = sessionVM.Description;
 
-            // file 
-            // here is the file => use your service
-            //session.URL = sessionVM.URL;
+            if (sessionVM.Video != null)
+            {
+                var thisSession = _unitOfWork.Sessions.Find(s => s.ID == sessionVM.SessionID, ["Group.Teacher.AppUser", "Group.Subject"]);
+                var title = thisSession.Group.Teacher.AppUser.FirstName
+                            + " " + thisSession.Group.Teacher.AppUser.LastName
+                            + " " + thisSession.Group.Subject.Topic
+                            + " " + Guid.NewGuid();
+
+                var url = await _youTubeUploaderService.UploadVideoAsync(sessionVM.Video.OpenReadStream(), title, sessionVM.Description);
+
+                if (url == null)
+                {
+                    return new EditSessionResponseDTO
+                    {
+                        Status = false,
+                        Errors = new List<string> { "Couldn't upload video." }
+                    };
+                }
+
+                session.URL = url;
+            }                                     
 
             // Save changes
             try
