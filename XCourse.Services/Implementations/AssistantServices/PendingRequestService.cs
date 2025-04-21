@@ -58,7 +58,7 @@ namespace XCourse.Services.Implementations.AssistantServices
         public async Task<PendingRequestVM> FindInvitationRequestByID(int id)
         {
             var invitationRequest = await _unitOfWork.AssistantInvitations
-                .FindAsync(x => x.ID == id, includes: new[] { "Group.Teacher.AppUser", "Group.Teacher.Subjects" });
+                .FindAsync(x => x.ID == id, includes: new[] { "Group.Teacher.AppUser", "Group.Subject" });
             PendingRequestVM pendingRequest = new PendingRequestVM
             {
                 Status = invitationRequest.Status,
@@ -67,14 +67,10 @@ namespace XCourse.Services.Implementations.AssistantServices
                 TeacherID = invitationRequest.Group.TeacherID,
                 GroupDescription = invitationRequest.Group.Description,
                 TeacherName = invitationRequest.Group.Teacher.AppUser.FirstName + " " + invitationRequest.Group.Teacher.AppUser.LastName,
-                SubjectName = invitationRequest.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == invitationRequest.Group.SubjectID)?.Topic,
-                Major = invitationRequest.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == invitationRequest.Group.SubjectID)?.Major ?? default(Major),
-                Year = invitationRequest.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == invitationRequest.Group.SubjectID)?.Year ?? default(Year),
-                Semester = invitationRequest.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == invitationRequest.Group.SubjectID)?.Semester ?? default(Semester)
+                SubjectName = invitationRequest.Group.Subject.Topic,
+                Major = invitationRequest.Group.Subject.Major ,
+                Year = invitationRequest.Group.Subject.Year,
+                Semester = invitationRequest.Group.Subject.Semester,
             };
             return pendingRequest;
 
@@ -102,16 +98,10 @@ namespace XCourse.Services.Implementations.AssistantServices
                 TeacherID = x.Group.TeacherID,
                 GroupDescription = x.Group.Description,
                 TeacherName = x.Group.Teacher.AppUser.FirstName + " " + x.Group.Teacher.AppUser.LastName,
-                SubjectName = x.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == x.Group.SubjectID)?.Topic ,
-
-                Major = x.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == x.Group.SubjectID)?.Major ?? default(Major),
-                Year = x.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == x.Group.SubjectID)?.Year ?? default(Year),
-
-                Semester = x.Group.Teacher.Subjects
-                    .FirstOrDefault(s => s.ID == x.Group.SubjectID)?.Semester ?? default(Semester)
+                SubjectName = x.Group.Subject.Topic,
+                Major = x.Group.Subject.Major,
+                Year = x.Group.Subject.Year,
+                Semester = x.Group.Subject.Semester,
 
             }).ToList();
         }
