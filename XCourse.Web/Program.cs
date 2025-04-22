@@ -31,25 +31,25 @@ namespace XCourse.Web
             builder.Services.AddIntegratedServices();
             builder.Services.AddCenterAdminServices();
             builder.Services.AddAssistantServices();
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", policy =>
-                {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
-                });
-            });
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowAll", policy =>
+            //    {
+            //        policy.AllowAnyOrigin()
+            //              .AllowAnyMethod()
+            //              .AllowAnyHeader();
+            //    });
+            //});
 
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 4;
+                //options.SignIn.RequireConfirmedAccount = false;
+                //options.Password.RequireDigit = false;
+                //options.Password.RequireLowercase = false;
+                //options.Password.RequireNonAlphanumeric = false;
+                //options.Password.RequireUppercase = false;
+                //options.Password.RequiredLength = 4;
 
             }).AddEntityFrameworkStores<XCourseContext>().AddDefaultTokenProviders();
 
@@ -77,14 +77,14 @@ namespace XCourse.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            //app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseStaticFiles();
 
             app.UseRouting();
             Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
-            app.UseCors("AllowAll");
+            //app.UseCors("AllowAll");
 
             app.UseAuthorization();
 

@@ -15,7 +15,7 @@
     <section id="form-section" class="form-section col-12 ">
         <div class="form-container">
             <h1 class="form-header">@ViewData["Title"]</h1>
-            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                 <input asp-for="Input.AccountType" hidden value="@Model.AccountType" />
                 <div class="form-group">
                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
