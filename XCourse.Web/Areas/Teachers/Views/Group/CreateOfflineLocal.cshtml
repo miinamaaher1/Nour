@@ -1,4 +1,5 @@
-﻿@{
+﻿@model XCourse.Core.Entities.Teacher;
+@{
     ViewData["Title"] = "Create Group";
 }
 
@@ -773,7 +774,7 @@
         }
 
         async function GetTeacherSubjects() {
-            const requestBody = { TeacherId: 1, Year: 11, Semester: 1 };
+            const requestBody = { TeacherId: @Model.ID, Year: 11, Semester: 1 };
             const url = "http://localhost:5041/Teachers/Group/AllSubjects";
             try {
                 return await sendAsyncRequest(url, "POST", requestBody);
@@ -787,7 +788,7 @@
         function getFormValues() {
             const form = document.getElementById("hubForm");
             const data = {
-                teacherId: 1,
+                teacherId: @Model.ID,
                 subjectId: parseInt(form.subject.value),
                 maxNumberOfStudents: parseInt(form.maxStudents.value),
                 pricePerSession: parseFloat(form.pricePerSession.value),
