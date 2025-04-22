@@ -233,7 +233,10 @@
                         {
                             @if (isOnline)
                             {
-                                <iframe width="560" height="315" style="border-radius: 10px; overflow: hidden;" src="@Model.Session.URL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                @if (Model.Session.StartDateTime >= DateTime.Now && Model.Session.EndDateTime <= DateTime.Now.AddHours((Model.Session.EndDateTime - Model.Session.StartDateTime).TotalHours))
+                                {
+                                    <iframe width="560" height="315" style="border-radius: 10px; overflow: hidden;" src="@Model.Session.URL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                }
                             }
                             else
                             {
@@ -1140,6 +1143,6 @@
 
         // Start the countdown to the session's start time.
         startCountdown('@startTime');
-        
+
     </script>
 }
