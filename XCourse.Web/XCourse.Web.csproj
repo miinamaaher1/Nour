@@ -51,6 +51,9 @@
 
   <ItemGroup>
     <Folder Include="Areas\Teachers\Controllers\" />
+    <Folder Include="wwwroot\docs\designs\" />
+    <Folder Include="wwwroot\docs\drafts\" />
+    <Folder Include="wwwroot\docs\diagrams\" />
     <Folder Include="wwwroot\images\groupTypes\" />
     <Folder Include="wwwroot\js\Students\" />
   </ItemGroup>

@@ -19,7 +19,6 @@ namespace XCourse.Web
             var builder = WebApplication.CreateBuilder(args);
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            //var connectionString = builder.Configuration.GetConnectionString("TestConnection");
 
             builder.Services.Configure<GmailSettings>(builder.Configuration.GetSection("GmailSettings"));
 
@@ -71,7 +70,6 @@ namespace XCourse.Web
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
-            //builder.Services.AddScoped<ISubjectService, SubjectService>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -79,7 +77,7 @@ namespace XCourse.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            //app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseStaticFiles();
 
