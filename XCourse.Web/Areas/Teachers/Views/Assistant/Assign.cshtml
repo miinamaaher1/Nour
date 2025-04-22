@@ -1,0 +1,124 @@
+@model XCourse.Core.DTOs.Teachers.InviteAssistantDTO
+@{
+    var group = ViewBag.Group;
+    var assistants = ViewBag.Assistants as List<XCourse.Core.Entities.Assistant>;
+}
+
+@section Styles {
+    <link href="~/css/form.css" rel="stylesheet" />
+    <style>
+        .group-card {
+            background-color: var(--clr-surface);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            margin-bottom: 24px;
+            padding: 24px;
+        }
+        .group-title {
+            color: var(--clr-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .assign-group-details {
+            flex: 1 1 50%;
+            background: var(--clr-background);
+            border-radius: 16px;
+            border: 2.5px solid var(--clr-primary);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+            padding: 28px 22px 22px 22px;
+            margin-bottom: 24px;
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .group-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px 32px;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            color: var(--clr-text-secondary);
+        }
+        .form-container {
+            background-color: var(--clr-surface);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .submit-btn {
+            background: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            border-radius: 6px;
+            padding: 12px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover {
+            background: var(--clr-accent);
+        }
+        .assign-card-header{
+            margin-bottom: 2.5rem;
+        }
+    </style>
+}
+
+<div class="form-section">
+    <div class="assign-card">
+        <div class="assign-card-header">
+            <span class="form-header">Assign Assistant to Group</span>
+        </div>
+        <div class="assign-card-body">
+            <div class="assign-group-details">
+    <div class="group-title" style="margin-bottom:18px;">@group.Subject?.Topic</div>
+    @if (group.GroupDefaults is IEnumerable<XCourse.Core.Entities.GroupDefaults> defaultsCol && defaultsCol.Any())
+    {
+        var firstDefault = defaultsCol.FirstOrDefault();
+        <div class="group-meta-row">
+            <div><strong>Start Time:</strong> @firstDefault?.StartTime?.ToString("hh:mm")</div>
+            <div><strong>End Time:</strong> @firstDefault?.EndTime?.ToString("hh:mm")</div>
+        </div>
+        <div class="group-meta-row">
+            <div><strong>Start Date:</strong> @firstDefault?.StartDate?.ToString("yyyy-MM-dd")</div>
+            <div><strong>End Date:</strong> @firstDefault?.EndDate?.ToString("yyyy-MM-dd")</div>
+        </div>
+    }
+</div>
+            <div class="assign-form-wrapper">
+                <form asp-action="Assign" method="post" class="needs-validation" autocomplete="off">
+    @Html.AntiForgeryToken()
+    <input asp-for="GroupId" type="hidden" value="@group.ID" />
+    <div class="form-group">
+        <label asp-for="AssistantId"><strong>Choose Assistant</strong></label>
+        <select asp-for="AssistantId" class="form-control" required>
+            <option value="">-- Select Assistant --</option>
+            @foreach (var assistant in assistants)
+            {
+                <option value="@assistant.ID">
+                    @(assistant.AppUser != null ? ($"{assistant.AppUser.FirstName} {assistant.AppUser.LastName}") : "Unknown")
+                </option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary w-100 mt-3">Assign Assistant</button>
+</form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Optionally add interactive scripts here if needed
+    </script>
+}

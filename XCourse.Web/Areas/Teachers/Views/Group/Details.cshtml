@@ -1,4 +1,4 @@
-﻿@model XCourse.Core.ViewModels.TeachersViewModels.GroupDetailsVM
+@model XCourse.Core.ViewModels.TeachersViewModels.GroupDetailsVM
 
 @{
     ViewData["Title"] = "Group Details";
@@ -395,6 +395,40 @@
                 color: #388e3c;
                 font-weight: bold;
             }
+
+        .assistants-buttons .assistants-add-btn {
+    cursor: pointer;
+            background: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+
+            .assistants-buttons .assistants-add-btn:hover {
+                background: var(--clr-accent);
+                color: var(--clr-text-on-accent);
+            }
+
+        .assistants-buttons .assistants-view-btn {
+    cursor: pointer;
+            background: var(--clr-surface);
+            color: var(--clr-primary);
+            border: 1px solid var(--clr-primary);
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+
+            .assistants-buttons .assistants-view-btn:hover {
+                background: var(--clr-primary);
+                color: var(--clr-text-on-primary);
+            }
     </style>
 }
 <div class="container col-12">
@@ -472,7 +506,7 @@
             </div>
             <div class="group-content">
                 <div class="group-meta">
-                    <div class="meta-item">
+                    <div class="meta-item" style="flex:1; min-width:180px;">
                         <i class="fas fa-map-marker-alt"></i>
                         @if (Model?.CenterName == "" || Model?.CenterName == null)
                         {
@@ -482,21 +516,32 @@
                         {
                             <span>@Model.CenterName</span>
                         }
+                        <div class="meta-item">
+                            <i class="fas fa-user-tie"></i>
+                            <span>@@keshk</span>
+
+                            <div class="meta-item">
+                                <i class="fas fa-building"></i>
+                                @if (Model?.CenterName == "" || Model?.CenterName == null)
+                                {
+                                    <span>Private Location</span>
+                                }
+                                else
+                                {
+                                    <span>@Model?.CenterName</span>
+                                }
+                            </div>
+                        </div>
                     </div>
-                    <div class="meta-item">
-                        <i class="fas fa-user-tie"></i>
-                        <span>@@keshk</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-building"></i>
-                        @if (Model?.CenterName == "" || Model?.CenterName == null)
-                        {
-                            <span>Private Location</span>
-                        }
-                        else
-                        {
-                            <span>@Model?.CenterName</span>
-                        }
+
+                    
+                    <div class="meta-item assistants-buttons" style="margin-left:10px; display:flex; gap:10px;">
+                        <a asp-area="Teachers" asp-controller="Assistant" asp-action="Assign" asp-route-id="@Model?.GroupID" type="button" class="assistants-add-btn" style="display:flex;align-items:center;gap:6px;">
+                            <i class="fa fa-plus"></i> Add Assistant
+                        </a>
+                        <a asp-area="Teachers" asp-controller="Assistant" asp-action="Index" asp-route-id="@Model?.GroupID" class="assistants-view-btn" style="display:flex;align-items:center;gap:6px;">
+                            <i class="fa fa-users"></i> View Assistants
+                        </a>
                     </div>
                 </div>
 
