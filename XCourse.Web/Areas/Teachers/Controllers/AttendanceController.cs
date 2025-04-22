@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs.Teachers;
 using XCourse.Services.Interfaces.TeacherServices;
 
 namespace XCourse.Web.Areas.Teachers.Controllers
 {
+    [Authorize(Roles = "Teacher")]
     [Area("Teachers")]
     public class AttendanceController : Controller
     {

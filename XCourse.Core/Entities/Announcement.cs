@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace XCourse.Core.Entities
 {
@@ -18,6 +17,6 @@ namespace XCourse.Core.Entities
 
         [DataType(dataType: DataType.DateTime)]
         public DateTime? DateTime { get; set; }
-        public virtual ICollection<Group> ? Groups { get; set; }
+        public virtual ICollection<Group>? Groups { get; set; }
     }
 }

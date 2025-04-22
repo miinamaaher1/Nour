@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs.StudentDTOs;
@@ -8,6 +9,7 @@ using XCourse.Services.Interfaces.StudentServices;
 
 namespace XCourse.Web.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     [Area("Students")]
     public class GroupController : Controller
     {

@@ -246,6 +246,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                             };
                             _unitOfWork.Students.Add(student);
                             _unitOfWork.Save();
+                            await _userManager.AddToRoleAsync(user, "Student");
                         }
                         else if (user.AccountType == AccountType.Teacher)
                         {
@@ -257,6 +258,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                             };
                             _unitOfWork.Teachers.Add(teacher);
                             _unitOfWork.Save();
+                            await _userManager.AddToRoleAsync(user, "Teacher");
                         }
                         else if (user.AccountType == AccountType.Assistant)
                         {
@@ -266,6 +268,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                             };
                             _unitOfWork.Assistants.Add(assistant);
                             _unitOfWork.Save();
+                            await _userManager.AddToRoleAsync(user, "Assistant");
                         }
                         else if (user.AccountType == AccountType.CenterAdmin)
                         {
@@ -275,6 +278,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                             };
                             _unitOfWork.CenterAdmins.Add(centerAdmin);
                             _unitOfWork.Save();
+                            await _userManager.AddToRoleAsync(user, "CenterAdmin");
                         }
 
                         Wallet wallet = new Wallet()

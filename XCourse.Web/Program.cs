@@ -9,11 +9,12 @@ using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Web.ServicesCollections;
 using XCourse.Web.Middleware;
+
 namespace XCourse.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +108,22 @@ namespace XCourse.Web
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}"
             ).WithStaticAssets();
+
+            // seed app with roles
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var roles = new[] { "Student", "Teacher", "CenterAdmin", "Assistant" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleMgr.RoleExistsAsync(role))
+                    {
+                        await roleMgr.CreateAsync(new IdentityRole(role));
+                    }
+                }
+            }
 
             app.Run();
         }
