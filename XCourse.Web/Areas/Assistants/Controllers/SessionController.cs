@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.Entities;
 using XCourse.Services.Interfaces.AssistantServices;
 
 namespace XCourse.Web.Areas.Assistants.Controllers
 {
+    [Authorize(Roles = "Assistant")]
     [Area("Assistants")]
     public class SessionController : Controller
     {

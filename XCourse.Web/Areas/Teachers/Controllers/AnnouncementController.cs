@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NuGet.DependencyResolver;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs.Teachers;
 using XCourse.Core.Entities;
 using XCourse.Services.Interfaces.TeacherServices;
 
 namespace XCourse.Web.Areas.Teachers.Controllers
 {
+    [Authorize(Roles = "Teacher")]
     [Area("Teachers")]
     public class AnnouncementController : Controller
     {
@@ -22,11 +23,12 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             {
                 Teacher teacher = await _announcementService.GetTeacherByUserId(userID);
                 ViewBag.TeacherId = teacher.ID;
-            } else
+            }
+            else
             {
                 ViewBag.TeacherId = 0;
             }
-                return View("Index");
+            return View("Index");
         }
 
         [HttpPost]
@@ -67,7 +69,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 Teacher teacher = await _announcementService.GetTeacherByUserId(userID);
                 teacherId = teacher.ID;
             }
-            var groups = await _announcementService.GetAllGroups(teacherId);  
+            var groups = await _announcementService.GetAllGroups(teacherId);
             return Json(groups);
         }
     }

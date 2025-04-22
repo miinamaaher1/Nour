@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -67,7 +67,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             var studentIds = students!.Select(s => s.ID).ToList();
 
             var attendances = await _unitOfWork.Attendances.FindAllAsync(
-                att => studentIds.Contains(att.StudentID) && att.SessionID == request.SessionId);
+                att => (studentIds.Contains(att.StudentID) && att.SessionID == request.SessionId));
 
             foreach (var student in students!)
             {
@@ -79,6 +79,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     SessionId = request.SessionId,
                     StudentId = student.ID,
                     StudentName = $"{appUser?.FirstName} {appUser?.LastName}",
+                    studentEmail = appUser?.Email,
                     HasAttended = attendance?.HasAttended ?? false,
                     HasPaid = attendance?.HasPaid ?? false,
                     ClassWorkGrade = attendance?.ClassWorkGrade,
@@ -97,6 +98,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 IsValid = true
             };
 
+            // Validate session and teacher ID
             if (request.SessionId <= 0 || request.TeacherId <= 0)
             {
                 response.IsValid = false;
@@ -104,11 +106,13 @@ namespace XCourse.Services.Implementations.TeacherServices
                 return response;
             }
 
+            // Fetch session with group info
             var session = await _unitOfWork.Sessions.FindAsync(
                 s => s.ID == request.SessionId,
                 includes: new[] { "Group" }
             );
 
+            // Validate access to session
             if (session?.Group == null || session.Group.TeacherID != request.TeacherId)
             {
                 response.IsValid = false;
@@ -116,23 +120,34 @@ namespace XCourse.Services.Implementations.TeacherServices
                 return response;
             }
 
+            // Get existing attendances for the session
             var sessionAttendances = await _unitOfWork.Attendances
                 .FindAllAsync(att => att.SessionID == request.SessionId);
 
-            var attendanceStudentIds = sessionAttendances.Select(a => a.StudentID).ToHashSet();
+            // Create a set of (SessionID, StudentID) keys
+            var attendanceKeys = sessionAttendances
+                .Select(a => (a.SessionID, a.StudentID))
+                .ToHashSet();
 
             foreach (var newAttendance in request.SessionDayAttendances ?? new List<SessionDayAttendance>())
             {
-                if (attendanceStudentIds.Contains(newAttendance.StudentId))
+                var key = (request.SessionId, newAttendance.StudentId);
+
+                if (attendanceKeys.Contains(key))
                 {
-                    var existing = sessionAttendances.First(a => a.StudentID == newAttendance.StudentId);
+                    // Update existing attendance
+                    var existing = sessionAttendances
+                        .First(a => a.SessionID == request.SessionId && a.StudentID == newAttendance.StudentId);
+
                     existing.HasPaid = newAttendance.HasPaid;
                     existing.HasAttended = newAttendance.HasAttended;
                     existing.HomeWorkGrade = newAttendance.HomeWorkGrade;
                     existing.ClassWorkGrade = newAttendance.ClassWorkGrade;
+                    _unitOfWork.Attendances.Attach(existing);
                 }
                 else
                 {
+                    // Add new attendance
                     var attendance = new Attendance
                     {
                         SessionID = request.SessionId,
@@ -147,6 +162,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 }
             }
 
+            // Save changes
             try
             {
                 await _unitOfWork.SaveAsync();

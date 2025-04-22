@@ -1,24 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetTopologySuite.Algorithm;
 using XCourse.Core.DTOs.CenterAdmins;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
-using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.CenterAdminServices;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
 {
+    [Authorize(Roles = "CenterAdmin")]
     [Area("CenterAdmins")]
     public class RoomController : Controller
     {
 
         ICenterAdminService _centerAdminService;
-       
-        public RoomController(ICenterAdminService centerAdminService )
+
+        public RoomController(ICenterAdminService centerAdminService)
         {
             _centerAdminService = centerAdminService;
-           
+
         }
         // GET: RoomController
         public ActionResult Index(int id)
@@ -37,10 +37,10 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         {
             var room = new RoomDto()
             {
-                CenterId= id
+                CenterId = id
             };
 
-                return View(room);
+            return View(room);
         }
 
         // POST: RoomController/Create
@@ -48,7 +48,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(RoomDto room)
         {
-           
+
             try
             {
                 if (Request.Form.Files.Count > 0)
@@ -64,9 +64,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
 
                 if (ModelState.IsValid)
                 {
-                   
-                    int t= _centerAdminService.AddNewRoom(room);
-                    if(t==1)
+
+                    int t = _centerAdminService.AddNewRoom(room);
+                    if (t == 1)
                     {
                         return RedirectToAction("Index", new { id = room.CenterId });
                     }
@@ -76,7 +76,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                     }
                 }
                 return View(room);
-                
+
             }
             catch
             {
@@ -90,12 +90,12 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         {
             var model = _centerAdminService.GetRoom(id);
 
-         
+
             model.SelectedEquipments = Enum.GetValues(typeof(Equipment))
               .Cast<Equipment>()
             .Where(e => (model.Equipment & e) == e)
            .ToList();
-            
+
 
 
             return View(model);
@@ -121,18 +121,18 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 }
                 if (ModelState.IsValid)
                 {
-                    
 
-                    int t= _centerAdminService.EditRoom(room);
+
+                    int t = _centerAdminService.EditRoom(room);
                     if (t == 1)
                     {
                         return RedirectToAction("Index", new { id = room.CenterId });
                     }
                     else
-                        {
-                        
+                    {
+
                         return View(room);
-                    
+
                     }
                 }
                 return View(room);
@@ -144,15 +144,15 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         }
 
 
-     
-
-        
-       
 
 
-       
 
-       
+
+
+
+
+
+
         // GET: RoomController/Delete/5
         public ActionResult Delete(int id)
         {
@@ -166,38 +166,38 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(RoomDto room)
         {
-           
-                try
-                {
 
-                    int t = _centerAdminService.DeleteRoom(room);
-                    if (t == 1)
-                    {
-                        return RedirectToAction("Index", new { id = room.CenterId });
-                    }
-                    else
-                {
-                    
-                        return RedirectToAction("TransfomReservations", new { RoomId=room.RoomId,  CenterId=room.CenterId });
+            try
+            {
 
-                    }
+                int t = _centerAdminService.DeleteRoom(room);
+                if (t == 1)
+                {
+                    return RedirectToAction("Index", new { id = room.CenterId });
                 }
-                catch
+                else
                 {
-                    return View(room);
-                }
-            
 
-           
+                    return RedirectToAction("TransfomReservations", new { RoomId = room.RoomId, CenterId = room.CenterId });
+
+                }
+            }
+            catch
+            {
+                return View(room);
+            }
+
+
+
 
         }
 
 
-       
+
         public ActionResult TransfomReservations(int RoomId, int CenterId)
         {
 
-            var Avalible = _centerAdminService.transfomReservations(RoomId,CenterId);
+            var Avalible = _centerAdminService.transfomReservations(RoomId, CenterId);
             if (Avalible.ApproveReservations.All(r => r.AvailableRooms.Count == 0))
             {
                 return RedirectToAction("UnableDeleting", new { id = RoomId });
@@ -205,7 +205,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             }
 
 
-            return View (Avalible);
+            return View(Avalible);
 
 
 
@@ -218,7 +218,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
                 int t = _centerAdminService.ConfirmTransformRoom(transfom);
 
-                if(t == 1)
+                if (t == 1)
                 {
                     return RedirectToAction("Index", new { id = transfom.CenterId });
                 }
@@ -226,8 +226,8 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 else
                 {
                     return View(transfom);
-                        
-                       
+
+
 
 
                 }

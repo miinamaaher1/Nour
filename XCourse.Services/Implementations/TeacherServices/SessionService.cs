@@ -100,12 +100,11 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 return 0; // Invalid Session 
             }
-            if (group.IsOnline == true)
+            if (group.IsOnline)
             {
                 return 1; // Online Group
             }
-            if (group.GroupDefaults == null || group.GroupDefaults.Count
-                () == 0 || group.GroupDefaults!.Any(gd => gd.Room == null))
+            if (group.DefaultRoomID == null || group.DefaultRoomID == 0)
             {
                 return 2; // Local Group at teacher's Home
             }
@@ -119,7 +118,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 return new List<Session>();
             }
-            var sessions = await _unitOfWork.Sessions.FindAllAsync(s => s.GroupID == groupId, ["Address"]);
+            var sessions = await _unitOfWork.Sessions.FindAllAsync(s => s.GroupID == groupId, ["Address","Group.Subject"]);
             return sessions.ToList();
         }
         async public Task<EditSessionResponseDTO> EditOfflineLocalSession(EditOfflineLocalSessionVM sessionVM, int teacherId)

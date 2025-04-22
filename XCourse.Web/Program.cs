@@ -9,16 +9,16 @@ using XCourse.Infrastructure.Data;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Web.ServicesCollections;
 using XCourse.Web.Middleware;
+
 namespace XCourse.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            //var connectionString = builder.Configuration.GetConnectionString("TestConnection");
 
             builder.Services.Configure<GmailSettings>(builder.Configuration.GetSection("GmailSettings"));
 
@@ -70,7 +70,6 @@ namespace XCourse.Web
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
-            //builder.Services.AddScoped<ISubjectService, SubjectService>();
             var app = builder.Build();
 
             if (!app.Environment.IsDevelopment())
@@ -78,7 +77,7 @@ namespace XCourse.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            //app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseStaticFiles();
 
@@ -107,6 +106,22 @@ namespace XCourse.Web
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}"
             ).WithStaticAssets();
+
+            // seed app with roles
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var roles = new[] { "Student", "Teacher", "CenterAdmin", "Assistant" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleMgr.RoleExistsAsync(role))
+                    {
+                        await roleMgr.CreateAsync(new IdentityRole(role));
+                    }
+                }
+            }
 
             app.Run();
         }
