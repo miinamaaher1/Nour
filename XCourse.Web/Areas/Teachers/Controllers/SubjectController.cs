@@ -66,7 +66,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                     await _subjectService.AddSubjectAsync(newSubject, teacher.ID);
                 }
 
-                return RedirectToAction("Details", new { id = newSubject.ID });
+                return RedirectToAction(nameof(Index));
             }
             else
             {
