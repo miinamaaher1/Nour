@@ -50,7 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Teachers\Controllers\" />
     <Folder Include="wwwroot\images\groupTypes\" />
     <Folder Include="wwwroot\js\Students\" />
   </ItemGroup>
