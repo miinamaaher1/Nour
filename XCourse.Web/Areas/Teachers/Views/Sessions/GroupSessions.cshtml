@@ -3,8 +3,10 @@
 @{
     ViewData["Title"] = "Sessions";
     int groupID = 0;
+    bool isOnline = false;
     foreach (var session in Model)
     {
+        isOnline = session.IsOnline;
         groupID = session.GroupID;
         break;
     }
@@ -113,9 +115,11 @@
             </div>
         }
     </div>
-    <a class="add-button" asp-action="AddSession" asp-route-id="@groupID">
-        <i class="fa-solid fa-add"></i>
-    </a>
+    @if(isOnline) {
+        <a class="add-button" asp-action="AddSession" asp-route-id="@groupID">
+            <i class="fa-solid fa-add"></i>
+        </a>
+    }
 </div>
 
 @section Styles {

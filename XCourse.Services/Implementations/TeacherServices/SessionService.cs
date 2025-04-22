@@ -300,9 +300,9 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             if (sessionVM.Video != null)
             {
-                var title = group.Teacher.AppUser.FirstName
-                            + " " + group.Teacher.AppUser.LastName
-                            + " " + group.Subject.Topic
+                var title = group?.Teacher?.AppUser?.FirstName?? ""
+                            + " " + group?.Teacher?.AppUser?.LastName?? ""
+                            + " " + group?.Subject?.Topic?? ""
                             + " " + Guid.NewGuid();
 
                 var url = await _youTubeUploaderService.UploadVideoAsync(sessionVM.Video.OpenReadStream(), title, sessionVM.Description);
