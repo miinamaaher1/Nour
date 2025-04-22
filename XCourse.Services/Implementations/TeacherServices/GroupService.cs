@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Common;
 using System.Globalization;
 using System.Linq;
@@ -100,6 +101,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             onlineGroup.GroupDefaults = new List<GroupDefaults>();
             foreach (var defaultSession in request.DefaultSessionResrvations!)
             {
+                onlineGroup.DefaultSessionDays |= (WeekDay)defaultSession.WeekDay;
                 GroupDefaults gd = new GroupDefaults()
                 {
                     StartDate = request.StartDate,
@@ -214,7 +216,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             offlineLocalGroup.Sessions = new List<Session>();
             foreach (var defaultSession in request.DefaultSessionResrvations!)
             {
-                
+                offlineLocalGroup.DefaultSessionDays |= (WeekDay)defaultSession.WeekDay;
 
                 DateOnly current = request.StartDate;
                 var groupDefaults = new GroupDefaults
@@ -286,7 +288,6 @@ namespace XCourse.Services.Implementations.TeacherServices
                 Address = center.Address,
                 IsPrivate = false,
                 IsOnline = false,
-                DefaultRoomID = -1,
                 IsGirlsOnly = request.IsGirlsOnly,
                 IsActive = true,
                 CurrentStudents = 0,
@@ -301,6 +302,7 @@ namespace XCourse.Services.Implementations.TeacherServices
 
             foreach (var session in request.Sessions)
             {
+                groupInCenter.DefaultSessionDays |= (WeekDay)session.DayId;
                 var room = await _unitOfWork.Rooms.FindAsync(r => r.ID == session.RoomId);
 
                 if (room == null)
