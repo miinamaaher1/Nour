@@ -32,7 +32,9 @@
             const cardsContainer = document.getElementById('centerCards');
 
             roomData.forEach(center => {
-                const occupancyRate = Math.round((center.bookedRooms / center.totalRooms) * 100);
+                const occupancyRate = center.totalRooms > 0
+                    ? Math.round((center.bookedRooms / center.totalRooms) * 100)
+                    : 0;
                 const card = document.createElement('div');
                 card.className = 'center-card';
 

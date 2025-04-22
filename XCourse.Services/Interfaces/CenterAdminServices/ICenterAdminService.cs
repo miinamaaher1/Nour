@@ -28,6 +28,9 @@ namespace XCourse.Services.Interfaces.CenterAdminServices
 
         public Task<int> DeleteReservation(DetailsReservationViewModel details);
 
+        public Task<List<ReservationViewModel>> PendingReservationService(string appUserId);
+
+
 
     }
 }
