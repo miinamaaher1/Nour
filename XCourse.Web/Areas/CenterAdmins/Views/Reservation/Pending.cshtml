@@ -1,0 +1,345 @@
+﻿@model List<XCourse.Core.ViewModels.CenterAdminViewModels.ReservationViewModel>
+
+@{
+    ViewData["Title"] = "Pending Reservations";    
+}
+
+@section Styles {
+    <style>
+
+        /* Layout: Search bar */
+        .search {
+            margin-bottom: 20px; /* Space between search bar and cards */
+            padding: 10px 35px 10px 15px; /* Add padding for text and icon space */
+            border: 1px solid var(--clr-border);
+            border-radius: 25px;
+            font-size: 1rem;
+            color: var(--clr-text-primary);
+            background-color: var(--clr-surface);
+            width: 100%; /* Make it take full width of its container */
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+            transition: border-color 0.3s ease; /* Smooth transition for focus state */
+        }
+
+            .search::placeholder {
+                color: var(--clr-text-secondary);
+            }
+
+            .search:focus {
+                outline: none; /* Remove default focus outline */
+                border-color: var(--clr-primary); /* Change border color on focus */
+            }
+
+        /* Styling for the container to hold the input and the icon */
+        .search-container {
+            position: relative;
+            margin: 15px auto;
+        }
+
+            .search-container i, .search-container svg { /* Style the Font Awesome icon */
+                position: absolute;
+                top: 35%;
+                right: 15px; /* Adjust as needed */
+                transform: translateY(-50%);
+                color: var(--clr-text-secondary);
+                font-size: 1.2rem; /* Adjust icon size */
+                cursor: pointer;
+            }
+        .data-table {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4rem;
+        }
+
+        .data-table__container {
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        .data-table__table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+            .data-table__table th {
+                background-color: var(--clr-secondary);
+                color: var(--clr-text-on-secondary);
+                font-weight: 500;
+                text-align: left;
+                padding: 14px 16px;
+            }
+
+                .data-table__table th:first-child {
+                    border-top-left-radius: 8px;
+                }
+
+                .data-table__table th:last-child {
+                    border-top-right-radius: 8px;
+                }
+
+            .data-table__table tbody tr {
+                transition: background-color 0.2s;
+            }
+
+                .data-table__table tbody tr:hover {
+                    background-color: rgba(224, 169, 109, 0.1);
+                }
+
+            .data-table__table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid var(--clr-border);
+                color: var(--clr-text-secondary);
+            }
+
+            .data-table__table tr:last-child td {
+                border-bottom: none;
+            }
+
+        .data-table__actions {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+
+        .data-table__btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 4px;
+            text-decoration: none;
+        }
+
+            .data-table__btn:last-child {
+                margin-right: 0;
+            }
+
+        .data-table__btn--edit {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+            .data-table__btn--edit:hover {
+                background-color: color-mix(in srgb, var(--clr-accent) 85%, black);
+            }
+
+        .data-table__btn--details {
+            background-color: var(--clr-secondary);
+            color: var(--clr-text-on-secondary);
+        }
+
+            .data-table__btn--details:hover {
+                background-color: color-mix(in srgb, var(--clr-secondary) 85%, black);
+            }
+
+        .data-table__btn--delete {
+            background-color: #d44848;
+            color: #ffffff;
+        }
+
+            .data-table__btn--delete:hover {
+                background-color: #b33a3a;
+            }
+
+        /* Add Button */
+        .add-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+            .add-button:hover {
+                background-color: color-mix(in srgb, var(--clr-primary) 85%, black);
+                transform: translateY(-5px);
+            }
+
+        .openModal {
+            display: block;
+            margin-left: auto;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            padding: 10px;
+            font-size: 1.5rem;
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            outline: none;
+            border: none;
+        }
+
+        @@media (max-width: 575.98px) {
+            .search {
+                padding: 8px 35px 8px 12px;
+                font-size: 0.95rem;
+            }
+
+            .search-container i {
+                font-size: 1rem;
+                top: 50%;
+            }
+        }
+
+    </style>
+}
+
+
+
+<div class="col-12">
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-lg-6 col-12">
+            <div class="search-container">
+                <input class="search" id="sessionSearch" placeholder="Search..." />
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="modal" id="pendingModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title" id="pendingModalLabel">@ViewData["Title"]</h1>
+                    </div>
+                    <div class="modal-body">
+                        <div class="data-table">
+                            <div class="data-table__container">
+                                <table class="data-table__table">
+                                    <thead>
+                                        <tr>
+											<th> Center Name </th>
+                                            <th> Room Name </th>
+											<th> Room Equipment </th>
+                                            <th> Date </th>
+                                            <th>StartTime</th>
+                                            <th>EndTime</th>
+                                            <th>Total Price </th>
+                                            <th colspan="2"
+                                                style="text-align: center !important">
+                                                Manage
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach (var item in Model )
+                                        {
+                                            <tr>
+												<td>@Html.DisplayFor(modelItem => item.CenterName )</td>
+                                                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.Equipment )</td>
+                                                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+
+                                                <td>@Html.DisplayFor(modelItem => item.StartTime)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
+                                                <td>@Html.DisplayFor(modelItem => item.TotalPrice)</td>
+                                                <td class="data-table__actions">
+                                                    <a class="data-table__btn data-table__btn--edit" asp-action="AcceptReservation" asp-route-id="@item.ID">
+                                                        <i class="fas fa-check"></i>
+                                                        Yes, accept!
+                                                    </a>
+
+
+                                                <td class="data-table__actions">
+                                                    <a class="data-table__btn data-table__btn--edit" asp-action="RejectReservation" asp-route-id="@item.ID">
+                                                        <i class="fas fa-xmark"></i> Reject
+                                                    </a>
+                                                </td>
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+           document.getElementById('sessionSearch').addEventListener('keyup', function () {
+            const searchQuery = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('.data-table__table tbody tr');
+
+            let matchFound = false;
+
+            tableRows.forEach(row => {
+                const centerName = row.cells[0]?.textContent.toLowerCase() || '';
+                const roomName = row.cells[1]?.textContent.toLowerCase() || '';
+                const equipment = row.cells[2]?.textContent.toLowerCase() || '';
+                const date = row.cells[3]?.textContent.toLowerCase() || '';
+                const startTime = row.cells[4]?.textContent.toLowerCase() || '';
+                const endTime = row.cells[5]?.textContent.toLowerCase() || '';
+                const totalPrice = row.cells[6]?.textContent.toLowerCase() || '';
+
+                const isVisible =
+                    centerName.includes(searchQuery) ||
+                    roomName.includes(searchQuery) ||
+                    equipment.includes(searchQuery) ||
+                    date.includes(searchQuery) ||
+                    startTime.includes(searchQuery) ||
+                    endTime.includes(searchQuery) ||
+                    totalPrice.includes(searchQuery);
+
+                row.style.display = isVisible ? '' : 'none';
+
+                if (isVisible) {
+                    matchFound = true;
+                }
+            });
+
+            // Add empty state message when no results are found
+            const tableBody = document.querySelector('.data-table__table tbody');
+            if (!matchFound && tableRows.length > 0) {
+                if (!document.getElementById('emptyMessage')) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.id = 'emptyMessage';
+                    const emptyCell = document.createElement('td');
+                    emptyCell.textContent = 'No matching reservations found.';
+                    emptyCell.style.textAlign = 'center';
+                    emptyCell.style.padding = '20px';
+                    emptyCell.style.color = 'var(--clr-text-secondary)';
+                    emptyCell.colSpan = 9; // Span across all columns
+
+                    emptyRow.appendChild(emptyCell);
+                    tableBody.appendChild(emptyRow);
+                }
+            } else {
+                const emptyMsg = document.getElementById('emptyMessage');
+                if (emptyMsg) {
+                    emptyMsg.remove();
+                }
+            }
+        });
+    </script>
+}

@@ -12,7 +12,8 @@ namespace XCourse.Web.ServicesCollections
         public static IServiceCollection AddCenterAdminServices(this IServiceCollection services)
         {
             services.AddScoped<ICenterAdminService, CenterAdminService>();
-          
+            services.AddScoped<ICenterAdminHomeService, CenterAdminHomeService>();
+
 
             return services;
         }

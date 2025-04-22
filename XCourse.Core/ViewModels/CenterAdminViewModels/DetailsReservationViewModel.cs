@@ -26,7 +26,10 @@ namespace XCourse.Core.ViewModels.CenterAdminViewModels
         public TimeOnly? StartTime { get; set; }
         public TimeOnly? EndTime { get; set; }
         public WeekDay? WeekDay { get; set; }
-
+        public string? TeacherName { get; set; }
+   
+        public string? Type {  get; set; }
+        public string? SubjectName { get; set; }
 
     }
 }

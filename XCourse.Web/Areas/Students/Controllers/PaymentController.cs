@@ -1,14 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.Entities;
-using XCourse.Core.ViewModels.PaymentViewModels;
-using XCourse.Infrastructure.Data;
-using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.PaymentService;
 
 namespace XCourse.Web.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     [Area("Students")]
     public class PaymentController : Controller
     {
@@ -16,7 +14,7 @@ namespace XCourse.Web.Areas.Students.Controllers
         private readonly IWalletService _walletService;
         private readonly UserManager<AppUser> _userManager;
 
-        public PaymentController(IStripeService stripeService,UserManager<AppUser> userManager, IWalletService walletService)
+        public PaymentController(IStripeService stripeService, UserManager<AppUser> userManager, IWalletService walletService)
         {
             _stripeService = stripeService;
             _walletService = walletService;
@@ -31,7 +29,7 @@ namespace XCourse.Web.Areas.Students.Controllers
         [HttpGet]
         public async Task<ActionResult> TopUpWallet()
         {
-            var paymentDetailsVm=  await _walletService.GetPaymentDetailsAsync(User);
+            var paymentDetailsVm = await _walletService.GetPaymentDetailsAsync(User);
             return View(paymentDetailsVm);
         }
 
@@ -55,7 +53,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             var paymentDetailsVm = await _walletService.GetPaymentDetailsAsync(User);
             if (!result)
             {
-                paymentDetailsVm.Toast= "error";
+                paymentDetailsVm.Toast = "error";
                 return RedirectToAction("TopUpWallet", paymentDetailsVm);
 
             }

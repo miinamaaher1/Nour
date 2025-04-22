@@ -1,86 +1,44 @@
-﻿@model XCourse.Core.DTOs.CenterAdmins.RoomDto
+@model XCourse.Core.DTOs.CenterAdmins.RoomDto
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Confirm Delete";
 }
 
-<h1>Delete</h1>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Assistants/Card.css" />
+    <link rel="stylesheet" href="~/css/form.css" />
+}
+<div class="container">
+    <div class="teacher-card">
+        <div class="teacher-card__header">          
+            Are you sure you want to delete this room?
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Room Name:</div>
+            <div class="teacher-card__value">@Model.Name</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Capacity:</div>
+            <div class="teacher-card__value">@Model.Capacity</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Equipment:</div>
+            <div class="teacher-card__value">@Model.Equipment</div>
+        </div>
+        <div class="teacher-card__row">
+            <div class="teacher-card__label">Price /hr:</div>
+            <div class="teacher-card__value">L.E. @Model.PricePerHour</div>
+        </div>
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="RoomId" />
+            <input type="hidden" asp-for="CenterId" />
+            <input type="hidden" asp-for="Capacity" />
+            <input type="hidden" asp-for="Equipment" />
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>RoomDto</h4>
-    <hr />
-    <dl class="row">
-
-       
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Capacity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Capacity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Equipment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Equipment)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PricePerHour)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PricePerHour)
-        </dd>
-        @if (Model.RoomReservations != null && Model.RoomReservations.Any())
-        {
-            <dt class="col-sm-2">Room Reservations</dt>
-            <dd class="col-sm-10">
-                <ul>
-                    @foreach (var item in Model.RoomReservations)
-                    {
-                        <li>
-                            <strong>Reservation ID:</strong> @item.ID <br />
-                            <strong>Status:</strong> @item.ReservationStatus <br />
-                            <strong>Start Time:</strong> @item.StartTime <br />
-                            <strong>End Time:</strong> @item.EndTime
-                        </li>
-                    }
-                </ul>
-            </dd>
-        }
-        else
-        {
-            <dt class="col-sm-2">Room Reservations</dt>
-            <dd class="col-sm-10">
-                <p>No reservations for this room.</p>
-            </dd>
-        }
-
-        <dd class="col-sm-10">
-            @if (Model.PreviewPicture2 != null)
-            {
-                <img style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover; alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(Model.PreviewPicture2))" />
-            }
-            else
-            {
-                <img alt="profile" src="~/images/RoomProfile.webp" style="border-radius: 50%; width: 250px; height: 250px; object-fit: cover;" />
-            }
-        </dd>
-
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="RoomId" />
-        <input type="hidden" asp-for="CenterId" />
-        <input type="hidden" asp-for="Capacity" />
-        <input type="hidden" asp-for="Equipment" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index" asp-controller="Center" asp-route-id="@Model.CenterId" class="btn btn-outline-success">Back to List</a>
-    </form>
+            <div class="form-navigation" style="padding: 20px; padding-top: 0">
+                <a asp-action="Edit" asp-controller="Room" asp-route-id="@Model.RoomId" class="btn btn-close">Cancel</a>
+                <button type="submit" class="btn btn-primary">Delete</button>
+            </div>
+        </form>
+    </div>
 </div>

@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.Student;
 
 namespace XCourse.Web.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     [Area("Students")]
     public class HomeController : Controller
     {
@@ -18,7 +19,7 @@ namespace XCourse.Web.Areas.Students.Controllers
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            HomeViewModel homeViewModel= await  _studentHomeService.IndexService(userID!);
+            HomeViewModel homeViewModel = await _studentHomeService.IndexService(userID!);
 
             return View(homeViewModel);
         }

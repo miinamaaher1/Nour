@@ -1,25 +1,31 @@
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using XCourse.Core.DTOs.StudentDTOs;
+using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.StudentServices;
 
 namespace XCourse.Web.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     [Area("Students")]
     public class GroupController : Controller
     {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IEnrollStudentService _enrollStudentService;
         private readonly IRequestPrivateGroupService _requestPrivateGroupService;
         IStudentGroup StudentGroup { get; set; }
 
-        public GroupController(IUnitOfWork unitOfWork, IEnrollStudentService enrollStudentService, IRequestPrivateGroupService requestPrivateGroupService, IStudentGroup group)
+        public GroupController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager,
+                                IEnrollStudentService enrollStudentService, 
+                                IRequestPrivateGroupService requestPrivateGroupService, IStudentGroup group)
         {
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
             _enrollStudentService = enrollStudentService;
             _requestPrivateGroupService = requestPrivateGroupService;
             StudentGroup = group;
@@ -27,9 +33,42 @@ namespace XCourse.Web.Areas.Students.Controllers
 
         public async Task<IActionResult> Preview(int id)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.AccountType != AccountType.Student)
+            {
+                return NotFound();
+            }
+            var stud = _unitOfWork.Students.Find(s => s.AppUserID == user.Id, ["Groups"]);
+            var groupIds = stud.Groups.Select(g => g.ID).ToList();
+
+            if (groupIds.Contains(id))
+            {
+                return RedirectToAction("Details", new { id });
+            }
+
             var groupVM = await _enrollStudentService.GetGroupInfo(id, User);
             if (groupVM == null) return NotFound();
             return View(groupVM);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.AccountType != AccountType.Student)
+            {
+                return NotFound();
+            }
+            var stud = _unitOfWork.Students.Find(s => s.AppUserID == user.Id, ["Groups"]);
+            var groupIds = stud.Groups.Select(g => g.ID).ToList();
+
+            if (!groupIds.Contains(id))
+            {
+                return RedirectToAction("Preview", new { id });
+            }
+
+            var group = StudentGroup.Details(id);
+            if (group == null) return NotFound();
+            return View(group);
         }
 
         [HttpPost]
@@ -71,13 +110,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             return View(groups);
         }
 
-        public IActionResult Details(int id)
-        {
-            var group = StudentGroup.Details(id);
-            if (group == null) return NotFound();
 
-            return View(group);
-        }
 
         public async Task<IActionResult> Recommended()
         {
@@ -87,7 +120,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             {
                 groups = new List<RecommendedGroupViewModel>();
             }
-            return await Task.FromResult( View(groups));
+            return await Task.FromResult(View(groups));
         }
     }
 }

@@ -13,7 +13,7 @@ namespace XCourse.Core.ViewModels.CenterAdminViewModels
         [Key]
         public int ID { get; set; }
         public int RoomID { get; set; }
-     
+        
         public decimal TotalPrice { get; set; }
         public DateOnly? Date { get; set; }
         public TimeOnly? StartTime { get; set; }
@@ -26,8 +26,9 @@ namespace XCourse.Core.ViewModels.CenterAdminViewModels
 
         public int Capacity { get; set; }
 
-        public Equipment Equipment { get; set; }
+        public Equipment? Equipment { get; set; }
 
+        public string? CenterName { get; set; }
 
     }
 }

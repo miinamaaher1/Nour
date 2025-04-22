@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol;
-using System.Text.Json;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs.Teachers;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels;
@@ -8,6 +7,7 @@ using XCourse.Services.Interfaces.Teachers;
 
 namespace XCourse.Web.Areas.Teachers.Controllers
 {
+    [Authorize(Roles = "Teacher")]
     [Area("Teachers")]
     public class GroupController : Controller
     {
@@ -135,23 +135,23 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             return Ok(subjects);
         }
         [HttpPost]
-        public async Task<bool> InsertAnnouncement([FromBody]RequestAnnouncement request)
+        public async Task<bool> InsertAnnouncement([FromBody] RequestAnnouncement request)
         {
             //var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             //Teacher teacher = await _groupService.GetTeacherByUserId(userID!);
-            if(request.title == "")
+            if (request.title == "")
             {
                 request.title = null;
             }
-            return await _groupService.PostAnnouncement(request.groupId, 1, request.body! ,request.isImportant, request.title);
+            return await _groupService.PostAnnouncement(request.groupId, 1, request.body!, request.isImportant, request.title);
 
         }
         [HttpPost]
         public async Task<IActionResult> GetAllGroups()
         {
-            IEnumerable <GroupVM> groupDetails = await _groupService.GetAllGroups(1);
+            IEnumerable<GroupVM> groupDetails = await _groupService.GetAllGroups(1);
             return Json(groupDetails);
-        } 
-        
+        }
+
     }
 }

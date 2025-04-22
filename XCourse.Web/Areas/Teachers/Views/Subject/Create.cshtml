@@ -1,9 +1,40 @@
-﻿@model XCourse.Core.ViewModels.TeachersViewModels.SubjectCreateVM
+@model XCourse.Core.ViewModels.TeachersViewModels.SubjectCreateVM
 @{
    ViewData["Title"] = "Create";  
 }
 @section Styles {
     <link rel="stylesheet" href="~/css/Teachers/Card.css" />
+    <style>
+        .xcourse-input {
+            background-color: var(--clr-surface);
+            color: var(--clr-text-primary);
+            border: 1px solid var(--clr-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .xcourse-input:focus {
+            border-color: var(--clr-primary);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--clr-primary-light, #e0d7f7);
+        }
+        .xcourse-select {
+            background-color: var(--clr-surface);
+            color: var(--clr-text-primary);
+            border: 1px solid var(--clr-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+        }
+        .xcourse-select:focus {
+            border-color: var(--clr-primary);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--clr-primary-light, #e0d7f7);
+        }
+    </style>
 }
 
 <div class="container">
@@ -20,7 +51,7 @@
                 <div class="card__label">Topic:</div>
                 <div class="card__value">
                     @* <label asp-for="Topic" class="control-label"></label> *@
-                    <input asp-for="Topic" class="form-control" list="TopicSuggestions" placeholder="Select or type a topic" />
+                    <input asp-for="Topic" class="form-control xcourse-input" list="TopicSuggestions" placeholder="Select or type a topic" />
                     <datalist id="TopicSuggestions">
                         @foreach (var topic in Model.Topics)
                         {
@@ -33,19 +64,19 @@
             <div class="card__row">
 
                 <div class="card__label">Major:</div>
-                <select asp-for="Major" class="card__value" asp-items=@Html.GetEnumSelectList(typeof(XCourse.Core.Entities.Major))></select>
+                <select asp-for="Major" class="card__value xcourse-select" asp-items=@Html.GetEnumSelectList(typeof(XCourse.Core.Entities.Major))></select>
                 <span asp-validation-for="Major" class="text-danger"></span>  
                 
             </div>
            <div class="card__row">  
                 <div class="card__label">Year:</div>
-               <select asp-for="Year" class="card__value" asp-items=@Html.GetEnumSelectList(typeof(XCourse.Core.Entities.Year))></select>  
+               <select asp-for="Year" class="card__value xcourse-select" asp-items=@Html.GetEnumSelectList(typeof(XCourse.Core.Entities.Year))></select>  
                <span asp-validation-for="Year" class="text-danger"></span>  
            </div>  
            
            <div class="card__row">
                <div class="card__label">Semester:</div>
-                <select asp-for="Semester" class="card__value" asp-items="@(new SelectList(Enum.GetValues(typeof(XCourse.Core.Entities.Semester))))"></select>
+                <select asp-for="Semester" class="card__value xcourse-select" asp-items="@(new SelectList(Enum.GetValues(typeof(XCourse.Core.Entities.Semester))))"></select>
                 <span asp-validation-for="Semester" class="text-danger"></span>  
            </div>
             <div class="button-container">

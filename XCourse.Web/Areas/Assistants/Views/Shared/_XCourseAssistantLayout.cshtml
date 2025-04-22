@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "/Views/Shared/_XCourseLayout.cshtml";
+}
+
+@section Styles {
+    @RenderSection("Styles", false)
+}
+
+@RenderBody()
+
+@section NavigationMenu {
+    <li class="nav-item">
+        <a asp-action="Index" asp-controller="PendingRequests" asp-area="Assistants" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "PendingRequests" ? "active" : "") ">
+            <i class="fa-regular fa-envelope nav-icon"></i>
+            <span class="nav-text">Invitations</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a asp-action="Index" asp-controller="Group" asp-area="Assistants" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Group" ? "active" : "") ">
+            <i class="fa-solid fa-users nav-icon"></i>
+            <span class="nav-text">Groups</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a asp-action="TopUpWallet" asp-controller="Payment" asp-area="Assistants" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payment" ? "active" : "") ">
+            <i class="fa-solid fa-wallet  nav-icon"></i>
+            <span class="nav-text">Wallet</span>
+        </a>
+    </li>
+}
+
+@section Scripts {
+    @RenderSection("Scripts", false)
+}

@@ -32,14 +32,13 @@ namespace XCourse.Services.Implementations.AssistantServices
 
             var acceptedRequests = await _unitOfWork.AssistantInvitations
                 .FindAllAsync(
-                    x => x.AssistantID == assistant.ID && x.Status == AssistantInvitationStatus.Accepted,
-                    includes: new[] { "Group.Teacher.AppUser", "Group.Teacher.Subjects" }
+                    x => x.AssistantID == assistant.ID && x.Status == AssistantInvitationStatus.Accepted
                 );
 
             var acceptedGroups = await _unitOfWork.Groups
                 .FindAllAsync(
                     x => acceptedRequests.Select(y => y.GroupID).Contains(x.ID),
-                    includes: new[] { "Teacher.AppUser", "Teacher.Subjects" }
+                    includes: new[] { "Teacher.AppUser","Subject" }
                 );
             return acceptedGroups.Select(x => new GroupVM
             {
