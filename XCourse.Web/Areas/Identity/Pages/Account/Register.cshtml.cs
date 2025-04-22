@@ -124,8 +124,6 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
             public string LastName { get; set; }
             [Column(TypeName = "varbinary(MAX)")]
             [Display(Name = "Profile Picture")]
-            public byte[] ProfilePicture { get; set; }
-            [EnumDataType(typeof(Gender))]
             public Gender Gender { get; set; }
             [DataType(DataType.Date)]
             [Display(Name = "Date of Birth")]
@@ -183,17 +181,6 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                 user.Gender = Input.Gender;
                 user.AccountType = Input.AccountType;
 
-                if (Request.Form.Files.Count > 0)
-                {
-                    var file = Request.Form.Files.FirstOrDefault();
-
-                    using (var dataStream = new MemoryStream())
-                    {
-                        await file.CopyToAsync(dataStream);
-                        user.ProfilePicture = dataStream.ToArray();
-                    }
-                }
-
                 await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -212,6 +199,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         };
                         _unitOfWork.Students.Add(student);
                         _unitOfWork.Save();
+                        await _userManager.AddToRoleAsync(user, "Student");
                     }
                     else if (user.AccountType == AccountType.Teacher)
                     {
@@ -223,6 +211,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         };
                         _unitOfWork.Teachers.Add(teacher);
                         _unitOfWork.Save();
+                        await _userManager.AddToRoleAsync(user, "Teacher");
                     }
                     else if (user.AccountType == AccountType.Assistant)
                     {
@@ -232,6 +221,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         };
                         _unitOfWork.Assistants.Add(assistant);
                         _unitOfWork.Save();
+                        await _userManager.AddToRoleAsync(user, "Assistant");
                     }
                     else if (user.AccountType == AccountType.CenterAdmin)
                     {
@@ -241,6 +231,7 @@ namespace XCourse.Web.Areas.Identity.Pages.Account
                         };
                         _unitOfWork.CenterAdmins.Add(centerAdmin);
                         _unitOfWork.Save();
+                        await _userManager.AddToRoleAsync(user, "CenterAdmin");
                     }
 
                     Wallet wallet = new Wallet()

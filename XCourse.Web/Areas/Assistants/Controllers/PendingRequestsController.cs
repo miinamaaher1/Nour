@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.AssistantServices;
 
 namespace XCourse.Web.Areas.Assistants.Controllers
 {
+    [Authorize(Roles = "Assistant")]
     [Area("Assistants")]
     public class PendingRequestsController : Controller
     {
@@ -28,7 +28,7 @@ namespace XCourse.Web.Areas.Assistants.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcceptConfirmed(int id)
         {
-            
+
             var Result = await _pendingRequestService.AcceptInvitationRequest(id);
             TempData["ToastMessage"] = "Invitation Confirmed Successfully";
             TempData["ToastType"] = "success";

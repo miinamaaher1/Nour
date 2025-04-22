@@ -1,0 +1,379 @@
+@model List<XCourse.Core.Entities.Group>
+@{
+    ViewData["Title"] = "Assigned Groups";
+    var assistant = ViewBag.Assistant as XCourse.Core.Entities.Assistant;
+}
+
+@section Styles {
+    <style>
+
+        .assigned-groups-title {
+            font-size: 1.5rem;
+            color: var(--clr-primary);
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+        }
+
+        .assistant-details {
+            font-size: 1.1rem;
+            color: var(--clr-text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .groups-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            background: var(--clr-surface);
+            box-shadow: 0 2px 8px var(--clr-overlay, rgba(0, 0, 0, 0.04));
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .groups-table th, .groups-table td {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--clr-border, #eee);
+            text-align: left;
+        }
+
+        .groups-table th {
+            background: var(--clr-surface);
+            color: var(--clr-primary);
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .groups-table td {
+            background: var(--clr-background);
+            font-size: 1.01rem;
+        }
+
+        .group-action-btn {
+            margin-right: 6px;
+            padding: 5px 14px;
+            border-radius: 5px;
+            border: none;
+            font-size: 0.96rem;
+            cursor: pointer;
+            transition: background 0.18s;
+        }
+
+        .btn-details {
+            background: var(--clr-primary) !important;
+            color: var(--clr-text-on-primary) !important;
+        }
+
+        .btn-details:hover {
+            background: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+        }
+
+        .btn-remove {
+            background: var(--clr-danger, #dc3545);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 7px;
+            padding: 7px 18px;
+            font-size: 1rem;
+            transition: background 0.18s, color 0.18s;
+        }
+
+        .btn-remove:hover, .btn-remove:focus {
+            background: #a71d2a;
+            color: #fff;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: var(--clr-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.06rem;
+        }
+
+
+        .subject-meta {
+            font-size: 0.97rem;
+            color: var(--clr-text-secondary);
+            margin-left: 2px;
+        }
+
+        .group-card {
+            background-color: var(--clr-surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            height: 100%;
+        }
+
+        .group-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 0;
+            color: var(--clr-text-on-primary);
+        }
+
+        .subject-badge {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .group-info {
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .info-icon {
+            color: var(--clr-secondary);
+            margin-right: 8px;
+            width: 18px;
+            text-align: center;
+        }
+
+        .badge {
+            background-color: var(--clr-accent);
+            color: var(--clr-text-on-accent);
+            padding: 4px 8px;
+            border-radius: 20px;
+            margin-right: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .badge-online {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-offline {
+            background-color: var(--clr-secondary);
+            color: white;
+        }
+
+        .badge-private {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .badge-girls {
+            background-color: #d63384;
+            color: white;
+        }
+
+        .badge-status {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+        }
+
+        .students-count {
+            margin-top: 12px;
+            height: 5px;
+            background-color: var(--clr-border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .students-progress {
+            height: 100%;
+            background-color: var(--clr-secondary);
+            border-radius: 3px;
+        }
+
+        .students-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-top: 4px;
+            color: var(--clr-text-secondary);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-details {
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-details:hover {
+            background-color: #4e2257;
+            color: var(--clr-text-on-primary);
+        }
+    </style>
+}
+
+
+
+<div class="col-12 container" style="margin: auto;">
+    <div class="container" style="margin: auto;">
+        <div class="d-flex justify-content-start align-items-center mb-4">
+        </div>
+        <div class="assigned-groups-title">Assigned Groups for Assistant: <span>@assistant</span></div>
+        <div class="assistant-details">
+            <!-- You can add more assistant details here if needed -->
+        </div>
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info">No groups assigned to this assistant.</div>
+        }
+        else
+        {
+            <table class="groups-table">
+                <thead>
+                    <tr>
+                        <th>Group Name</th>
+                        <th>Default Timings</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var group in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="subject-name">
+                                    <i class="fas fa-book"></i>
+                                    <span>@(group.Subject?.Topic ?? "Unnamed Group")</span>
+                                    <span class="subject-meta">
+                                        @if (group.Subject != null)
+                                        {
+                                            @switch ((int)group.Subject.Year)
+                                            {
+                                                case 0:
+                                                    <span>Primary One</span>
+                                                    break;
+                                                case 1:
+                                                    <span>Primary Two</span>
+                                                    break;
+                                                case 2:
+                                                    <span>Primary Three</span>
+                                                    break;
+                                                case 3:
+                                                    <span>Primary Four</span>
+                                                    break;
+                                                case 4:
+                                                    <span>Primary Five</span>
+                                                    break;
+                                                case 5:
+                                                    <span>Primary Six</span>
+                                                    break;
+                                                case 6:
+                                                    <span>Preparatory One</span>
+                                                    break;
+                                                case 7:
+                                                    <span>Preparatory Two</span>
+                                                    break;
+                                                case 8:
+                                                    <span>Preparatory Three</span>
+                                                    break;
+                                                case 9:
+                                                    <span>Secondary One</span>
+                                                    break;
+                                                case 10:
+                                                    <span>Secondary Two</span>
+                                                    break;
+                                                case 11:
+                                                    <span>Secondary Three</span>
+                                                    break;
+                                                default:
+                                                    <span>Unknown Grade</span>
+                                                    break;
+                                            }
+                                            <span> - </span>
+                                            @switch ((int)group.Subject.Semester)
+                                            {
+                                                case 1:
+                                                    <span>First Semester</span>
+                                                    break;
+                                                case 2:
+                                                    <span>Second Semester</span>
+                                                    break;
+                                                case 3:
+                                                    <span>Full Year</span>
+                                                    break;
+                                                default:
+                                                    <span>Unknown</span>
+                                                    break;
+                                            }
+                                        }
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                @if (group.GroupDefaults != null && group.GroupDefaults.Any())
+                                {
+                                    var def = group.GroupDefaults.First();
+                                    <div>
+                                        <span>@def.StartTime?.ToString("hh:mm") - @def.EndTime?.ToString("hh:mm")</span>
+                                        <span class="ms-2">@def.StartDate?.ToString("yyyy-MM-dd") to @def.EndDate?.ToString("yyyy-MM-dd")</span>
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <span>No default timings</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a class="group-action-btn btn-details d-flex align-items-center gap-1" asp-area="Teachers" asp-controller="Group" asp-action="Details" asp-route-id="@group.ID">
+                                        <i class="bi bi-info-circle"></i> Details
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+</div>

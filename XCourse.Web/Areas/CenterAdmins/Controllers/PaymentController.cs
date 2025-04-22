@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.Entities;
 using XCourse.Services.Interfaces.PaymentService;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
 {
+    [Authorize(Roles = "CenterAdmin")]
     [Area("CenterAdmins")]
     public class PaymentController : Controller
     {

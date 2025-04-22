@@ -1,20 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs.StudentDTOs;
-using XCourse.Core.Entities;
-using XCourse.Core.ViewModels;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
 using XCourse.Services.Interfaces.CenterAdminServices;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
 {
+    [Authorize(Roles = "CenterAdmin")]
     [Area("CenterAdmins")]
     public class CenterController : Controller
     {
         // GET: CenterController
         ICenterAdminService _centerAdminService;
         IConfiguration Configuration;
-        public CenterController(ICenterAdminService centerAdminService,IConfiguration _configuration)
+        public CenterController(ICenterAdminService centerAdminService, IConfiguration _configuration)
         {
             _centerAdminService = centerAdminService;
             Configuration = _configuration;
@@ -25,20 +24,20 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userID))
                 return Unauthorized("User ID not found");
-            var Centers=_centerAdminService.GetCenters(userID);
+            var Centers = _centerAdminService.GetCenters(userID);
             if (Centers == null)
             {
-                 return NotFound("this User not Have Any Center");
+                return NotFound("this User not Have Any Center");
             }
             ViewBag.centeradmin = Centers.Select(c => c.CenterAdminid).FirstOrDefault();
-        
+
             return View(Centers);
         }
 
         // GET: CenterController/Details/5
         public ActionResult Details(int id)
         {
-            var Center = _centerAdminService.GetCenter(id); 
+            var Center = _centerAdminService.GetCenter(id);
             if (Center == null) return NotFound();
 
             return View(Center);
@@ -54,13 +53,13 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 Location = new MapInfoDTO { OriginX = 0, OriginY = 0, Key = Configuration["GoogleMaps:ApiKey"] }
             };
             return View(model);
-          
+
         }
 
         // POST: CenterController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create( CreateCenterViewModel Center)
+        public async Task<ActionResult> Create(CreateCenterViewModel Center)
         {
             if (Request.Form.Files.Count > 0)
             {
@@ -69,7 +68,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 using (var dataStream = new MemoryStream())
                 {
                     await file.CopyToAsync(dataStream);
-                    Center.PreviewPicture= dataStream.ToArray();
+                    Center.PreviewPicture = dataStream.ToArray();
                 }
             }
             if (Center.Location == null)
@@ -104,7 +103,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
 
 
 
-       
+
 
 
 
@@ -112,9 +111,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // GET: CenterController/Edit/5
         public ActionResult Edit(int id)
         {
-            var EditCenter=_centerAdminService.GetCenter(id);
-            if(EditCenter==null) return NotFound();
-            
+            var EditCenter = _centerAdminService.GetCenter(id);
+            if (EditCenter == null) return NotFound();
+
 
             return View(EditCenter);
         }
@@ -138,7 +137,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 }
                 if (ModelState.IsValid)
                 {
-                  int t=  _centerAdminService.EditCenter(EditCenter);
+                    int t = _centerAdminService.EditCenter(EditCenter);
                     if (t == 1)
                     {
                         return RedirectToAction(nameof(Index));
@@ -147,7 +146,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                     else return View(EditCenter);
                 }
 
-               
+
                 return View(EditCenter);
             }
             catch
@@ -173,7 +172,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
 
 
-                int t=_centerAdminService.DeleteCenter(Center);
+                int t = _centerAdminService.DeleteCenter(Center);
                 if (t == 1)
                 {
                     return RedirectToAction(nameof(Index));
@@ -182,12 +181,12 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
 
                 else
                 {
-                    
 
-                    return RedirectToAction("ConfirmDelete", new {  CenterID=Center.CenterID });
+
+                    return RedirectToAction("ConfirmDelete", new { CenterID = Center.CenterID });
 
                 }
-               
+
             }
             catch
             {
@@ -200,10 +199,10 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
 
         public ActionResult ConfirmDelete(int CenterID)
         {
-            var Deletemessage=_centerAdminService.GetCenter(CenterID);
+            var Deletemessage = _centerAdminService.GetCenter(CenterID);
             return View(Deletemessage);
 
         }
-        
+
     }
 }

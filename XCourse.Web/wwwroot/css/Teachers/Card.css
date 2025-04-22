@@ -1,4 +1,4 @@
-﻿
+
 .container {
     display: grid;
     max-width: 600px;
@@ -91,11 +91,13 @@
 .btn--accept {
     background-color: var(--clr-accent);
     color: var(--clr-text-on-accent);
+    box-shadow: 0 2px 6px rgba(224, 169, 109, 0.08);
 }
 
-    .btn--accept:hover {
-        background-color: #c99a5f;
-    }
+.btn--accept:hover {
+    background-color: color-mix(in srgb, var(--clr-accent) 85%, #000);
+    color: var(--clr-text-on-accent);
+}
 
 .btn--edit {
     background-color: var(--clr-secondary);
@@ -130,7 +132,7 @@ select.form-control,
     padding: 8px 12px;
     border: 1px solid #d0d0d0;
     border-radius: 6px;
-    background-color: #fff;
+    background-color: var(--clr-surface);
     font-size: 0.95rem;
     color: var(--clr-text-primary);
     appearance: none; /* Removes default browser styling */

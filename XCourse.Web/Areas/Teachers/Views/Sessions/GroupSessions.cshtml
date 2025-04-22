@@ -1,5 +1,15 @@
 @model List<XCourse.Core.Entities.Session>;
 
+@{
+    ViewData["Title"] = "Sessions";
+    int groupID = 0;
+    foreach (var session in Model)
+    {
+        groupID = session.GroupID;
+        break;
+    }
+}
+
 <div class="container my-4">
     <div class="row g-4 session-cards-row">
         @if (Model != null && Model.Any())
@@ -11,15 +21,21 @@
                         <div class="session-card-body">
                             <h5 class="session-card-title">
                                 <i class="fas fa-chalkboard-teacher icon-spaced"></i>
-                                @if (session.Description != null)
-                                {
-                                    @session.Description
-                                }                                          
-                                else
-                                {
-                                    <span class="session-muted">No Description</span>
-                                }
+                                @session.Group?.Subject?.Topic
                             </h5>
+                            <div class="session-card-description mt-1 mb-2">
+                                <span class="small-description">
+                                    <i class="fas fa-pen"></i>
+                                    @if (session.Description != null)
+                                    {
+                                        @session.Description
+                                    }
+                                    else
+                                    {
+                                        <span class="session-muted">No Description</span>
+                                    }
+                                </span>
+                            </div>
                             <ul class="session-list">
                                 <li>
                                     <strong>Duration:</strong>
@@ -97,9 +113,39 @@
             </div>
         }
     </div>
+    <a class="add-button" asp-action="AddSession" asp-route-id="@groupID">
+        <i class="fa-solid fa-add"></i>
+    </a>
 </div>
 
 @section Styles {
+    <style>
+        .add-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--clr-primary);
+            color: var(--clr-text-on-primary);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, background-color 0.2s;
+            z-index: 1000;
+            text-decoration: none;
+        }
+
+            .add-button:hover {
+                background-color: color-mix(in srgb, var(--clr-primary) 85%, black);
+                transform: translateY(-5px);
+            }
+    </style>
     <style>
         .session-location-box {
             background: var(--clr-surface);
@@ -124,13 +170,17 @@
             border: 1px solid var(--clr-border);
             border-radius: 1rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-            padding: 1.2rem 1rem;
-            margin-bottom: 2rem;
-            min-height: 340px;
+            padding: 0.3rem 0.5rem;
+            margin-bottom: 1.2rem;
+            min-height: 300px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             transition: box-shadow 0.2s;
+        }
+
+        session-card-description{
+            margin-bottom: 1.8rem;
         }
         .session-cards-row > .col-md-6, .session-cards-row > .col-lg-4, .session-cards-row > .col-12 {
             display: flex;
@@ -157,12 +207,12 @@
             display: flex;
             flex-direction: column;
             height: 100%;
-            padding: 1.5rem;
+            padding: 0.75rem 0.75rem 0.75rem 0.75rem;
         }
         .session-card-title {
             color: var(--clr-primary);
             font-size: 1.25rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .session-address {

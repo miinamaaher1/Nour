@@ -47,11 +47,16 @@ namespace XCourse.Services.Implementations.PaymentService
                 successUrl = "https://localhost:7054/CenterAdmins/Payment/StripeSuccess?session_id={CHECKOUT_SESSION_ID}";
                 cancelUrl = "https://localhost:7054/CenterAdmins/Payment/TopUpWallet";
             }
-
-            var options = new SessionCreateOptions
+            else if(user.AccountType==AccountType.Assistant)
             {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions>
+                successUrl = "https://localhost:7054/Assistants/Payment/StripeSuccess?session_id={CHECKOUT_SESSION_ID}";
+                cancelUrl = "https://localhost:7054/Assistants/Payment/TopUpWallet";
+            }
+
+                var options = new SessionCreateOptions
+                {
+                    PaymentMethodTypes = new List<string> { "card" },
+                    LineItems = new List<SessionLineItemOptions>
             {
                 new SessionLineItemOptions
                 {
@@ -67,12 +72,12 @@ namespace XCourse.Services.Implementations.PaymentService
                     Quantity = 1
                 }
             },
-                Mode = "payment",
+                    Mode = "payment",
 
-                SuccessUrl = successUrl,
-                CancelUrl = cancelUrl,
-                CustomerEmail = email
-            };
+                    SuccessUrl = successUrl,
+                    CancelUrl = cancelUrl,
+                    CustomerEmail = email
+                };
 
             var service = new SessionService();
             Stripe.Checkout.Session session = await service.CreateAsync(options);

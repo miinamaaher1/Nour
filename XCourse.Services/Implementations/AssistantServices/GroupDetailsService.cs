@@ -39,7 +39,7 @@ namespace XCourse.Services.Implementations.AssistantServices
                 Location = group.Location,
                 Key = _configuration["GoogleMaps:ApiKey"],
                 DefaultRoom = group.DefaultRoom,
-                Sessions = _unitOfWork.Sessions.FindAll(s => s.GroupID == group.ID, new string[] { "RoomReservation.Room" }, null, 3).ToList(),
+                Sessions = _unitOfWork.Sessions.FindAll(s => s.GroupID == group.ID, ["RoomReservation.Room" ]).ToList(),
                 Teacher = group.Teacher,
                 IsOnline = group.IsOnline,
                 IsPrivate = group.IsPrivate,
