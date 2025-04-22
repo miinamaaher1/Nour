@@ -330,6 +330,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                     Room = room,
                     Group = groupInCenter
                 };
+                groupInCenter.DefaultRoomID = session.RoomId;
                 groupInCenter.GroupDefaults.Add(groupDefaults);
 
                 // Create all actual sessions

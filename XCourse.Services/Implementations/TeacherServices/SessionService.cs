@@ -104,7 +104,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 return 1; // Online Group
             }
-            if (group.DefaultRoomID == null || group.DefaultRoomID == 0)
+            if (group.DefaultRoomID == null)
             {
                 return 2; // Local Group at teacher's Home
             }
