@@ -1,4 +1,5 @@
-﻿@{
+﻿@model XCourse.Core.Entities.Teacher;
+@{
     ViewData["Title"] = "Create Group";
 }
 
@@ -824,7 +825,7 @@
                     { key: "Friday", value: 64 }
                 ];
 
-                this.teacherId = 1;
+                        this.teacherId = @Model.ID;
 
 
                 this.groupData = {

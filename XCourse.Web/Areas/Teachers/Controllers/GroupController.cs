@@ -18,17 +18,23 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         }
 
         // Group Creation 
-        public IActionResult CreateOffline()
+        async public Task<IActionResult> CreateOffline()
         {
-            return View();
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var teacher = await _groupService.GetTeacherByUserId(userID);
+            return View(teacher);
         }
-        public IActionResult CreateOfflineLocal()
+        async public Task<IActionResult> CreateOfflineLocal()
         {
-            return View();
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var teacher = await _groupService.GetTeacherByUserId(userID);
+            return View(teacher);
         }
-        public IActionResult CreateOnline()
+        async public Task<IActionResult> CreateOnline()
         {
-            return View();
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var teacher = await _groupService.GetTeacherByUserId(userID);
+            return View(teacher);
         }
 
         // Group Details 
