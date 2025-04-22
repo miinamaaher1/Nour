@@ -85,6 +85,7 @@ namespace XCourse.Services.Implementations.AssistantServices
                     SessionId = request.SessionId,
                     StudentId = student.ID,
                     StudentName = $"{appUser?.FirstName} {appUser?.LastName}",
+                    studentEmail = appUser?.Email,
                     HasAttended = attendance?.HasAttended ?? false,
                     HasPaid = attendance?.HasPaid ?? false,
                     ClassWorkGrade = attendance?.ClassWorkGrade,
