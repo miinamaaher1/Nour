@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = $"{Model.Name}";
 }
+
 <div class="col-12">
 
 	<!-- Center Information Section -->
@@ -24,7 +25,6 @@
                             <img id="PreviewPicture" alt="profile" 
                                  src="~/images/default_center.svg" />
                         }
-
                     </div>
 
                     <div class="col-md-6">
@@ -32,14 +32,13 @@
                             <h2 class="center__name">@Model.Name</h2>
                             <h2 class="center__name">
 								
-								@if (@Model.IsGirlsOnly==true)
+								@if (Model.IsGirlsOnly)
 								{
-									<span>Girls</span>
+									<span class="group-card__feature" style="width: fit-content">
+										<i class="fas fa-child-dress"></i>&nbsp;Girls Only
+									</span>
 								}
-								<span>Mixed</span>
 
-								
-								
 							</h2>
                             <div class="center__location">
                                 <i class="fas fa-map-marker-alt"></i>&nbsp;
@@ -49,43 +48,22 @@
                                 Welcome to our premium conference center – a perfect blend of luxury and functionality.
                                 With state-of-the-art facilities and a prime location, we offer the ideal setting for your next event.
                             </p>
-                            <div class="center__map">
+                            <div class="center__map" style="overflow: hidden">
                                 @if (Model.Location != null)
                                 {
-                                    <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.Location.Key, OriginX=Model.Location.OriginX, OriginY=Model.Location.OriginY }" style="width:100%; height:100%" />
+                                    <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.Location.Key, OriginX=Model.Location.OriginX, OriginY=Model.Location.OriginY }" style=" border-radius:var(--border-radius); width:100%; height:100%; overflow: hidden;" />
                                 }
                                 else
                                 {
                                     <i class="fa-solid fa-map-location-dot"></i>
                                 }
                             </div>
-
-
-
-
-
-
-
 						</div>
-
                     </div>
-
-
-
-
-
-
                 </div>
             </div>
-			
-
         </div>
-
     </section>
-
-	<a asp-action="Index" class="btn btn-close" style="text-decoration: none;">Cancel</a>
-
-
 </div>
 
 
@@ -171,111 +149,9 @@
 			border-radius: var(--border-radius);
 			overflow: hidden;
 			box-shadow: var(--shadow-sm);
-			border: 2px solid var(--clr-border);
 		}
 
-		.rooms {
-			padding: 2rem 0;
-		}
-
-		.rooms__heading {
-			position: relative;
-			margin-bottom: 2rem;
-			display: inline-block;
-			font-family: var(--font-heading);
-			font-size: 2rem;
-			color: var(--clr-primary);
-		}
-
-			.rooms__heading::after {
-				content: '';
-				position: absolute;
-				bottom: -8px;
-				left: 0;
-				width: 80px;
-				height: 3px;
-				background-color: var(--clr-accent);
-			}
-
-		.rooms__card {
-			background-color: var(--clr-surface);
-			border-radius: var(--border-radius);
-			overflow: hidden;
-			box-shadow: var(--shadow-md);
-			margin-bottom: 2rem;
-			transition: transform 0.3s, box-shadow 0.3s;
-			border: 1px solid var(--clr-border);
-			display: flex;
-			flex-direction: column;
-		}
-
-			.rooms__card:hover {
-				transform: translateY(-5px);
-				box-shadow: var(--shadow-lg);
-			}
-
-		.rooms__image {
-			width: 100%;
-			height: 180px;
-			object-fit: cover;
-		}
-
-		.rooms__info {
-			padding: 1rem;
-			flex-grow: 1;
-			display: flex;
-			flex-direction: column;
-		}
-
-		.rooms__name {
-			font-size: 1.5rem;
-			color: var(--clr-primary);
-			margin-bottom: 0.5rem;
-			font-family: var(--font-heading);
-		}
-
-		.rooms__details {
-			flex-grow: 1;
-		}
-
-		.rooms__capacity,
-		.rooms__price {
-			display: flex;
-			align-items: center;
-			margin-bottom: 0.5rem;
-			color: var(--clr-text-secondary);
-		}
-
-			.rooms__capacity i,
-			.rooms__price i {
-				margin-right: 0.5rem;
-				color: var(--clr-accent);
-				width: 20px;
-				text-align: center;
-			}
-
-		.rooms__reserve-btn {
-			background-color: var(--clr-primary);
-			color: var(--clr-text-on-primary);
-			border: none;
-			padding: 10px 20px;
-			border-radius: var(--border-radius);
-			font-weight: 600;
-			transition: background-color 0.3s, transform 0.2s;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 100%;
-		}
-
-			.rooms__reserve-btn i {
-				margin-right: 0.5rem;
-			}
-
-			.rooms__reserve-btn:hover {
-				background-color: var(--clr-secondary);
-				transform: scale(1.03);
-			}
+		
 
 		@@media (max-width: 768px) {
 			.center__name {
@@ -292,33 +168,8 @@
 			}
 		}
 
-		@@media (max-width: 576px) {
-			.rooms__card {
-				margin-bottom: 1rem;
-			}
+	
 
-			.center__info {
-				padding: 1rem;
-			}
-		}
-
-		.rooms__tags {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 0.5rem;
-			margin-bottom: 1rem;
-		}
-
-		.rooms__tag {
-			background-color: var(--clr-accent);
-			color: var(--clr-text-on-accent);
-			padding: 4px 10px;
-			border-radius: 20px;
-			font-size: 0.8rem;
-			font-weight: 600;
-			text-transform: uppercase;
-			letter-spacing: 0.5px;
-		}
 
 		/* Element - Group Card Features */
 		.group-card__features {
@@ -342,241 +193,5 @@
 				margin-right: 5px;
 			}
 
-		#xmodal-container {
-			position: fixed;
-			top: 0;
-			left: 0;
-			bottom: 0;
-			right: 0;
-			z-index: 1000;
-		}
-
-		#ymodal-container {
-			position: fixed;
-			top: 0;
-			left: 0;
-			bottom: 0;
-			right: 0;
-			z-index: 1000;
-		}
-
-		.xmodal-overlay {
-			position: fixed;
-			top: 0;
-			left: 0;
-			bottom: 0;
-			right: 0;
-			background: var(--clr-overlay);
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		.xmodal {
-			background: var(--clr-background);
-			width: 400px;
-			border-radius: 10px;
-			box-shadow: 0 4px 10px var(--clr-overlay);
-			overflow: hidden;
-		}
-
-		.xmodal-header {
-			background: var(--clr-primary);
-			color: var(--clr-background);
-			padding: 15px;
-			font-size: 18px;
-			text-align: center;
-		}
-
-		.xmodal-body {
-			padding: 20px;
-			text-align: center;
-		}
-
-		.xmodal-footer {
-			background: var(--clr-surface);
-			padding: 15px;
-			text-align: center;
-		}
-
-		.day-picker {
-			margin: auto;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			border-radius: 10px;
-			background-color: var(--clr-surface);
-			box-shadow: 0 0 15px var(--clr-overlay);
-			width: 300px;
-			height: 60px;
-			overflow: hidden;
-		}
-
-		.arrow {
-			cursor: pointer;
-			font-size: 24px;
-			width: 60px;
-			height: 100%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			background-color: var(--clr-primary);
-			color: var(--clr-text-on-primary);
-			user-select: none;
-			transition: background-color 0.3s;
-		}
-
-			.arrow:hover {
-				opacity: 0.9;
-			}
-
-			.arrow:active {
-				opacity: 0.7;
-			}
-
-		.date-display {
-			font-size: 18px;
-			font-weight: bold;
-			color: var(--clr-text-primary);
-			text-align: center;
-			flex-grow: 1;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			background-color: var(--clr-surface);
-		}
-
-		#clock {
-			margin-top: 20px;
-			background: white;
-			border-radius: 50%;
-			box-shadow: 0 0 15px var(--clr-overlay);
-		}
-
-		#loading {
-			margin: 0 auto;
-			margin-top: 20px;
-			width: 300px;
-			height: 300px;
-		}
-
-		circle.handle {
-			cursor: pointer;
-		}
-
-		text.hour-mark {
-			font-size: 27px;
-			font-weight: 1000;
-			fill: var(--clr-text-on-primary);
-			user-select: none;
-		}
-
-		.reserved-segment {
-			opacity: 0.4;
-		}
-
-		#tell-time {
-			font-weight: bold;
-			margin-top: 20px;
-			margin-bottom: 0;
-		}
-
-		.rotating-dots {
-			position: relative;
-			width: 60px;
-			height: 60px;
-		}
-
-			.rotating-dots .dot {
-				position: absolute;
-				width: 12px;
-				height: 12px;
-				border-radius: 50%;
-				background: var(--clr-accent);
-				animation: dots 1.5s infinite ease-in-out;
-			}
-
-				.rotating-dots .dot:nth-child(1) {
-					top: 0;
-					left: 50%;
-					transform: translateX(-50%);
-					animation-delay: 0s;
-				}
-
-				.rotating-dots .dot:nth-child(2) {
-					top: 25%;
-					right: 0;
-					animation-delay: 0.2s;
-				}
-
-				.rotating-dots .dot:nth-child(3) {
-					bottom: 0;
-					left: 50%;
-					transform: translateX(-50%);
-					animation-delay: 0.4s;
-				}
-
-				.rotating-dots .dot:nth-child(4) {
-					top: 25%;
-					left: 0;
-					animation-delay: 0.6s;
-				}
-
-		@@keyframes dots {
-			0%, 100% {
-				transform: scale(1);
-				opacity: 1;
-			}
-
-			50% {
-				transform: scale(1.5);
-				opacity: 0.5;
-			}
-		}
-
-
-		.btn {
-			padding: 12px 20px;
-			border: none;
-			border-radius: 6px;
-			cursor: pointer;
-			font-size: 1rem;
-			transition: background-color 0.3s ease, transform 0.2s ease;
-			
-		}
-
-			.btn:hover {
-				transform: translateY(-2px);
-			}
-
-		.btn-primary {
-			background-color: var(--clr-primary);
-			color: var(--clr-text-on-primary);
-		}
-
-			.btn-primary:hover {
-				background-color: var(--clr-primary);
-				opacity: 0.9;
-			}
-
-		.btn-secondary {
-			background-color: var(--clr-secondary);
-			color: var(--clr-text-on-secondary);
-		}
-
-			.btn-secondary:hover {
-				background-color: var(--clr-secondary);
-				opacity: 0.9;
-			}
-
-		.btn-close {
-			background-color: #FF4D4D;
-			color: var(--clr-text-on-secondary);
-			
-		}
-
-			.btn-close:hover {
-				background-color: #FF6666;
-			}
 	</style>
 }

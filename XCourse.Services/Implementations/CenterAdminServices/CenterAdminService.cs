@@ -17,6 +17,8 @@ using XCourse.Core.DTOs.CenterAdmins;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using XCourse.Services.Interfaces.PaymentService;
+using System.Security.Claims;
 
 namespace XCourse.Services.Implementations.CenterAdminServices
 {
@@ -24,10 +26,12 @@ namespace XCourse.Services.Implementations.CenterAdminServices
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
-        public CenterAdminService(IUnitOfWork unitOfWork, IConfiguration configuration)
+        private readonly ITransactionService _transactionService;
+        public CenterAdminService(IUnitOfWork unitOfWork, IConfiguration configuration,ITransactionService transactionService)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
+            _transactionService = transactionService;
         }
 
 
@@ -308,12 +312,26 @@ namespace XCourse.Services.Implementations.CenterAdminServices
             return Reservation.RoomID;
         }
 
-        public int RejectReservation(int id)
+        public async Task<int> RejectReservation(int id)
         {
             var Reservation = _unitOfWork.RoomReservations.Find(r => r.ID == id);
             if (Reservation == null) return 0;
 
+            var session = _unitOfWork.Sessions.Find(s => s.RoomReservationID == Reservation.ID);
+            var group = _unitOfWork.Groups.Find(g => g.ID == session.GroupID, [ "Teacher" ]);
+
+            var room = _unitOfWork.Rooms.Find(r => r.ID == Reservation.RoomID);
+            var center = _unitOfWork.Centers.Find(c => c.ID == room.CenterID, new string[] { "CenterAdmin" });
+
+            var IsRefund = await _transactionService.MakeTransactionAsync(group.Teacher.AppUserID,center.CenterAdmin.AppUserID,Reservation.TotalPrice,TransactionType.Refund);
+            if (IsRefund == false)
+            {
+                return 0;
+            }
+
             Reservation.ReservationStatus = ReservationStatus.Declined;
+
+
 
             _unitOfWork.RoomReservations.Update(Reservation);
             _unitOfWork.Save();
@@ -614,20 +632,98 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
         }
 
-        public int DeleteReservation(DetailsReservationViewModel details)
+        public async Task<int> DeleteReservation(DetailsReservationViewModel details)
         {
-
             var reservation = _unitOfWork.RoomReservations.Find(r => r.ID == details.ID);
             if (reservation == null) return 0;
 
-            _unitOfWork.RoomReservations.Delete(reservation);
-           _unitOfWork.Save();
-            return reservation.RoomID;
+            var room = _unitOfWork.Rooms.Find(r => r.ID == reservation.RoomID);
+            if (room == null) return 0;
 
+            var center = _unitOfWork.Centers.Find(c => c.ID == room.CenterID, new string[] { "CenterAdmin" });
+            if (center == null) return 0;
+
+            if (reservation.ReservationStatus == ReservationStatus.Approved)
+            {
+                var student = _unitOfWork.Students.Find(s => s.ID == reservation.StudentID, ["AppUser"]);
+
+                if (student != null)
+                {
+                    var isRefund = await _transactionService.MakeTransactionAsync(
+                        center.CenterAdmin.AppUserID,
+                        student.AppUserID,
+                        reservation.TotalPrice,
+                        TransactionType.Refund);
+                }
+                else
+                {
+                    var session = _unitOfWork.Sessions.Find(s => s.RoomReservationID == reservation.ID);
+
+                    if (session != null)
+                    {
+                        var group = _unitOfWork.Groups.Find(g => g.ID == session.GroupID, ["Teacher"]);
+
+                        if (group != null)
+                        {
+                            var isRefund = await _transactionService.MakeTransactionAsync(
+                                center.CenterAdmin.AppUserID,
+                                group.Teacher.AppUserID,
+                                reservation.TotalPrice,
+                                TransactionType.Refund);
+
+                            if (isRefund == false)
+                            {
+                                return 0;
+                            }
+                        }
+                      
+                    }
+                    else
+                    {
+                       
+                        return 0;
+                    }
+                }
+            }
+
+            _unitOfWork.RoomReservations.Delete(reservation);
+            _unitOfWork.Save();
+            return reservation.RoomID;
         }
 
 
 
+        public async Task<List<ReservationViewModel>> PendingReservationService(string appUserId)
+        {
+            var centerAdmin = await _unitOfWork.CenterAdmins.FindAsync(c => c.AppUserID == appUserId, new string[] { "Centers" });
+            if (centerAdmin == null) return new List<ReservationViewModel>();
+            var centers = centerAdmin.Centers;
+            var centerIds=centers.Select(c => c.ID).ToList();
+
+            var pendingReservation = await _unitOfWork.RoomReservations.FindAllAsync(res=> centerIds.Contains(res.Room.CenterID)
+                                                                         &&res.ReservationStatus==ReservationStatus.Pending
+                                                                         &&res.Date >= DateOnly.FromDateTime(DateTime.Now), ["Room"]);
+
+            var reservationVm= pendingReservation.Select( g => new ReservationViewModel
+            {
+                ID = g.ID,
+                RoomID = g.RoomID,
+                Name = g.Room.Name,
+                Capacity = g.Room.Capacity,
+                Equipment = g.Room.Equipment,
+                TotalPrice = g.TotalPrice,
+                Date = g.Date,
+                StartTime = g.StartTime,
+                EndTime = g.EndTime,
+                WeekDay = g.WeekDay,
+                CenterId = g.Room.CenterID,
+                ReservationStatus = g.ReservationStatus,
+                CenterName = centers.FirstOrDefault(c => c.ID == g.Room.CenterID)?.Name      
+
+            }).ToList();
+
+            return reservationVm;
+        }
 
     }
 }

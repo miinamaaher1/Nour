@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using XCourse.Core.Entities;
+using NetTopologySuite.Algorithm;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
 using XCourse.Services.Interfaces.CenterAdminServices;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
 {
+    [Authorize(Roles = "CenterAdmin")]
     [Area("CenterAdmins")]
     public class ReservationController : Controller
     {
@@ -37,9 +38,9 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return RedirectToAction("Index", new { id = t });
         }
 
-        public ActionResult RejectReservation(int id)
+        public async Task<ActionResult> RejectReservation(int id)
         {
-            int t = _centerAdminService.RejectReservation(id);
+            int t = await _centerAdminService.RejectReservation(id);
             if (t == 0)
             {
                 return NotFound();
@@ -47,19 +48,11 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return RedirectToAction("Index", new { id = t });
         }
 
-        // GET: ReservationController/Details/5
-        public ActionResult Details(int id)
-        {
-            var model = _centerAdminService.DetailsReservation(id);
-            if (model == null) return NotFound();
-            return View(model);
-        }
-    
         // GET: ReservationController/Edit/5
         public ActionResult Edit(int id)
         {
-       var Result = _centerAdminService.EditRoomReservation(id);
-            if(Result==null)
+            var Result = _centerAdminService.EditRoomReservation(id);
+            if (Result == null)
                 return NotFound();
             return View(Result);
         }
@@ -80,7 +73,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 }
                 else
                 {
-                   var Rooms = _centerAdminService.EditRoomReservation(editRoom.ID);
+                    var Rooms = _centerAdminService.EditRoomReservation(editRoom.ID);
                     return View(Rooms);
                 }
             }
@@ -100,15 +93,15 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             return View(Result);
         }
         [HttpPost]
-        public ActionResult Delete(DetailsReservationViewModel details)
+        public async Task<ActionResult> Delete(DetailsReservationViewModel details)
         {
-            var deleteReservation = _centerAdminService.DeleteReservation(details);
+            var deleteReservation = await _centerAdminService.DeleteReservation(details);
 
             try
             {
                 if (deleteReservation == null)
                     return NotFound();
-               if(deleteReservation==0)
+                if (deleteReservation == 0)
                 {
                     return View(details);
                 }
@@ -123,10 +116,17 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             }
 
 
-           
+
         }
 
 
+        public async Task<IActionResult> Pending()
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var Reservations = await _centerAdminService.PendingReservationService(userID);
+            if (Reservations == null) return RedirectToAction("Index", "Error", new { Area = "" });
+            return View(Reservations);
+        }
 
     }
 }

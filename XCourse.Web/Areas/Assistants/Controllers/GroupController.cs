@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Services.Interfaces.AssistantServices;
 
 namespace XCourse.Web.Areas.Assistants.Controllers
 {
+    [Authorize(Roles = "Assistant")]
     [Area("Assistants")]
     public class GroupController : Controller
     {
         // GET: GroupController
         private readonly IGroupService _groupService;
         private readonly IGroupDetailsService _groupDetailsService;
-        public GroupController(IGroupDetailsService groupDetailsService ,IGroupService groupService)
+        public GroupController(IGroupDetailsService groupDetailsService, IGroupService groupService)
         {
             _groupService = groupService;
             _groupDetailsService = groupDetailsService;

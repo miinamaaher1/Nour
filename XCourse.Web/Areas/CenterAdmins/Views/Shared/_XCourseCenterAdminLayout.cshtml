@@ -12,10 +12,15 @@
 
     <li class="nav-item">
         <a asp-action="Index" asp-controller="Center" asp-area="CenterAdmins" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Center"
-                                                                                                || ViewContext.RouteData.Values["controller"]?.ToString() == "Room"
-                                                                                                || ViewContext.RouteData.Values["controller"]?.ToString() == "Reservation" ? "active" : "") ">
+                                                                                                || ViewContext.RouteData.Values["controller"]?.ToString() == "Room" ? "active" : "") ">
             <i class="fa-solid fa-building nav-icon"></i>
             <span class="nav-text">Centers</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a asp-action="Pending" asp-controller="Reservation" asp-area="CenterAdmins" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reservation" ? "active" : "") ">
+            <i class="fa-solid fa-ticket nav-icon"></i>
+            <span class="nav-text">Reservations</span>
         </a>
     </li>
 
