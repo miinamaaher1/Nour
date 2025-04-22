@@ -59,7 +59,7 @@ namespace XCourse.Services.Implementations.CenterAdminServices
                         CenterId = center.ID,
                         CenterName = center.Name,
                         TotalRooms = center?.Rooms?.Count ?? 0,
-                        BookedRooms = center?.Rooms?.Count(r => r.RoomReservations.Any(res=>res.ReservationStatus==ReservationStatus.Approved)) ?? 0
+                        BookedRooms = center?.Rooms?.Count(r => r.RoomReservations.Any(res => res.ReservationStatus == ReservationStatus.Approved)) ?? 0
 
 
 

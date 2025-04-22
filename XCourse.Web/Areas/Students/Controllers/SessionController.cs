@@ -1,18 +1,17 @@
-﻿using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs;
-using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.Student;
 
 namespace XCourse.Web.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     [Area("Students")]
     public class SessionController : Controller
     {
         private IStudentHomeService _studentHomeService;
 
-        public SessionController(IStudentHomeService studentHomeService )
+        public SessionController(IStudentHomeService studentHomeService)
         {
             _studentHomeService = studentHomeService;
 
@@ -27,7 +26,7 @@ namespace XCourse.Web.Areas.Students.Controllers
         public async Task<IActionResult> Details(int Id)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
-            var sessionDetailsVM = await _studentHomeService.SessionDetailsService(Id,userId);
+            var sessionDetailsVM = await _studentHomeService.SessionDetailsService(Id, userId);
             return View(sessionDetailsVM);
         }
 
@@ -58,7 +57,7 @@ namespace XCourse.Web.Areas.Students.Controllers
             return Json(new { isValid = isSaved });
         }
 
-        public async Task<IActionResult> RemoveFeedback([FromBody]FeedBackDTO feedBackDTO)
+        public async Task<IActionResult> RemoveFeedback([FromBody] FeedBackDTO feedBackDTO)
         {
             bool isRemoved = await _studentHomeService.SessionRemoveFeedbackService(feedBackDTO);
             return Json(new { isValid = isRemoved });

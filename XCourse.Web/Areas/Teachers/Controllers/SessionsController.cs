@@ -1,15 +1,13 @@
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Stripe;
-using XCourse.Core.DTOs;
 using XCourse.Core.DTOs.StudentDTOs;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.TeachersViewModels.Sessions;
 using XCourse.Services.Interfaces.TeacherServices;
-using XCourse.Web.Areas.Students.Controllers;
 
 namespace XCourse.Web.Areas.Teachers.Controllers
 {
+    [Authorize(Roles = "Teacher")]
     [Area("Teachers")]
     public class SessionsController : Controller
     {
@@ -62,7 +60,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (userID == null)
             {
-                // Error Page Here
+                return NotFound();
             }
             var teacher = await _sessionService.GetTeacherByUserId(userID!);
             int groupType = await _sessionService.GetGroupTypeFromSession(id, teacher.ID);
@@ -77,7 +75,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 case 3:
                     return RedirectToAction(nameof(EditOfflineInACenter), new { id });
             }
-            return null!; // error page 
+            return NotFound();
         }
 
         public async Task<IActionResult> EditOnlineGroup(int id)
@@ -112,7 +110,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             }
             var teacher = await _sessionService.GetTeacherByUserId(userID!);
             var result = await _sessionService.EditOnlineSessionVM(sessionVM, teacher.ID);
-            return RedirectToAction(nameof(Details), new {id = sessionVM.SessionID});
+            return RedirectToAction(nameof(Details), new { id = sessionVM.SessionID });
         }
 
         public async Task<IActionResult> EditOfflineLocalSession(int id)
@@ -134,7 +132,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 EndTime = TimeOnly.FromDateTime(session.EndDateTime),
                 Date = DateOnly.FromDateTime(session.StartDateTime),
                 Description = session.Description,
-                Location = new MapInfoDTO { OriginX = session.Location?.X?? 0, OriginY = session.Location?.Y?? 0, Key = _configuration["GoogleMaps:ApiKey"] },
+                Location = new MapInfoDTO { OriginX = session.Location?.X ?? 0, OriginY = session.Location?.Y ?? 0, Key = _configuration["GoogleMaps:ApiKey"] },
                 Address = new Core.Entities.Address
                 {
                     Governorate = session.Address?.Governorate,
@@ -174,7 +172,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         }
 
 
-         
+
         public async Task<IActionResult> AddSession(int id)
         {
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -195,7 +193,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                     return null;
             }
         }
-        
+
         // Adding Online session
         public async Task<IActionResult> AddOnlineSession(int id)
         {
@@ -220,14 +218,15 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             var response = await _sessionService.AddOnlineSession(sessionVM, teacherId);
             if (response.Status == true)
             {
-                return RedirectToAction(nameof(GroupSessions), new {id = sessionVM.GroupID});
+                return RedirectToAction(nameof(GroupSessions), new { id = sessionVM.GroupID });
             }
             else
             {
                 foreach (var err in response.Errors!)
                 {
                     ModelState.AddModelError(string.Empty, err);
-                };
+                }
+                ;
                 return View(sessionVM);
             }
         }

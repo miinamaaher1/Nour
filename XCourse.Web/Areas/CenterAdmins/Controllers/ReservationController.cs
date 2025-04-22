@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using XCourse.Core.Entities;
+using NetTopologySuite.Algorithm;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
 using XCourse.Services.Interfaces.CenterAdminServices;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
 {
+    [Authorize(Roles = "CenterAdmin")]
     [Area("CenterAdmins")]
     public class ReservationController : Controller
     {
@@ -51,8 +51,8 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // GET: ReservationController/Edit/5
         public ActionResult Edit(int id)
         {
-       var Result = _centerAdminService.EditRoomReservation(id);
-            if(Result==null)
+            var Result = _centerAdminService.EditRoomReservation(id);
+            if (Result == null)
                 return NotFound();
             return View(Result);
         }
@@ -73,7 +73,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
                 }
                 else
                 {
-                   var Rooms = _centerAdminService.EditRoomReservation(editRoom.ID);
+                    var Rooms = _centerAdminService.EditRoomReservation(editRoom.ID);
                     return View(Rooms);
                 }
             }
@@ -101,7 +101,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
                 if (deleteReservation == null)
                     return NotFound();
-               if(deleteReservation==0)
+                if (deleteReservation == 0)
                 {
                     return View(details);
                 }
@@ -116,10 +116,17 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             }
 
 
-           
+
         }
 
 
+        public async Task<IActionResult> Pending()
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var Reservations = await _centerAdminService.PendingReservationService(userID);
+            if (Reservations == null) return RedirectToAction("Index", "Error", new { Area = "" });
+            return View(Reservations);
+        }
 
     }
 }

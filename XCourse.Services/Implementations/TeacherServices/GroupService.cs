@@ -286,6 +286,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 Address = center.Address,
                 IsPrivate = false,
                 IsOnline = false,
+                DefaultRoomID = -1,
                 IsGirlsOnly = request.IsGirlsOnly,
                 IsActive = true,
                 CurrentStudents = 0,

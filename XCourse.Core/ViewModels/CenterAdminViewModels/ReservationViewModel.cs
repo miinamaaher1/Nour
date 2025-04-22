@@ -28,7 +28,7 @@ namespace XCourse.Core.ViewModels.CenterAdminViewModels
 
         public Equipment? Equipment { get; set; }
 
-      
+        public string? CenterName { get; set; }
 
     }
 }

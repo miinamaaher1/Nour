@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using XCourse.Services.Interfaces.PaymentService;
+using System.Security.Claims;
 
 namespace XCourse.Services.Implementations.CenterAdminServices
 {
@@ -320,7 +321,7 @@ namespace XCourse.Services.Implementations.CenterAdminServices
             var group = _unitOfWork.Groups.Find(g => g.ID == session.GroupID, [ "Teacher" ]);
 
             var room = _unitOfWork.Rooms.Find(r => r.ID == Reservation.RoomID);
-            var center = _unitOfWork.Centers.Find(c => c.ID == room.CenterID, new string[] { "CenterAdmins" });
+            var center = _unitOfWork.Centers.Find(c => c.ID == room.CenterID, new string[] { "CenterAdmin" });
 
             var IsRefund = await _transactionService.MakeTransactionAsync(group.Teacher.AppUserID,center.CenterAdmin.AppUserID,Reservation.TotalPrice,TransactionType.Refund);
             if (IsRefund == false)
@@ -692,6 +693,37 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
 
 
+        public async Task<List<ReservationViewModel>> PendingReservationService(string appUserId)
+        {
+            var centerAdmin = await _unitOfWork.CenterAdmins.FindAsync(c => c.AppUserID == appUserId, new string[] { "Centers" });
+            if (centerAdmin == null) return new List<ReservationViewModel>();
+            var centers = centerAdmin.Centers;
+            var centerIds=centers.Select(c => c.ID).ToList();
+
+            var pendingReservation = await _unitOfWork.RoomReservations.FindAllAsync(res=> centerIds.Contains(res.Room.CenterID)
+                                                                         &&res.ReservationStatus==ReservationStatus.Pending
+                                                                         &&res.Date >= DateOnly.FromDateTime(DateTime.Now), ["Room"]);
+
+            var reservationVm= pendingReservation.Select( g => new ReservationViewModel
+            {
+                ID = g.ID,
+                RoomID = g.RoomID,
+                Name = g.Room.Name,
+                Capacity = g.Room.Capacity,
+                Equipment = g.Room.Equipment,
+                TotalPrice = g.TotalPrice,
+                Date = g.Date,
+                StartTime = g.StartTime,
+                EndTime = g.EndTime,
+                WeekDay = g.WeekDay,
+                CenterId = g.Room.CenterID,
+                ReservationStatus = g.ReservationStatus,
+                CenterName = centers.FirstOrDefault(c => c.ID == g.Room.CenterID)?.Name      
+
+            }).ToList();
+
+            return reservationVm;
+        }
 
     }
 }

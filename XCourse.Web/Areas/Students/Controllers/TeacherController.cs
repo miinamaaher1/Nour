@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.ViewModels.StudentsViewModels;
 using XCourse.Services.Interfaces.StudentServices;
 
 namespace XCourse.Web.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     [Area("Students")]
     public class TeacherController : Controller
     {

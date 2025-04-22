@@ -100,12 +100,11 @@ namespace XCourse.Services.Implementations.TeacherServices
             {
                 return 0; // Invalid Session 
             }
-            if (group.IsOnline == true)
+            if (group.IsOnline)
             {
                 return 1; // Online Group
             }
-            if (group.GroupDefaults == null || group.GroupDefaults.Count
-                () == 0 || group.GroupDefaults!.Any(gd => gd.Room == null))
+            if (group.DefaultRoomID == null || group.DefaultRoomID == 0)
             {
                 return 2; // Local Group at teacher's Home
             }
