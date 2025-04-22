@@ -317,7 +317,6 @@
 }
 
 <div class="container">
-
     <!-- Cover Section -->
     <section class="cover-section">
         <div class="cover-image">
@@ -485,7 +484,7 @@
         async function GetAttendance() {
             let url = "/Assistants/Attendance/GetSessionAttendance"
             let requstBody = {
-                "sessionId": ,
+                "sessionId": @Model.ID,
                 "assistantId": 1
             }
             let errorResponse = {
