@@ -62,7 +62,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
             var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (userID == null)
             {
-                // Error Page Here
+                return NotFound();
             }
             var teacher = await _sessionService.GetTeacherByUserId(userID!);
             int groupType = await _sessionService.GetGroupTypeFromSession(id, teacher.ID);
@@ -77,7 +77,7 @@ namespace XCourse.Web.Areas.Teachers.Controllers
                 case 3:
                     return RedirectToAction(nameof(EditOfflineInACenter), new { id });
             }
-            return null!; // error page 
+            return NotFound();
         }
 
         public async Task<IActionResult> EditOnlineGroup(int id)
