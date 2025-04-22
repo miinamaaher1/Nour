@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Algorithm;
 using XCourse.Core.Entities;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
 using XCourse.Services.Interfaces.CenterAdminServices;
@@ -120,6 +121,13 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         }
 
 
+        public async Task<IActionResult> Pending()
+        {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var Reservations = await _centerAdminService.PendingReservationService(userID);
+            if (Reservations == null) return RedirectToAction("Index", "Error",new {Area=""});
+            return View(Reservations);
+        }
 
     }
 }
