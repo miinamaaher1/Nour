@@ -20,7 +20,6 @@ namespace XCourse.Core.Entities
         public decimal? PrivatePrice { get; set; }
 
         public virtual ICollection<PrivateGroupRequest>? PrivateGroupRequests { get; set; }
-        public virtual ICollection<AssistantInvitation>? AssistantInvitations { get; set; }
         public virtual ICollection<Subject>? Subjects { get; set; }
         public virtual ICollection<Group>? Groups { get; set; }
 

@@ -7,11 +7,27 @@ using NetTopologySuite.Geometries;
 namespace XCourse.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Announcements",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsImportant = table.Column<bool>(type: "bit", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Body = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Announcements", x => x.ID);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -24,60 +40,6 @@ namespace XCourse.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Subjects",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Topic = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
-                    Major = table.Column<int>(type: "int", nullable: false),
-                    Year = table.Column<int>(type: "int", nullable: false),
-                    Semester = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subjects", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Wallets",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Wallets", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,7 +57,6 @@ namespace XCourse.Infrastructure.Migrations
                     HomeAddress_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     HomeAddress_Governorate = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     HomeLocation = table.Column<Point>(type: "geography", nullable: true),
-                    WalletID = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     AccountType = table.Column<int>(type: "int", nullable: false),
@@ -117,34 +78,43 @@ namespace XCourse.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Wallets_WalletID",
-                        column: x => x.WalletID,
-                        principalTable: "Wallets",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Transactions",
+                name: "Subjects",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Topic = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    Major = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Semester = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subjects", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    WalletID = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaymentTransactionID = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Transactions_Wallets_WalletID",
-                        column: x => x.WalletID,
-                        principalTable: "Wallets",
-                        principalColumn: "ID",
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -302,6 +272,7 @@ namespace XCourse.Infrastructure.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AppUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TagLine = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsAvailableForPrivateGroups = table.Column<bool>(type: "bit", nullable: false),
                     PrivatePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -318,6 +289,29 @@ namespace XCourse.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Wallets",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AppUserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wallets", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Wallets_AspNetUsers_AppUserID",
+                        column: x => x.AppUserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Centers",
                 columns: table => new
                 {
@@ -326,6 +320,7 @@ namespace XCourse.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     IsGirlsOnly = table.Column<bool>(type: "bit", nullable: false),
                     Location = table.Column<Point>(type: "geography", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address_Street = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Neighborhood = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
@@ -405,6 +400,29 @@ namespace XCourse.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WalletID = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentTransactionID = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Wallets_WalletID",
+                        column: x => x.WalletID,
+                        principalTable: "Wallets",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Rooms",
                 columns: table => new
                 {
@@ -413,9 +431,12 @@ namespace XCourse.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     Equipment = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PricePerHour = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PreviewPicture = table.Column<byte[]>(type: "varbinary(MAX)", nullable: true),
-                    CenterID = table.Column<int>(type: "int", nullable: false)
+                    CenterID = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -435,19 +456,23 @@ namespace XCourse.Infrastructure.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MaxStudents = table.Column<int>(type: "int", nullable: false),
+                    CurrentStudents = table.Column<int>(type: "int", nullable: false),
                     PricePerSession = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Address_Street = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Neighborhood = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Governorate = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
+                    DefaultSessionDays = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Location = table.Column<Point>(type: "geography", nullable: true),
                     IsPrivate = table.Column<bool>(type: "bit", nullable: false),
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
                     IsGirlsOnly = table.Column<bool>(type: "bit", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TeacherID = table.Column<int>(type: "int", nullable: false),
                     CoverPicture = table.Column<byte[]>(type: "varbinary(MAX)", nullable: true),
                     DefaultRoomID = table.Column<int>(type: "int", nullable: true),
-                    SubjectID = table.Column<int>(type: "int", nullable: true),
+                    SubjectID = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -462,7 +487,8 @@ namespace XCourse.Infrastructure.Migrations
                         name: "FK_Groups_Subjects_SubjectID",
                         column: x => x.SubjectID,
                         principalTable: "Subjects",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Groups_Teachers_TeacherID",
                         column: x => x.TeacherID,
@@ -480,9 +506,11 @@ namespace XCourse.Infrastructure.Migrations
                     RoomID = table.Column<int>(type: "int", nullable: false),
                     StudentID = table.Column<int>(type: "int", nullable: true),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Duration = table.Column<TimeSpan>(type: "time", nullable: false),
-                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: true),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    WeekDay = table.Column<int>(type: "int", nullable: true),
+                    ReservationStatus = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -502,23 +530,24 @@ namespace XCourse.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Announcements",
+                name: "AnnouncementGroup",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IsImportant = table.Column<bool>(type: "bit", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Body = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    GroupID = table.Column<int>(type: "int", nullable: false)
+                    AnnouncementsID = table.Column<int>(type: "int", nullable: false),
+                    GroupsID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Announcements", x => x.ID);
+                    table.PrimaryKey("PK_AnnouncementGroup", x => new { x.AnnouncementsID, x.GroupsID });
                     table.ForeignKey(
-                        name: "FK_Announcements_Groups_GroupID",
-                        column: x => x.GroupID,
+                        name: "FK_AnnouncementGroup_Announcements_AnnouncementsID",
+                        column: x => x.AnnouncementsID,
+                        principalTable: "Announcements",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AnnouncementGroup_Groups_GroupsID",
+                        column: x => x.GroupsID,
                         principalTable: "Groups",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
@@ -528,14 +557,15 @@ namespace XCourse.Infrastructure.Migrations
                 name: "AssistantInvitations",
                 columns: table => new
                 {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     AssistantID = table.Column<int>(type: "int", nullable: false),
                     GroupID = table.Column<int>(type: "int", nullable: false),
-                    ID = table.Column<int>(type: "int", nullable: false),
-                    TeacherID = table.Column<int>(type: "int", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AssistantInvitations", x => new { x.AssistantID, x.GroupID });
+                    table.PrimaryKey("PK_AssistantInvitations", x => x.ID);
                     table.ForeignKey(
                         name: "FK_AssistantInvitations_Assistants_AssistantID",
                         column: x => x.AssistantID,
@@ -546,10 +576,34 @@ namespace XCourse.Infrastructure.Migrations
                         column: x => x.GroupID,
                         principalTable: "Groups",
                         principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupDefaults",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WeekDay = table.Column<int>(type: "int", nullable: true),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    RoomID = table.Column<int>(type: "int", nullable: true),
+                    GroupID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupDefaults", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_AssistantInvitations_Teachers_TeacherID",
-                        column: x => x.TeacherID,
-                        principalTable: "Teachers",
+                        name: "FK_GroupDefaults_Groups_GroupID",
+                        column: x => x.GroupID,
+                        principalTable: "Groups",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_GroupDefaults_Rooms_RoomID",
+                        column: x => x.RoomID,
+                        principalTable: "Rooms",
                         principalColumn: "ID");
                 });
 
@@ -581,16 +635,18 @@ namespace XCourse.Infrastructure.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Duration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    Duration = table.Column<TimeSpan>(type: "time", nullable: true),
                     Location = table.Column<Point>(type: "geography", nullable: true),
                     Address_Street = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Neighborhood = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_City = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     Address_Governorate = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     URL = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ExpiryDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RoomReservationID = table.Column<int>(type: "int", nullable: false),
+                    StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RoomReservationID = table.Column<int>(type: "int", nullable: true),
                     GroupID = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -620,6 +676,7 @@ namespace XCourse.Infrastructure.Migrations
                     Feedback = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Rating = table.Column<int>(type: "int", nullable: true),
                     HasAttended = table.Column<bool>(type: "bit", nullable: true),
+                    HasPaid = table.Column<bool>(type: "bit", nullable: false),
                     ClassWorkGrade = table.Column<double>(type: "float", nullable: true),
                     HomeWorkGrade = table.Column<double>(type: "float", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -640,9 +697,9 @@ namespace XCourse.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Announcements_GroupID",
-                table: "Announcements",
-                column: "GroupID");
+                name: "IX_AnnouncementGroup_GroupsID",
+                table: "AnnouncementGroup",
+                column: "GroupsID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -677,12 +734,6 @@ namespace XCourse.Infrastructure.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_WalletID",
-                table: "AspNetUsers",
-                column: "WalletID",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -690,14 +741,14 @@ namespace XCourse.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AssistantInvitations_AssistantID",
+                table: "AssistantInvitations",
+                column: "AssistantID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AssistantInvitations_GroupID",
                 table: "AssistantInvitations",
                 column: "GroupID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AssistantInvitations_TeacherID",
-                table: "AssistantInvitations",
-                column: "TeacherID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Assistants_AppUserID",
@@ -720,6 +771,16 @@ namespace XCourse.Infrastructure.Migrations
                 name: "IX_Centers_CenterAdminID",
                 table: "Centers",
                 column: "CenterAdminID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupDefaults_GroupID",
+                table: "GroupDefaults",
+                column: "GroupID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupDefaults_RoomID",
+                table: "GroupDefaults",
+                column: "RoomID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_DefaultRoomID",
@@ -770,7 +831,8 @@ namespace XCourse.Infrastructure.Migrations
                 name: "IX_Sessions_RoomReservationID",
                 table: "Sessions",
                 column: "RoomReservationID",
-                unique: true);
+                unique: true,
+                filter: "[RoomReservationID] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentGroups_StudentID",
@@ -798,13 +860,19 @@ namespace XCourse.Infrastructure.Migrations
                 name: "IX_Transactions_WalletID",
                 table: "Transactions",
                 column: "WalletID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Wallets_AppUserID",
+                table: "Wallets",
+                column: "AppUserID",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Announcements");
+                name: "AnnouncementGroup");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -828,6 +896,9 @@ namespace XCourse.Infrastructure.Migrations
                 name: "Attendances");
 
             migrationBuilder.DropTable(
+                name: "GroupDefaults");
+
+            migrationBuilder.DropTable(
                 name: "PrivateGroupRequests");
 
             migrationBuilder.DropTable(
@@ -840,6 +911,9 @@ namespace XCourse.Infrastructure.Migrations
                 name: "Transactions");
 
             migrationBuilder.DropTable(
+                name: "Announcements");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -847,6 +921,9 @@ namespace XCourse.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sessions");
+
+            migrationBuilder.DropTable(
+                name: "Wallets");
 
             migrationBuilder.DropTable(
                 name: "Groups");
@@ -874,9 +951,6 @@ namespace XCourse.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Wallets");
         }
     }
 }

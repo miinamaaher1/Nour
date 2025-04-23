@@ -9,12 +9,10 @@ using XCourse.Core.Entities;
 
 namespace XCourse.Infrastructure.Data.Configurations
 {
-    public class AssistantInvitationConfiguration : IEntityTypeConfiguration<AssistantInvitation>
+    public class AssistantInvitationConfiguration  : IEntityTypeConfiguration<AssistantInvitation>
     {
         public void Configure(EntityTypeBuilder<AssistantInvitation> builder)
         {
-            builder.HasKey(entity => new {entity.AssistantID , entity.GroupID});
-
             builder.HasOne(e => e.Assistant)
                 .WithMany(a => a.AssistantInvitations)
                 .HasForeignKey(e => e.AssistantID)
@@ -24,8 +22,6 @@ namespace XCourse.Infrastructure.Data.Configurations
                 .WithMany(a => a.AssistantInvitations)
                 .HasForeignKey(e => e.GroupID)
                 .OnDelete(DeleteBehavior.NoAction);
-
-
         }
     }
 }

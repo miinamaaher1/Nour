@@ -23,7 +23,7 @@ namespace XCourse.Core.Entities
         [ForeignKey(nameof(Group))]
         [Display(Name = nameof(Group))]
         public int GroupID { get; set; }
-        public AssistantInvitationStatus Status { get; set; }
         public virtual Group? Group { get; set; }
+        public AssistantInvitationStatus Status { get; set; }
     }
 }

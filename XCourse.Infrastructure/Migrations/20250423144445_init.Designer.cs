@@ -13,18 +13,33 @@ using XCourse.Infrastructure.Data;
 namespace XCourse.Infrastructure.Migrations
 {
     [DbContext(typeof(XCourseContext))]
-    [Migration("20250326205725_Editing session and group entities")]
-    partial class Editingsessionandgroupentities
+    [Migration("20250423144445_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AnnouncementGroup", b =>
+                {
+                    b.Property<int>("AnnouncementsID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GroupsID")
+                        .HasColumnType("int");
+
+                    b.HasKey("AnnouncementsID", "GroupsID");
+
+                    b.HasIndex("GroupsID");
+
+                    b.ToTable("AnnouncementGroup");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -204,9 +219,6 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<DateTime?>("DateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GroupID")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsImportant")
                         .HasColumnType("bit");
 
@@ -215,8 +227,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("GroupID");
 
                     b.ToTable("Announcements");
                 });
@@ -342,23 +352,26 @@ namespace XCourse.Infrastructure.Migrations
 
             modelBuilder.Entity("XCourse.Core.Entities.AssistantInvitation", b =>
                 {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
                     b.Property<int>("AssistantID")
                         .HasColumnType("int");
 
                     b.Property<int>("GroupID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ID")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TeacherID")
-                        .HasColumnType("int");
+                    b.HasKey("ID");
 
-                    b.HasKey("AssistantID", "GroupID");
+                    b.HasIndex("AssistantID");
 
                     b.HasIndex("GroupID");
-
-                    b.HasIndex("TeacherID");
 
                     b.ToTable("AssistantInvitations");
                 });
@@ -379,6 +392,9 @@ namespace XCourse.Infrastructure.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<bool?>("HasAttended")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasPaid")
                         .HasColumnType("bit");
 
                     b.Property<double?>("HomeWorkGrade")
@@ -407,6 +423,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.Property<int>("CenterAdminID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -466,11 +485,8 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<byte[]>("CoverPicture")
                         .HasColumnType("varbinary(MAX)");
 
-                    b.Property<TimeOnly?>("DefaultDayOneTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeOnly?>("DefaultDayTwoTime")
-                        .HasColumnType("time");
+                    b.Property<int>("CurrentStudents")
+                        .HasColumnType("int");
 
                     b.Property<int?>("DefaultRoomID")
                         .HasColumnType("int");
@@ -478,8 +494,8 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("DefaultSessionDays")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan?>("Duration")
-                        .HasColumnType("time");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -505,7 +521,7 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<decimal>("PricePerSession")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("SubjectID")
+                    b.Property<int>("SubjectID")
                         .HasColumnType("int");
 
                     b.Property<int>("TeacherID")
@@ -520,6 +536,44 @@ namespace XCourse.Infrastructure.Migrations
                     b.HasIndex("TeacherID");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("XCourse.Core.Entities.GroupDefaults", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("GroupID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RoomID")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("WeekDay")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("GroupID");
+
+                    b.HasIndex("RoomID");
+
+                    b.ToTable("GroupDefaults");
                 });
 
             modelBuilder.Entity("XCourse.Core.Entities.PrivateGroupRequest", b =>
@@ -565,8 +619,17 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<int>("CenterID")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Equipment")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -594,29 +657,35 @@ namespace XCourse.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("Date")
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan>("Duration")
+                    b.Property<TimeOnly?>("EndTime")
                         .HasColumnType("time");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("ReservationStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("RoomID")
                         .HasColumnType("int");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time");
 
                     b.Property<int?>("StudentID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("WeekDay")
+                        .HasColumnType("int");
 
                     b.HasKey("ID");
 
@@ -637,6 +706,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<TimeSpan?>("Duration")
                         .HasColumnType("time");
@@ -756,6 +828,9 @@ namespace XCourse.Infrastructure.Migrations
                     b.Property<decimal?>("PrivatePrice")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("TagLine")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ID");
 
                     b.HasIndex("AppUserID")
@@ -826,6 +901,21 @@ namespace XCourse.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("AnnouncementGroup", b =>
+                {
+                    b.HasOne("XCourse.Core.Entities.Announcement", null)
+                        .WithMany()
+                        .HasForeignKey("AnnouncementsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("XCourse.Core.Entities.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -909,17 +999,6 @@ namespace XCourse.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("XCourse.Core.Entities.Announcement", b =>
-                {
-                    b.HasOne("XCourse.Core.Entities.Group", "Group")
-                        .WithMany("Announcements")
-                        .HasForeignKey("GroupID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-                });
-
             modelBuilder.Entity("XCourse.Core.Entities.AppUser", b =>
                 {
                     b.OwnsOne("XCourse.Core.Entities.Address", "HomeAddress", b1 =>
@@ -978,10 +1057,6 @@ namespace XCourse.Infrastructure.Migrations
                         .HasForeignKey("GroupID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("XCourse.Core.Entities.Teacher", null)
-                        .WithMany("AssistantInvitations")
-                        .HasForeignKey("TeacherID");
 
                     b.Navigation("Assistant");
 
@@ -1068,7 +1143,9 @@ namespace XCourse.Infrastructure.Migrations
 
                     b.HasOne("XCourse.Core.Entities.Subject", "Subject")
                         .WithMany("Groups")
-                        .HasForeignKey("SubjectID");
+                        .HasForeignKey("SubjectID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("XCourse.Core.Entities.Teacher", "Teacher")
                         .WithMany("Groups")
@@ -1112,6 +1189,21 @@ namespace XCourse.Infrastructure.Migrations
                     b.Navigation("Subject");
 
                     b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("XCourse.Core.Entities.GroupDefaults", b =>
+                {
+                    b.HasOne("XCourse.Core.Entities.Group", "Group")
+                        .WithMany("GroupDefaults")
+                        .HasForeignKey("GroupID");
+
+                    b.HasOne("XCourse.Core.Entities.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomID");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("XCourse.Core.Entities.PrivateGroupRequest", b =>
@@ -1330,9 +1422,9 @@ namespace XCourse.Infrastructure.Migrations
 
             modelBuilder.Entity("XCourse.Core.Entities.Group", b =>
                 {
-                    b.Navigation("Announcements");
-
                     b.Navigation("AssistantInvitations");
+
+                    b.Navigation("GroupDefaults");
 
                     b.Navigation("Sessions");
                 });
@@ -1372,8 +1464,6 @@ namespace XCourse.Infrastructure.Migrations
 
             modelBuilder.Entity("XCourse.Core.Entities.Teacher", b =>
                 {
-                    b.Navigation("AssistantInvitations");
-
                     b.Navigation("Groups");
 
                     b.Navigation("PrivateGroupRequests");

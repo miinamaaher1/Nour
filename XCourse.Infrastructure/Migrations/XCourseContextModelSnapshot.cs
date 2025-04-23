@@ -349,26 +349,26 @@ namespace XCourse.Infrastructure.Migrations
 
             modelBuilder.Entity("XCourse.Core.Entities.AssistantInvitation", b =>
                 {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
                     b.Property<int>("AssistantID")
                         .HasColumnType("int");
 
                     b.Property<int>("GroupID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TeacherID")
-                        .HasColumnType("int");
+                    b.HasKey("ID");
 
-                    b.HasKey("AssistantID", "GroupID");
+                    b.HasIndex("AssistantID");
 
                     b.HasIndex("GroupID");
-
-                    b.HasIndex("TeacherID");
 
                     b.ToTable("AssistantInvitations");
                 });
@@ -1055,10 +1055,6 @@ namespace XCourse.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("XCourse.Core.Entities.Teacher", null)
-                        .WithMany("AssistantInvitations")
-                        .HasForeignKey("TeacherID");
-
                     b.Navigation("Assistant");
 
                     b.Navigation("Group");
@@ -1465,8 +1461,6 @@ namespace XCourse.Infrastructure.Migrations
 
             modelBuilder.Entity("XCourse.Core.Entities.Teacher", b =>
                 {
-                    b.Navigation("AssistantInvitations");
-
                     b.Navigation("Groups");
 
                     b.Navigation("PrivateGroupRequests");
