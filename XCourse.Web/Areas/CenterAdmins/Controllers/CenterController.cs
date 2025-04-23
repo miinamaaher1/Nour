@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using XCourse.Core.DTOs.StudentDTOs;
 using XCourse.Core.ViewModels.CenterAdminViewModels;
+using XCourse.Infrastructure.Repositories.Interfaces;
 using XCourse.Services.Interfaces.CenterAdminServices;
 
 namespace XCourse.Web.Areas.CenterAdmins.Controllers
@@ -13,10 +14,12 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         // GET: CenterController
         ICenterAdminService _centerAdminService;
         IConfiguration Configuration;
-        public CenterController(ICenterAdminService centerAdminService, IConfiguration _configuration)
+        IUnitOfWork _unitOfWork;
+        public CenterController(ICenterAdminService centerAdminService, IConfiguration _configuration,IUnitOfWork unitOfWork )
         {
             _centerAdminService = centerAdminService;
             Configuration = _configuration;
+            _unitOfWork = unitOfWork;
         }
 
         public ActionResult Index()
@@ -29,8 +32,6 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
                 return NotFound("this User not Have Any Center");
             }
-            ViewBag.centeradmin = Centers.Select(c => c.CenterAdminid).FirstOrDefault();
-
             return View(Centers);
         }
 
@@ -44,12 +45,13 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
         }
 
         // GET: CenterController/Create
-        public ActionResult Create(int centeradminid)
+        public ActionResult Create()
         {
-
+            var appUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var centerAdminId = _unitOfWork.CenterAdmins.Find(c => c.AppUserID==appUserId).ID;
             var model = new CreateCenterViewModel
             {
-                CenterAdminid = centeradminid,
+                CenterAdminid = centerAdminId,
                 Location = new MapInfoDTO { OriginX = 0, OriginY = 0, Key = Configuration["GoogleMaps:ApiKey"] }
             };
             return View(model);

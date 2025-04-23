@@ -32,8 +32,7 @@
 								<span>@Model.Street St. @Model.City City, @Model.Governorate</span>
 							</div>
 							<p>
-								Welcome to our premium conference center – a perfect blend of luxury and functionality.
-								With state-of-the-art facilities and a prime location, we offer the ideal setting for your next event.
+								@Model.Description
 							</p>
 							<div class="center__map">
 								@if (Model.Location != null)
@@ -101,7 +100,7 @@
 										}
 									</div>
 									<p>
-										A luxurious executive suite with state-of-the-art presentation equipment and elegant furnishings.
+										@room.Description
 									</p>
 								</div>
 								<button class="btn rooms__reserve-btn" onclick="openModal(@room.ID, @room.PricePerHour)">

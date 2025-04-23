@@ -38,5 +38,6 @@ namespace XCourse.Core.ViewModels.CenterAdminViewModels
             "Qena", "Aswan", "Luxor", "Red Sea", "New Valley",
             "Matrouh", "North Sinai", "South Sinai", "Damietta"
         ];
+        public string? Description { get; set; }
     }
 }

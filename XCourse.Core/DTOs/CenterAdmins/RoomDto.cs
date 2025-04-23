@@ -26,5 +26,7 @@ namespace XCourse.Core.DTOs.CenterAdmins
         public List<Equipment>? SelectedEquipments { get; set; } = new() ;
         
         public byte[]? PreviewPicture2 { get; set; }
+
+        public string? Description { get; set; }
     }
 }

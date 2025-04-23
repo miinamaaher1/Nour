@@ -41,6 +41,8 @@ namespace XCourse.Services.Implementations.CenterAdminServices
 
 
             if (room == null) return 0;
+            var oldRoom = _unitOfWork.Rooms.Get(room.RoomId);
+
             if (room.SelectedEquipments != null)
             {
                 foreach (var item in room.SelectedEquipments)
@@ -49,19 +51,19 @@ namespace XCourse.Services.Implementations.CenterAdminServices
                 }
             }
 
+            oldRoom.ID = room.RoomId;
+            oldRoom.CenterID = room.CenterId;
+            oldRoom.Name = room.Name;
+            oldRoom.Capacity = room.Capacity;
+            oldRoom.PricePerHour = room.PricePerHour;
+            oldRoom.Equipment = room.Equipment;
+            oldRoom.RoomReservations = room.RoomReservations;
+            oldRoom.Description = room.Description;
+            oldRoom.PreviewPicture = room.PreviewPicture2 ?? oldRoom.PreviewPicture;
 
-            var Room = new Room()
-            {
-                ID = room.RoomId,
-                CenterID = room.CenterId,
-                Name = room.Name,
-                Capacity = room.Capacity,
-                PricePerHour = room.PricePerHour,
-                PreviewPicture = room.PreviewPicture2,
-                Equipment = room.Equipment,
-                RoomReservations = room.RoomReservations
-            };
-            _unitOfWork.Rooms.Update(Room);
+
+ 
+            _unitOfWork.Rooms.Update(oldRoom);
             return _unitOfWork.Save();
 
 
@@ -122,6 +124,7 @@ namespace XCourse.Services.Implementations.CenterAdminServices
                 PreviewPicture = room.PreviewPicture2,
                 PricePerHour = room.PricePerHour,
                 Equipment = room.Equipment,
+                Description = room.Description,
 
 
             };
@@ -172,6 +175,7 @@ namespace XCourse.Services.Implementations.CenterAdminServices
                 CenterAdminID = Center.CenterAdminid,
                 Location = new Point(Center.Location.OriginX, Center.Location.OriginY) { SRID = 4326 },
                 PreviewPicture = Center.PreviewPicture,
+                Description = Center.Description,
 
             };
             _unitOfWork.Centers.Add(center);
@@ -231,7 +235,8 @@ namespace XCourse.Services.Implementations.CenterAdminServices
                 },
                 IsGirlsOnly = center.IsGirlsOnly,
                 CenterAdminid = center.CenterAdminID,
-                PreviewPicture = center.PreviewPicture
+                PreviewPicture = center.PreviewPicture,
+                Description = center.Description,
 
             };
 
@@ -242,19 +247,21 @@ namespace XCourse.Services.Implementations.CenterAdminServices
         {
             if (Center == null) return 0;
 
-            var EditCenter = new Center()
-            {
-                Name = Center.Name,
-                Address = Center.Address,
-                Location = new Point(Center.Location.OriginX, Center.Location.OriginY) { SRID = 4326 },
-                IsGirlsOnly = Center.IsGirlsOnly,
-                PreviewPicture = Center.PreviewPicture,
-                ID = Center.CenterID,
-                CenterAdminID = Center.CenterAdminid
+            var oldCenter = _unitOfWork.Centers.Get(Center.CenterID);
 
-            };
 
-            _unitOfWork.Centers.Update(EditCenter);
+            oldCenter.Name = Center.Name;
+            oldCenter.Address = Center.Address;
+            oldCenter.Location = new Point(Center.Location.OriginX, Center.Location.OriginY) { SRID = 4326 };
+            oldCenter.IsGirlsOnly = Center.IsGirlsOnly;
+            oldCenter.ID = Center.CenterID;
+            oldCenter.CenterAdminID = Center.CenterAdminid;
+            oldCenter.Description = Center.Description;
+            oldCenter.PreviewPicture = Center.PreviewPicture ?? oldCenter.PreviewPicture;
+
+
+
+            _unitOfWork.Centers.Update(oldCenter);
             return _unitOfWork.Save();
         }
 

@@ -256,7 +256,7 @@
                     <div class="insufficient-funds-alert">
                         <i class="fa-solid fa-circle-exclamation"></i>
                         <p>Your wallet balance is insufficient to join this group. Please add funds to your wallet.</p>
-                        <a href="/Students/Wallet/AddFunds" class="btn btn-accent mt-2">Add Funds</a>
+                        <a asp-action="TopUpWallet" asp-controller="Payment" asp-area="Students" class="btn btn-accent mt-2" style="text-decoration:none;">Top Up Wallet</a>
                     </div>
                 }
                 else

@@ -35,7 +35,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction("Index", new { id = t });
+            return RedirectToAction("Pending");
         }
 
         public async Task<ActionResult> RejectReservation(int id)
@@ -45,7 +45,7 @@ namespace XCourse.Web.Areas.CenterAdmins.Controllers
             {
                 return NotFound();
             }
-            return RedirectToAction("Index", new { id = t });
+            return RedirectToAction("Pending");
         }
 
         // GET: ReservationController/Edit/5

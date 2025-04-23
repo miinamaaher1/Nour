@@ -6,6 +6,7 @@ namespace XCourse.Core.ViewModels.StudentsViewModels
     {
         public int ID { get; set; }
         public string Name { get; set; }
+        public string? Description { get; set; }
         public bool IsGirlsOnly { get; set; }
         public string Governorate { get; set; }
         public string City { get; set; }

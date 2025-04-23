@@ -573,7 +573,7 @@ namespace XCourse.Services.Implementations.TeacherServices
                 .FindAllAsync(r =>
                     r.CenterID == request.CenterID &&
                     r.Capacity >= request.Capacity &&
-                    r.Equipment == Equipment.Lecture);
+                    r.Equipment.HasFlag( Equipment.Lecture));
 
             var availableRooms = new List<Room>();
 

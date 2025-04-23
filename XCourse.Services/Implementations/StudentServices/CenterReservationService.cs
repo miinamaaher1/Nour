@@ -47,7 +47,8 @@ namespace XCourse.Services.Implementations.StudentServices
                 Location = center.Location,
                 MapKey = _configuration["GoogleMaps:ApiKey"],
                 WalletBalance = userWallet.Balance,
-                AvailbleRooms = new List<RoomVM>()
+                AvailbleRooms = new List<RoomVM>(),
+                Description = center.Description
             };
 
             if (auser.Gender == Gender.Male && center.IsGirlsOnly)
@@ -72,7 +73,9 @@ namespace XCourse.Services.Implementations.StudentServices
                     Equipment = room.Equipment,
                     Capacity = room.Capacity,
                     PricePerHour = room.PricePerHour,
-                    PreviewPicture = room.PreviewPicture
+                    PreviewPicture = room.PreviewPicture,
+                    Description = room.Description
+
                 };
                 centerVM.AvailbleRooms.Add(roomVM);
             }
