@@ -11,23 +11,23 @@
 	<!-- Center Information Section -->
 	<section class="center animate-fade-in">
 		<div class="container">
-			<div class="center__card" style="height: 600px; overflow: hidden">
+			<div class="center__card">
 				<div class="row g-0">
-                    <div class="col-md-6">
+					<div class="col-md-6 col-12" style="height: 600px">
 
                         @if (Model.PreviewPicture != null)
                         {
-                            <img id="PreviewPicture" alt="profile" 
+							<img id="PreviewPicture" alt="profile" class="center__image"
                                  src="data:image/*;base64,@(Convert.ToBase64String(Model.PreviewPicture))" />
                         }
                         else
                         {
-                            <img id="PreviewPicture" alt="profile" 
+							<img id="PreviewPicture" alt="profile" class="center__image"
                                  src="~/images/default_center.svg" />
                         }
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-12">
                         <div class="center__info">
                             <h2 class="center__name">@Model.Name</h2>
                             <h2 class="center__name">
@@ -48,7 +48,7 @@
                                 Welcome to our premium conference center – a perfect blend of luxury and functionality.
                                 With state-of-the-art facilities and a prime location, we offer the ideal setting for your next event.
                             </p>
-                            <div class="center__map" style="overflow: hidden">
+                            <div class="center__map">
                                 @if (Model.Location != null)
                                 {
                                     <partial name="_MapPartialView" model="new MapInfoDTO() { Key=Model.Location.Key, OriginX=Model.Location.OriginX, OriginY=Model.Location.OriginY }" style=" border-radius:var(--border-radius); width:100%; height:100%; overflow: hidden;" />
@@ -118,7 +118,6 @@
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
-			border-bottom: 2px solid var(--clr-accent);
 		}
 
 		.center__info {
