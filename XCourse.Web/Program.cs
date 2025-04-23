@@ -77,7 +77,7 @@ namespace XCourse.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            //app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseStaticFiles();
 

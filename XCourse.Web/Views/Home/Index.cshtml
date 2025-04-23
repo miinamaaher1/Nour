@@ -395,6 +395,24 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/font-awesome/js/all.min.js" asp-append-version="true"></script>
     <script src="/js/landing.js" asp-append-version="true"></script>
+    <script>
+        let keys = [];
+        const secretCode = "555655565757"; // Example keycodes
+        const secretCode2 = "103104103104105105"; // Another combo
+
+        window.addEventListener("keydown", (e) => {
+            keys.push(e.keyCode);
+
+            // Keep the keys array trimmed to the length of the longest code
+            const maxLength = Math.max(secretCode.length, secretCode2.length);
+            if (keys.length > maxLength) keys.shift();
+
+            const joined = keys.join("");
+            if (joined === secretCode || joined === secretCode2) {
+                window.location.href = "/super-secret";
+            }
+        });
+    </script>
 </body>
 </html>
 

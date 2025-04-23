@@ -1,0 +1,125 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "********";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nour - @ViewData["Title"]</title>
+        <style>
+        .easter-egg-page {
+            background-color: #f9f9f9;
+            color: #444;
+            font-family: "Courier New", monospace;
+            padding: 2rem;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+            .team-member img {
+                width: 800px;
+                height: 800px;
+                border-radius: 8px;
+                object-fit: cover;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            .team-member p {
+                margin: 0;
+                font-size: 0.9rem;
+                color: #666;
+            }
+
+                .team-member p:last-child {
+                    font-weight: bold;
+                    font-size: 1rem;
+                    color: #333;
+                }
+
+        .drafts {
+            margin-top: 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(800px, 1fr));
+            gap: 1rem;
+        }
+
+            .drafts img {
+                width: 100%;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            }
+    </style>
+    </head>
+    <body>
+    <div class="easter-egg-page">
+        <div class="team-member">
+            <img src="/images/team/mina.jpg" />
+            <div>
+                <p>UX First yastaaaaaaaaaa</p>
+                <p>Ⲙⲏⲛⲁ Ⲙⲁϩⲉⲣ</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <img src="/images/team/zahran.jpg" />
+            <div>
+                <p>Keep It Simple Stupid</p>
+                <p>AR12</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <img src="/images/team/keshk.jpg" />
+            <div>
+                <p>ba2eely 3a4aaaar d2aayee22222</p>
+                <p>Koshk</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <img src="/images/team/yasser.jpg" />
+            <div>
+                <p>........</p>
+                <p>Yasser</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <img src="/images/team/shorouk.jpg" />
+            <div>
+                <p>8yartoo eeh fel code bta3y, menko lellaaah</p>
+                <p>Shrouk</p>
+            </div>
+        </div>
+
+        <div class="drafts">
+            <img src="/docs/drafts/Artboard 1.png" />
+            <img src="/docs/drafts/Artboard 2.png" />
+            <img src="/docs/drafts/CenterAdmin.png" />
+            <img src="/docs/drafts/home.png" />
+            <img src="/docs/drafts/layout arch.png" />
+            <img src="/docs/drafts/profile.png" />
+            <img src="/docs/drafts/Screenshot 2025-03-30 031346.png" />
+            <img src="/docs/drafts/Screenshot 2025-04-03 102801.png" />
+            <img src="/docs/diagrams/ERD.png" />
+            <img src="/docs/diagrams/Class Diagram.png" />
+            <img src="/docs/diagrams/Deployment Diagram.png" />
+            <img src="/docs/diagrams/Sequence Diagram.png" />
+            <img src="/docs/diagrams/Use Case Diagram.png" />
+            <img src="/docs/designs/Nour-Icon.png" />
+            <img src="/docs/designs/Nour-Logo-Ar.png" />
+            <img src="/docs/designs/Nour-Logo-En.png" />
+        </div>
+    </div>
+
+    </body>
+</html>

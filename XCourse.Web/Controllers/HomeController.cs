@@ -54,5 +54,11 @@ namespace XCourse.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [Route("super-secret")]
+        public IActionResult EasterEgg()
+        {
+            return View();
+        }
     }
 }
