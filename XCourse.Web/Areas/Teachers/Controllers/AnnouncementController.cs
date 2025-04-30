@@ -41,6 +41,14 @@ namespace XCourse.Web.Areas.Teachers.Controllers
         [HttpPost]
         async public Task<IActionResult> PostAnnouncement([FromBody] PostAnnouncementRequestDTO requestDTO)
         {
+            var userID = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            int teacherId = 0;
+            if (userID != null)
+            {
+                Teacher teacher = await _announcementService.GetTeacherByUserId(userID);
+                teacherId = teacher.ID;
+            }
+            requestDTO.TeacherId = teacherId;
             var response = await _announcementService.AddAnnouncementService(requestDTO);
             return Ok(response);
         }

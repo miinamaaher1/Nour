@@ -208,7 +208,7 @@ namespace XCourse.Services.Implementations.TeacherServices
             var groups = await _unitOfWork.Groups.FindAllAsync(g =>
             g.TeacherID == announcementRequest.TeacherId &&
             announcementRequest.GroupIds!.Contains(g.ID));
-            if (groups == null || !groups.Any())
+            if (groups == null || groups.Count() == 0)
             {
                 response.IsValid = false;
                 response.Errors.Add("No valid groups were found.");
