@@ -113,7 +113,10 @@ namespace XCourse.Services.Implementations.TeacherServices
                     GroupID = groupId,
                     Status = AssistantInvitationStatus.Pending
                 };
+                group.AssistantInvitations = new List <AssistantInvitation>();
+                group.AssistantInvitations.Add(newInvitation);
 
+                _unitOfWork.Groups.Attach(group);
                 await _unitOfWork.AssistantInvitations.AddAsync(newInvitation);
             }
             else
