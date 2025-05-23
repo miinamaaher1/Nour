@@ -1,5 +1,7 @@
 # Nour
 
+![Logo](XCourse.Web/wwwroot/docs/designs/NOUR.png)
+
 **Nour** is an educational platform designed to connect **teachers**, **students**, **assistants**, and **center admins**, streamlining and supporting the private tutoring business.
 
 This project was developed by our team as part of the [ITI](https://iti.gov.eg/home) ASP.NET MVC course under the Integrated Software Development & Architecture track.
